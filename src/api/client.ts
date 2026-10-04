@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { supabase } from './supabaseClient';
 
 // TODO: echte Backend-URL eintragen, sobald deployed (z.B. Render/Fly.io)
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'https://meinkochbuch-backend-production.up.railway.app';
 
 class ApiError extends Error {
   status: number;

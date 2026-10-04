@@ -794,7 +794,8 @@
     "keineAktivenPools": "Keine aktiven Pools - unter \"Meine Pools\" im Profil einen aktivieren.",
     "teilweiseVeroeffentlicht": "In {erfolge} von {gesamt} Pools veröffentlicht. Fehler: {fehler}",
     "keinPoolMarkiert": "Kein Pool ausgewählt",
-    "keinPoolMarkiertText": "Bitte mindestens einen Pool markieren."
+    "keinPoolMarkiertText": "Bitte mindestens einen Pool markieren.",
+    "nasDatenHinweis": "Deine Rezepte liegen sicher am Server, auf dem NAS landet je Rezept eine Rezeptkarte (PDF) mit Bild. Wird dort etwas gelöscht, bleibt das Rezept in der App."
   },
   "uebersetzung": {
     "angebotTitel": "Dieses Rezept ist auf {sprache} verfasst.",

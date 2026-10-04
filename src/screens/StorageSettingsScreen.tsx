@@ -309,6 +309,7 @@ export default function StorageSettingsScreen({ navigation }: Props) {
               {t('sonstiges.nasVerbunden', { adresse: nas.url ?? '' })}
             </Text>
           )}
+          <Text style={{ color: colors.text, fontSize: 12.5, lineHeight: 17, marginBottom: 10 }}>{t('sonstiges.nasDatenHinweis')}</Text>
           <Text style={{ color: colors.muted, fontSize: 12.5, marginBottom: 6 }}>{t('sonstiges.nasHersteller')}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
             {(['synology', 'qnap', 'nextcloud', 'truenas', 'andere'] as const).map((h) => (

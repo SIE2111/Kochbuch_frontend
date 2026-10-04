@@ -794,7 +794,8 @@
     "keineAktivenPools": "No active pools - activate one under \"My Pools\" in your profile.",
     "teilweiseVeroeffentlicht": "Published in {erfolge} of {gesamt} pools. Error: {fehler}",
     "keinPoolMarkiert": "No pool selected",
-    "keinPoolMarkiertText": "Please select at least one pool."
+    "keinPoolMarkiertText": "Please select at least one pool.",
+    "nasDatenHinweis": "Your recipes stay safely on the server; the NAS gets a recipe card (PDF) with picture for each recipe. If something is deleted there, the recipe stays in the app."
   },
   "uebersetzung": {
     "angebotTitel": "This recipe is written in {sprache}.",

@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Alert, ActivityIndicator, Image } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Alert, ActivityIndicator, Image, Modal, BackHandler } from 'react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import BrutzelAvatar from '../components/BrutzelAvatar';
 import * as ImagePicker from 'expo-image-picker';
 import { ensureMediaLibraryAccess } from '../utils/mediaPermissions';
 import { useTheme } from '../theme/ThemeContext';
@@ -227,6 +229,37 @@ export default function PhotoCaptureScreen({ navigation }: Props) {
     }
   };
 
+  // Abbruch-Schutz (Wunsch 04.10.2026): Zurück mit Fotos oder ausgewertetem
+  // Rezept verwarf vorher alles ohne Rückfrage. Eigener Zurück-Knopf statt
+  // beforeRemove (siehe ManualRecipeScreen), Wischgeste aus, Android-Zurück
+  // ebenfalls abgefangen. Die Frage stellt Brutzel, kein System-Dialog.
+  const [zurueckFrage, setZurueckFrage] = useState(false);
+  const gespeichertRef = useRef(false);
+  const ungespeichert = !gespeichertRef.current && (imageUris.length > 0 || !!result);
+  const ungespeichertRef = useRef(ungespeichert);
+  ungespeichertRef.current = ungespeichert;
+  const zurueck = () => {
+    if (ungespeichertRef.current) setZurueckFrage(true);
+    else navigation.goBack();
+  };
+  useEffect(() => {
+    navigation.setOptions({
+      gestureEnabled: false,
+      headerLeft: () => (
+        <Pressable onPress={zurueck} hitSlop={10} style={{ paddingHorizontal: 4 }}>
+          <MaterialCommunityIcons name="chevron-left" size={28} color={gradient[0]} />
+        </Pressable>
+      ),
+    });
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (!ungespeichertRef.current) return false;
+      setZurueckFrage(true);
+      return true;
+    });
+    return () => sub.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigation, gradient]);
+
   const handleSave = async (cookOnly = false) => {
     if (!title.trim()) {
       Alert.alert(t('erfassen.titelFehlt'), t('erfassen.bitteName'));
@@ -280,6 +313,8 @@ export default function PhotoCaptureScreen({ navigation }: Props) {
       }
 
       const saved = await api.post<{ id: string; title: string }>('/recipes/', { title: title.trim(), servings: servings ? Number(servings) : null, ingredients, steps, cover_image_url: coverImageUrl, folder_id: selectedFolderId, tags, personal_note: notiz.trim() || null, source_type: 'photo_scan' });
+      gespeichertRef.current = true;
+      ungespeichertRef.current = false;
       askWhatNext(navigation, { id: saved.id, title: saved.title }, cookOnly);
     } catch (err) {
       Alert.alert(t('erfassen.speichernFehlgeschlagen'), err instanceof ApiError ? err.detail : t('profil.unbekannterFehler'));
@@ -303,10 +338,43 @@ export default function PhotoCaptureScreen({ navigation }: Props) {
     />
   );
 
+  const zurueckDialog = (
+    <Modal visible={zurueckFrage} transparent animationType="fade" onRequestClose={() => setZurueckFrage(false)}>
+      <View style={styles.frageHintergrund}>
+        <View style={[styles.frageKarte, { backgroundColor: colors.card, borderRadius: radius.md }]}>
+          <View style={styles.frageKopf}>
+            <BrutzelAvatar size={48} />
+            <Text style={[styles.frageText, { color: colors.text }]}>
+              {result ? t('erfassen.brutzelZurueckRezept') : t('erfassen.brutzelZurueckFotos', { anzahl: imageUris.length })}
+            </Text>
+          </View>
+          {result && (
+            <Pressable
+              onPress={() => { setZurueckFrage(false); handleSave(false); }}
+              disabled={isSaving || isGeneratingImage}
+              style={[styles.saveButton, { backgroundColor: gradient[0], borderRadius: radius.md, marginTop: 14 }]}
+            >
+              <Text style={styles.primaryButtonText}>{t('erfassen.rezeptSpeichern')}</Text>
+            </Pressable>
+          )}
+          <Pressable
+            onPress={() => { setZurueckFrage(false); ungespeichertRef.current = false; navigation.goBack(); }}
+            style={[styles.secondaryButton, { borderColor: '#c0392b', borderRadius: radius.md, marginTop: 10 }]}
+          >
+            <Text style={{ color: '#c0392b', fontWeight: '700' }}>{t('erfassen.verwerfen')}</Text>
+          </Pressable>
+          <Pressable onPress={() => setZurueckFrage(false)} style={{ marginTop: 12, alignItems: 'center', paddingVertical: 6 }}>
+            <Text style={{ color: colors.text, opacity: 0.75 }}>{t('erfassen.weiterBearbeiten')}</Text>
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
+  );
+
   if (isScanning) {
     return (
       <View style={[styles.centered, { backgroundColor: colors.bg }]}>
-        {zuschnittFenster}
+        {zuschnittFenster}{zurueckDialog}
         <Image source={{ uri: imageUri }} style={styles.scanningPreview} />
         <ActivityIndicator color={colors.text} style={{ marginTop: 20 }} />
         <Text style={{ color: colors.muted, fontSize: 12, marginTop: 10 }}>{t('erfassen.wirdErfasst')}</Text>
@@ -317,7 +385,7 @@ export default function PhotoCaptureScreen({ navigation }: Props) {
   if (scanError) {
     return (
       <View style={[styles.centered, { backgroundColor: colors.bg, padding: 24 }]}>
-        {zuschnittFenster}
+        {zuschnittFenster}{zurueckDialog}
         <Text style={{ color: '#DC2626', fontSize: 13, textAlign: 'center', marginBottom: 16 }}>{scanError}</Text>
         <Pressable
           onPress={() => setScanError(null)}
@@ -341,7 +409,7 @@ export default function PhotoCaptureScreen({ navigation }: Props) {
         style={{ backgroundColor: colors.bg }}
         contentContainerStyle={{ padding: 24, alignItems: 'center' }}
       >
-        {zuschnittFenster}
+        {zuschnittFenster}{zurueckDialog}
         <Text style={[styles.introText, { color: colors.text }]}>
           Fotografiere eine Kochbuchseite, einen handschriftlichen Zettel oder ein Zutaten-Etikett.
         </Text>
@@ -398,7 +466,7 @@ export default function PhotoCaptureScreen({ navigation }: Props) {
       automaticallyAdjustKeyboardInsets
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag" contentContainerStyle={[styles.container, inhaltsBreite]}>
-      {zuschnittFenster}
+      {zuschnittFenster}{zurueckDialog}
       <Image source={{ uri: imageUri }} style={[styles.reviewThumbnail, { borderRadius: radius.md }]} />
 
       {result?.low_confidence_note && (
@@ -590,6 +658,10 @@ const styles = StyleSheet.create({
   folderChip: { paddingHorizontal: 12, paddingVertical: 8 },
   input: { minHeight: 44, paddingHorizontal: 14, paddingVertical: 10, fontSize: 13.5 },
   stepInput: { minHeight: 50 },
+  frageHintergrund: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', padding: 24 },
+  frageKarte: { padding: 18 },
+  frageKopf: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  frageText: { flex: 1, fontSize: 15, lineHeight: 21 },
   sectionTitle: { fontSize: 13, fontWeight: '700', marginTop: 20, marginBottom: 10 },
   saveButton: { height: 48, alignItems: 'center', justifyContent: 'center', marginTop: 24 },
   saveButtonText: { color: '#fff', fontWeight: '600', fontSize: 14.5 },

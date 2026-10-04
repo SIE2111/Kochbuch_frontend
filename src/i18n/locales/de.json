@@ -475,6 +475,8 @@
     "ungespeicherteAenderungen": "Es gibt ungespeicherte Änderungen an diesem Rezept.",
     "weiterBearbeiten": "Weiter bearbeiten",
     "verwerfen": "Verwerfen",
+    "brutzelZurueckRezept": "Brutzel fragt: Dein Rezept ist noch nicht gespeichert. Soll ich es speichern, bevor du gehst?",
+    "brutzelZurueckFotos": "Brutzel fragt: Du hast {{anzahl}} Foto(s) aufgenommen, aber noch nichts gespeichert. Wirklich alles verwerfen?",
     "rezeptNichtGeladen": "Rezept konnte nicht geladen werden",
     "kiZutaten": "Verfügbare Hauptzutaten (mit Komma getrennt)",
     "kiZutatenPlatzhalter": "z.B. Zucchini, Faschiertes, Reis",

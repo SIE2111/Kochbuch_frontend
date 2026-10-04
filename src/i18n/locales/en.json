@@ -475,6 +475,8 @@
     "ungespeicherteAenderungen": "This recipe has unsaved changes.",
     "weiterBearbeiten": "Keep editing",
     "verwerfen": "Discard",
+    "brutzelZurueckRezept": "Brutzel asks: Your recipe isn't saved yet. Shall I save it before you go?",
+    "brutzelZurueckFotos": "Brutzel asks: You took {{anzahl}} photo(s) but haven't saved anything yet. Really discard everything?",
     "rezeptNichtGeladen": "The recipe could not be loaded",
     "kiZutaten": "Main ingredients you have (comma separated)",
     "kiZutatenPlatzhalter": "e.g. courgette, minced meat, rice",

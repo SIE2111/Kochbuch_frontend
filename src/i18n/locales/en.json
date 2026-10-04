@@ -854,5 +854,19 @@
     "fehler": "The check failed.",
     "protokoll": "Update log",
     "protokollLeer": "No entries."
+  },
+  "tipps": {
+    "antippen": "Tip: Tap me at the top next to the title – I'll answer your questions about the app! ↗",
+    "foto": "Tip: Photograph a recipe from a cookbook or your handwritten notes – I'll read it in for you.",
+    "internet": "Tip: Import recipes from the internet via link – or search for them right in the app.",
+    "ki_rezept": "Tip: Tell me ingredients and time – with “AI recipe” I'll suggest a matching dish.",
+    "wochenplan": "Tip: Plan what you cook when in the weekly plan – the ingredients go to your shopping list with one tap.",
+    "einkauf": "Tip: The Shopping tab collects everything you still need to buy.",
+    "kochmodus": "Tip: Cooking mode guides you step by step – with timers, and the screen stays on.",
+    "kategorien": "Tip: Under “Manage categories” you sort the categories on your home screen and hide some.",
+    "pool": "Tip: The pool has recipes from other users – and you can share your own.",
+    "haushalt": "Tip: Invite your family under Profile → Household – then you cook from the same recipe book.",
+    "naechster": "Next tip ›",
+    "schliessen": "Close tip"
   }
 }

@@ -16,6 +16,9 @@ import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { MainTabParamList, MainStackParamList } from '../navigation/AppNavigator';
 import { useLayout } from '../utils/layout';
 import KochplanKarte from '../components/KochplanKarte';
+import { TippBlase } from '../components/TippBlase';
+import { TIPPS } from '../utils/tippListe';
+import BrutzelAvatar from '../components/BrutzelAvatar';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'Home'>,
@@ -54,6 +57,7 @@ export default function DashboardScreen({ navigation }: Props) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profileDisplayName, setProfileDisplayName] = useState<string | null>(null);
+  const [brutzelTipps, setBrutzelTipps] = useState(false);   // erst nach dem Laden der Einstellungen
   const [showGreeting, setShowGreeting] = useState(false);
   const [greetingMitVideo, setGreetingMitVideo] = useState(true);
   // "Schritte automatisch vorlesen" - steuert, ob die Begruessung
@@ -80,6 +84,7 @@ export default function DashboardScreen({ navigation }: Props) {
       }>('/preferences/')
       .then((prefs) => {
         setProfileDisplayName(prefs.display_name);
+        setBrutzelTipps(prefs.show_brutzel !== false);
         setCategoryOrder(prefs.category_order ?? []);
         setHiddenCategories(prefs.hidden_categories ?? []);
         // Auch show_brutzel pruefen: Wer Brutzel ganz abgeschaltet hat,
@@ -483,6 +488,12 @@ export default function DashboardScreen({ navigation }: Props) {
             gleiches Muster wie Klammi/Blitzi in Buerroablage/Medienablage). */}
         <BrutzelFaqBubble />
       </View>
+
+      {/* Ein Tipp je Start, der Reihe nach, jeder nur einmal - abschaltbar über
+          "Brutzel anzeigen" (show_brutzel), siehe utils/tipps.ts */}
+      <TippBlase tipps={TIPPS} erlaubt={brutzelTipps}
+        avatar={<BrutzelAvatar size={44} variant="head" />}
+        farben={{ flaeche: colors.card, text: colors.text, gedaempft: colors.muted, akzent: gradient[0] }} />
 
       {/* Nach dem Einkaufen direkt in die Zubereitung (Kochplan) */}
       <KochplanKarte />

@@ -854,5 +854,19 @@
     "fehler": "Die Prüfung hat nicht geklappt.",
     "protokoll": "Update-Protokoll",
     "protokollLeer": "Keine Einträge."
+  },
+  "tipps": {
+    "antippen": "Tipp: Tipp mich oben neben „Mein Kochbuch“ an – ich beantworte deine Fragen zur App! ↗",
+    "foto": "Tipp: Fotografier ein Rezept aus einem Kochbuch oder deine handgeschriebenen Notizen – ich lese es für dich ein.",
+    "internet": "Tipp: Rezepte aus dem Internet übernimmst du per Link – oder suchst direkt in der App danach.",
+    "ki_rezept": "Tipp: Sag mir Zutaten und Zeit – mit „KI-Rezept“ schlage ich dir ein passendes Gericht vor.",
+    "wochenplan": "Tipp: Plane im Wochenplan, was du wann kochst – die Zutaten landen mit einem Tipp auf der Einkaufsliste.",
+    "einkauf": "Tipp: Im Tab Einkauf sammelst du, was du noch besorgen musst.",
+    "kochmodus": "Tipp: Der Kochmodus führt dich Schritt für Schritt durchs Rezept – mit Timer, und der Bildschirm bleibt an.",
+    "kategorien": "Tipp: Unter „Kategorien verwalten“ sortierst du die Kategorien auf deiner Startseite und blendest welche aus.",
+    "pool": "Tipp: Im Pool findest du Rezepte anderer Nutzer – und kannst deine eigenen teilen.",
+    "haushalt": "Tipp: Lade deine Familie unter Profil → Haushalt ein – dann kocht ihr aus demselben Rezeptbuch.",
+    "naechster": "Nächster Tipp ›",
+    "schliessen": "Tipp schließen"
   }
 }

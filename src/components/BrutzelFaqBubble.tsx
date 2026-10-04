@@ -4,6 +4,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
 import BrutzelAvatar from './BrutzelAvatar';
+import { maskottchenAngetippt } from '../utils/tipps';
+import { FrageAbzeichen } from './Abzeichen';
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -46,9 +48,12 @@ export default function BrutzelFaqBubble() {
 
   return (
     <>
-      <Pressable onPress={() => setOpen(true)} hitSlop={8} style={[styles.bubble, { borderColor: gradient[0], backgroundColor: colors.card }]}>
-        <BrutzelAvatar size={36} variant="head" />
-      </Pressable>
+      <View>
+        <Pressable onPress={() => { maskottchenAngetippt(); setOpen(true); }} hitSlop={8} style={[styles.bubble, { borderColor: gradient[0], backgroundColor: colors.card }]}>
+          <BrutzelAvatar size={36} variant="head" />
+        </Pressable>
+        <FrageAbzeichen farbe={gradient[0]} />
+      </View>
 
       <Modal visible={open} animationType="slide" onRequestClose={handleClose} presentationStyle="pageSheet">
         <View style={[styles.container, { backgroundColor: colors.bg, paddingTop: insets.top + 16 }]}>

@@ -842,5 +842,17 @@
     "frageIgnorieren": "Close the report as unfounded?",
     "frageAusblenden": "Hide the recipe from the community pool?",
     "frageSperren": "Hide the recipe AND ban the author from publishing?"
+  },
+  "update": {
+    "suchen": "Check for updates",
+    "aktuell": "The app is up to date.",
+    "titel": "New version downloaded",
+    "text": "A new version is ready. Restart now?",
+    "spaeter": "Later",
+    "jetzt": "Restart now",
+    "build": "Build version",
+    "fehler": "The check failed.",
+    "protokoll": "Update log",
+    "protokollLeer": "No entries."
   }
 }

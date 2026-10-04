@@ -13,6 +13,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { MainTabParamList, MainStackParamList } from '../navigation/AppNavigator';
 import { useLayout } from '../utils/layout';
+import { UpdateInfo } from '../components/UpdateInfo';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'Profil'>,
@@ -703,6 +704,7 @@ export default function ProfileScreen({ navigation }: Props) {
         {versionAnzeige && (
           <Text style={[styles.footerVersion, { color: colors.muted }]}>{`v${versionAnzeige}`}</Text>
         )}
+        <UpdateInfo akzent={gradient[0]} gedaempft={colors.muted} />
       </View>
 
       <Modal visible={showDeleteDialog} transparent animationType="fade" onRequestClose={() => setShowDeleteDialog(false)}>

@@ -842,5 +842,17 @@
     "frageIgnorieren": "Meldung als unbegründet schließen?",
     "frageAusblenden": "Rezept aus dem Community-Pool ausblenden?",
     "frageSperren": "Rezept ausblenden UND den Ersteller fürs Veröffentlichen sperren?"
+  },
+  "update": {
+    "suchen": "Nach Updates suchen",
+    "aktuell": "Die App ist auf dem neuesten Stand.",
+    "titel": "Neue Version geladen",
+    "text": "Eine neue Version ist bereit. Jetzt neu starten?",
+    "spaeter": "Später",
+    "jetzt": "Jetzt neu starten",
+    "build": "Build-Stand",
+    "fehler": "Die Prüfung hat nicht geklappt.",
+    "protokoll": "Update-Protokoll",
+    "protokollLeer": "Keine Einträge."
   }
 }

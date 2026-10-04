@@ -512,7 +512,12 @@
     "portionenBitteEintragen": "Bitte trag ein, für wie viele Portionen das Rezept gedacht ist – davon hängen alle Mengen ab. Bei einer Torte oder einem Auflauf in der Form trägst du 0 ein.",
     "portionenFehlen": "Portionen fehlen",
     "portionenFehlenText": "Bitte eine Portionenzahl eintragen – oder 0, wenn das Rezept keine Portionen hat (z. B. eine Torte).",
-    "portionenNullHinweis": "0 = ohne Portionen, z. B. Torte oder Auflauf. Die Mengen gelten dann für das ganze Rezept."
+    "portionenNullHinweis": "0 = ohne Portionen, z. B. Torte oder Auflauf. Die Mengen gelten dann für das ganze Rezept.",
+    "kiPremium": "★ Premium-Rezept (5 AI Coins)",
+    "kiPremiumHinweis": "Premium nutzt eine stärkere KI: genauere Mengen und Garzeiten, Techniken erklärt, Tipps und Varianten. Das normale Rezept kostet 1 AI Coin.",
+    "kiPremiumFrage": "Premium-Rezept erstellen?",
+    "kiPremiumFrageText": "Das kostet 5 AI Coins.",
+    "kiPremiumJa": "Erstellen"
   },
   "haushalt": {
     "nichtGeladen": "Haushalt konnte nicht geladen werden",

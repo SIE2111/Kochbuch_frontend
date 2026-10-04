@@ -140,7 +140,8 @@ export default function AIGenerateScreen({ navigation, route }: Props) {
     ]);
   };
 
-  const handleGenerate = async () => {
+  // premium: stärkere KI, 5 AI Coins (bewusst gewählt) - Standard bleibt 1 Coin
+  const handleGenerate = async (premium = false) => {
     setIsGenerating(true);
     try {
       const available_ingredients = ingredientsText
@@ -154,6 +155,7 @@ export default function AIGenerateScreen({ navigation, route }: Props) {
         max_minutes: maxMinutes ? Number(maxMinutes) : undefined,
         servings: servings ? Number(servings) : undefined,
         free_text: freeText.trim() || undefined,
+        premium,
       });
 
       setResult(generated);
@@ -326,12 +328,25 @@ export default function AIGenerateScreen({ navigation, route }: Props) {
         />
 
         <Pressable
-          onPress={handleGenerate}
+          onPress={() => handleGenerate(false)}
           disabled={isGenerating}
           style={[styles.generateButton, { backgroundColor: gradient[0], borderRadius: radius.md, opacity: isGenerating ? 0.7 : 1 }]}
         >
           {isGenerating ? <ActivityIndicator color="#fff" /> : <Text style={styles.generateButtonText}>{t('erfassen.kiGenerieren')}</Text>}
         </Pressable>
+
+        {/* Premium-Rezept: stärkere KI, 5 AI Coins (04.10.2026) */}
+        <Pressable
+          onPress={() => Alert.alert(t('erfassen.kiPremiumFrage'), t('erfassen.kiPremiumFrageText'), [
+            { text: t('allgemein.abbrechen'), style: 'cancel' },
+            { text: t('erfassen.kiPremiumJa'), onPress: () => handleGenerate(true) },
+          ])}
+          disabled={isGenerating}
+          style={[styles.generateButton, { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: gradient[0], borderRadius: radius.md, marginTop: 10, opacity: isGenerating ? 0.5 : 1 }]}
+        >
+          <Text style={[styles.generateButtonText, { color: gradient[0] }]}>{t('erfassen.kiPremium')}</Text>
+        </Pressable>
+        <Text style={{ fontSize: 12.5, lineHeight: 18, color: colors.muted, marginTop: 8, textAlign: 'center' }}>{t('erfassen.kiPremiumHinweis')}</Text>
       </ScrollView>
     );
   }

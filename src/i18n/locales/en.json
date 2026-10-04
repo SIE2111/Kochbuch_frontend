@@ -512,7 +512,12 @@
     "portionenBitteEintragen": "Please enter how many servings the recipe is for – all amounts depend on it. For a cake or a casserole in a dish, enter 0.",
     "portionenFehlen": "Servings missing",
     "portionenFehlenText": "Please enter the number of servings, or 0 if the recipe has no servings (e.g. a cake).",
-    "portionenNullHinweis": "0 = no servings, e.g. a cake or casserole. The amounts then apply to the whole recipe."
+    "portionenNullHinweis": "0 = no servings, e.g. a cake or casserole. The amounts then apply to the whole recipe.",
+    "kiPremium": "★ Premium recipe (5 AI Coins)",
+    "kiPremiumHinweis": "Premium uses a stronger AI: more precise amounts and cooking times, techniques explained, tips and variations. The normal recipe costs 1 AI Coin.",
+    "kiPremiumFrage": "Create a premium recipe?",
+    "kiPremiumFrageText": "This costs 5 AI Coins.",
+    "kiPremiumJa": "Create"
   },
   "haushalt": {
     "nichtGeladen": "The household could not be loaded",

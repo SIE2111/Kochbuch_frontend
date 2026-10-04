@@ -873,5 +873,15 @@
     "haushalt": "Tipp: Lade deine Familie unter Profil → Haushalt ein – dann kocht ihr aus demselben Rezeptbuch.",
     "naechster": "Nächster Tipp ›",
     "schliessen": "Tipp schließen"
+  },
+  "rezeptSuche": {
+    "titel": "Rezept im Internet suchen",
+    "platzhalter": "z. B. Gulasch, Kaiserschmarrn …",
+    "suchen": "Suchen",
+    "hinweis": "Tippe ein Rezept an, um es zu übernehmen – das Auslesen kostet 1 AI Coin. Die Suche selbst ist kostenlos.",
+    "ansehen": "Ansehen ›",
+    "uebernehmen": "Übernehmen",
+    "keine": "Nichts gefunden – versuch einen anderen Begriff.",
+    "fehler": "Die Suche hat nicht geklappt."
   }
 }

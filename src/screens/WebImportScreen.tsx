@@ -287,7 +287,7 @@ export default function WebImportScreen({ navigation, route }: Props) {
             onChangeText={setUrl}
           />
           <Pressable
-            onPress={() => navigation.navigate('WebBrowse', { initialQuery: url || 'rezept' })}
+            onPress={() => navigation.navigate('RezeptSuche', { initialQuery: url && !/^https?:/i.test(url) ? url : undefined })}
             style={[styles.searchButton, { backgroundColor: colors.card, borderRadius: radius.md }]}
           >
             <Text style={{ fontSize: 18 }}>🔍</Text>

@@ -25,7 +25,8 @@ export default function WebBrowseScreen({ navigation, route }: Props) {
   const webViewRef = useRef<WebView>(null);
 
   const [searchText, setSearchText] = useState(route.params?.initialQuery ?? '');
-  const [currentUrl, setCurrentUrl] = useState(buildGoogleSearchUrl(route.params?.initialQuery ?? 'rezept'));
+  // initialUrl: "Ansehen" aus der Rezeptsuche öffnet direkt die Seite (04.10.2026)
+  const [currentUrl, setCurrentUrl] = useState(route.params?.initialUrl ?? buildGoogleSearchUrl(route.params?.initialQuery ?? 'rezept'));
   const [isLoading, setIsLoading] = useState(true);
   const [canGoBack, setCanGoBack] = useState(false);
 

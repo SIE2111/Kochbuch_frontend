@@ -873,5 +873,15 @@
     "haushalt": "Tip: Invite your family under Profile → Household – then you cook from the same recipe book.",
     "naechster": "Next tip ›",
     "schliessen": "Close tip"
+  },
+  "rezeptSuche": {
+    "titel": "Search recipes online",
+    "platzhalter": "e.g. goulash, pancakes …",
+    "suchen": "Search",
+    "hinweis": "Tap a recipe to import it – reading it costs 1 AI Coin. The search itself is free.",
+    "ansehen": "Preview ›",
+    "uebernehmen": "Import",
+    "keine": "Nothing found – try another term.",
+    "fehler": "The search failed."
   }
 }

@@ -21,6 +21,7 @@ import RecipeDetailScreen from '../screens/RecipeDetailScreen';
 import RecipeSourceMenuScreen from '../screens/RecipeSourceMenuScreen';
 import ManualRecipeScreen from '../screens/ManualRecipeScreen';
 import WebImportScreen from '../screens/WebImportScreen';
+import RezeptSucheScreen from '../screens/RezeptSucheScreen';
 import WebBrowseScreen from '../screens/WebBrowseScreen';
 import AIGenerateScreen from '../screens/AIGenerateScreen';
 import WeeklyPlanScreen from '../screens/WeeklyPlanScreen';
@@ -74,7 +75,8 @@ export type MainStackParamList = {
   RecipeSourceMenu: undefined;
   ManualRecipe: { recipeId?: string } | undefined;
   WebImport: { pickedUrl?: string } | undefined;
-  WebBrowse: { initialQuery?: string } | undefined;
+  WebBrowse: { initialQuery?: string; initialUrl?: string } | undefined;
+  RezeptSuche: { initialQuery?: string } | undefined;
   AIGenerate: { wunsch?: string } | undefined;
   WeeklyPlan: undefined;
   // discardAfterId: Rezept, das nach dem Kochvorgang wieder geloescht wird.
@@ -209,6 +211,7 @@ function MainNavigator({ startOnOnboarding }: { startOnOnboarding: boolean }) {
         component={WebImportScreen}
         options={{ title: 'Aus dem Internet' }}
       />
+      <MainStack.Screen name="RezeptSuche" component={RezeptSucheScreen} options={{ title: 'Rezeptsuche' }} />
       <MainStack.Screen
         name="WebBrowse"
         component={WebBrowseScreen}

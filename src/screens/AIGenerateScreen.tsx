@@ -61,6 +61,11 @@ export default function AIGenerateScreen({ navigation, route }: Props) {
   const [servings, setServings] = useState('');
   // Vorausgefüllt beim Sprung aus Mein Weinkeller ("Im Kochbuch öffnen")
   const [freeText, setFreeText] = useState(route?.params?.wunsch ?? '');
+  // useState übernimmt den Startwert nur beim ersten Öffnen. War der Bildschirm
+  // schon offen (im Hintergrund), kommt der neue Vorschlag aus dem Weinkeller
+  // nur als geänderter Parameter an - dann hier nachziehen.
+  const wunschParam = route?.params?.wunsch;
+  useEffect(() => { if (wunschParam) setFreeText(wunschParam); }, [wunschParam]);
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Ergebnis, editierbar vor dem Speichern (gleiches Muster wie beim

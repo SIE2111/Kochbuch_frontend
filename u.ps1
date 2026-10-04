@@ -19,6 +19,10 @@ Write-Host "Eingeloggt als:" -ForegroundColor Cyan
 npx eas whoami
 Write-Host "Installiere Dependencies..." -ForegroundColor Cyan
 npm install
+# Metro-Zwischenspeicher leeren - sonst bricht der Export unter Windows
+# gelegentlich mit "ENOTEMPTY ... metro-cache" ab (04.10.2026)
+Write-Host "Leere Metro-Zwischenspeicher..." -ForegroundColor Cyan
+Remove-Item -Recurse -Force (Join-Path $env:TEMP "metro-cache") -ErrorAction SilentlyContinue
 Write-Host "Veroeffentliche Update auf 'production': $Message" -ForegroundColor Cyan
 # --environment production: keine Rueckfrage "Select environment" (04.10.2026)
 npx eas update --branch production --environment production --platform ios --message $Message

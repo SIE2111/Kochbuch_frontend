@@ -24,6 +24,14 @@ interface RecipeSummary {
   tags: string[] | null;
 }
 
+// Alle Kategorien, die die KI vergeben kann - dieselben Namen wie in
+// Kochbuch_backend routers/ai_generation.py und web_import.py.
+const BEKANNTE_KATEGORIEN = [
+  'Klassiker', 'Traditionell', 'Schnell', 'Einfach', 'Vegetarisch', 'Vegan', 'Glutenfrei', 'Scharf', 'Mild', 'Süß',
+  'Warm', 'Kalt', 'Exotisch', 'Weihnachten', 'Cocktail', 'Alkoholisch', 'Alkoholfrei', 'Österreichische Küche',
+  'Italienisch', 'Polnisch', 'Chinesisch', 'Japanisch', 'Indisch', 'Grillen',
+];
+
 export default function ManageCategoriesScreen({ navigation }: any) {
   const { colors, gradient, radius } = useTheme();
   const insets = useSafeAreaInsets();
@@ -43,6 +51,10 @@ export default function ManageCategoriesScreen({ navigation }: any) {
       ]);
       const counts = new Map<string, number>();
       recipes.forEach((r) => (r.tags ?? []).forEach((tg) => counts.set(tg, (counts.get(tg) ?? 0) + 1)));
+      // Auch Kategorien ohne Rezept anzeigen (04.10.2026): sonst erschienen neu
+      // eingeführte (Grillen, Chinesisch, Japanisch, Indisch, Polnisch) erst,
+      // wenn ein Rezept sie trägt - bestehende Rezepte wurden vorher eingeordnet.
+      BEKANNTE_KATEGORIEN.forEach((tg) => { if (!counts.has(tg)) counts.set(tg, 0); });
 
       const gespeicherteReihenfolge = (prefs.category_order ?? []).filter((tg) => counts.has(tg));
       // Dieselbe Standard-Regel wie im Dashboard (siehe dort): "Einfach"

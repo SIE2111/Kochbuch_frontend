@@ -1,11 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useMaskottchenAngetippt } from '../utils/tipps';
 
-/** Kleines "?" am Maskottchen, bis man es einmal angetippt hat. */
+/** Kleines "?" am Maskottchen - bleibt dauerhaft als Zeichen für die Hilfe
+ * (Wunsch 04.10.2026; vorher nur bis zum ersten Antippen). */
 export function FrageAbzeichen({ farbe }: { farbe: string }) {
-  const angetippt = useMaskottchenAngetippt();
-  if (angetippt) return null;
   return (
     <View pointerEvents="none" style={[styles.punkt, { backgroundColor: farbe }]}>
       <Text style={styles.text}>?</Text>

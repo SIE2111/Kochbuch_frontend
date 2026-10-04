@@ -84,3 +84,30 @@ export async function gemerktenTitelHolen(recipeId: string): Promise<string> {
     return '';
   }
 }
+
+
+/**
+ * Sprung aus Mein Weinkeller ("Was koche ich dazu?" -> "Im Kochbuch öffnen",
+ * 04.10.2026): meinkochbuch://gericht?name=Spargel%20mit%20Hollandaise&wein=…
+ * Das Kochbuch öffnet ein eigenes Rezept mit diesem Namen oder - falls keins
+ * existiert - "KI-Rezept", vorausgefüllt mit Gericht und Wein.
+ */
+export interface GerichtAusWeinkeller { name: string; wein: string | null }
+
+export function parseGericht(url: string | null | undefined): GerichtAusWeinkeller | null {
+  if (!url) return null;
+  const q = url.indexOf('?');
+  const pfad = q >= 0 ? url.slice(0, q) : url;
+  if (!/(?:^meinkochbuch:\/\/|\/--\/)gericht\/?$/i.test(pfad)) return null;
+  const params = new URLSearchParams(q >= 0 ? url.slice(q + 1) : '');
+  const name = clean(params.get('name') ?? '', 120);
+  if (!name) return null;
+  const wein = clean(params.get('wein') ?? '', 200);
+  return { name, wein: wein || null };
+}
+
+/** Gleicher Name ohne Groß/Klein, Akzente und Satzzeichen. */
+export function gleicherTitel(a: string, b: string): boolean {
+  const n = (x: string) => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9äöüß]+/g, ' ').trim();
+  return n(a) === n(b);
+}

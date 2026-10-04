@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer, createNavigationContainerRef, type NavigatorScreenParams } from '@react-navigation/native';
 import { Linking } from 'react-native';
-import { parseRuecksprung, weinFuerRezeptSpeichern, gemerktenTitelHolen } from '../utils/weinPairing';
+import { parseRuecksprung, weinFuerRezeptSpeichern, gemerktenTitelHolen, parseGericht, gleicherTitel, GerichtAusWeinkeller } from '../utils/weinPairing';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ActivityIndicator, View, Text, Pressable } from 'react-native';
@@ -75,7 +75,7 @@ export type MainStackParamList = {
   ManualRecipe: { recipeId?: string } | undefined;
   WebImport: { pickedUrl?: string } | undefined;
   WebBrowse: { initialQuery?: string } | undefined;
-  AIGenerate: undefined;
+  AIGenerate: { wunsch?: string } | undefined;
   WeeklyPlan: undefined;
   // discardAfterId: Rezept, das nach dem Kochvorgang wieder geloescht wird.
   // Fuer "nur kochen, nicht behalten" - der Koch-Modus braucht ein
@@ -285,8 +285,11 @@ export default function AppNavigator() {
   // Diese Hooks MÜSSEN vor den frühen returns unten stehen.
   const [offenerRuecksprung, setOffenerRuecksprung] = useState<string | null>(null);
   const [navBereit, setNavBereit] = useState(false);
+  const [offenesGericht, setOffenesGericht] = useState<GerichtAusWeinkeller | null>(null);
   useEffect(() => {
     async function verarbeiten(url: string | null) {
+      const g = parseGericht(url);
+      if (g) { setOffenesGericht(g); return; }
       const r = parseRuecksprung(url);
       if (!r) return;
       if (r.wein) await weinFuerRezeptSpeichern(r.recipeId, r.wein);
@@ -304,6 +307,20 @@ export default function AppNavigator() {
       setOffenerRuecksprung(null);
     });
   }, [offenerRuecksprung, session, navBereit]);
+
+  // Gericht aus Mein Weinkeller: eigenes Rezept mit dem Namen öffnen, sonst KI-Rezept vorausgefüllt
+  useEffect(() => {
+    if (!offenesGericht || !session || !navBereit || !navigationRef.isReady()) return;
+    const g = offenesGericht;
+    setOffenesGericht(null);
+    api.get<{ id: string; title: string }[]>('/recipes/')
+      .then((liste) => liste.find((r) => gleicherTitel(r.title, g.name)) ?? null)
+      .catch(() => null)
+      .then((treffer) => {
+        if (treffer) navigationRef.navigate('RecipeDetail', { recipeId: treffer.id, title: treffer.title });
+        else navigationRef.navigate('AIGenerate', { wunsch: g.wein ? `${g.name} – passend zu ${g.wein}` : g.name });
+      });
+  }, [offenesGericht, session, navBereit]);
 
   if (isLoading || !themeLoaded || (!!session && firstLoginThisApp === null)) {
     return (

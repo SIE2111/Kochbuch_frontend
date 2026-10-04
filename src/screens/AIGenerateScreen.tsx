@@ -49,7 +49,7 @@ interface GeneratedRecipe {
   folder_suggestion: string | null;
 }
 
-export default function AIGenerateScreen({ navigation }: Props) {
+export default function AIGenerateScreen({ navigation, route }: Props) {
   const { colors, gradient, radius } = useTheme();
   const { inhaltsBreite } = useLayout();
   const { t } = useUebersetzung();
@@ -59,7 +59,8 @@ export default function AIGenerateScreen({ navigation }: Props) {
   const [diet, setDiet] = useState('');
   const [maxMinutes, setMaxMinutes] = useState('');
   const [servings, setServings] = useState('');
-  const [freeText, setFreeText] = useState('');
+  // Vorausgefüllt beim Sprung aus Mein Weinkeller ("Im Kochbuch öffnen")
+  const [freeText, setFreeText] = useState(route?.params?.wunsch ?? '');
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Ergebnis, editierbar vor dem Speichern (gleiches Muster wie beim

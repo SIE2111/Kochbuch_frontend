@@ -4,6 +4,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
 import { api, ApiError } from '../api/client';
+import { BEKANNTE_KATEGORIEN } from '../utils/kategorien';
 
 interface Props {
   selected: string[];
@@ -27,7 +28,7 @@ export default function CategoryPicker({ selected, onChange }: Props) {
     api
       .get<{ tags: string[] | null }[]>('/recipes/')
       .then((recipes) => {
-        const distinct = Array.from(new Set(recipes.flatMap((r) => r.tags ?? []))).sort((a, b) =>
+        const distinct = Array.from(new Set([...recipes.flatMap((r) => r.tags ?? []), ...BEKANNTE_KATEGORIEN])).sort((a, b) =>
           a.localeCompare(b, 'de'),
         );
         setExistingCategories(distinct);

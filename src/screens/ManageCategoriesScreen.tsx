@@ -5,6 +5,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
 import { api, ApiError } from '../api/client';
+import { BEKANNTE_KATEGORIEN } from '../utils/kategorien';
 
 /**
  * Verwaltung der Kategorien-Zeile im Dashboard: Reihenfolge mit Pfeil-
@@ -24,13 +25,6 @@ interface RecipeSummary {
   tags: string[] | null;
 }
 
-// Alle Kategorien, die die KI vergeben kann - dieselben Namen wie in
-// Kochbuch_backend routers/ai_generation.py und web_import.py.
-const BEKANNTE_KATEGORIEN = [
-  'Klassiker', 'Traditionell', 'Schnell', 'Einfach', 'Vegetarisch', 'Vegan', 'Glutenfrei', 'Scharf', 'Mild', 'Süß',
-  'Warm', 'Kalt', 'Exotisch', 'Weihnachten', 'Cocktail', 'Alkoholisch', 'Alkoholfrei', 'Österreichische Küche',
-  'Italienisch', 'Polnisch', 'Chinesisch', 'Japanisch', 'Indisch', 'Grillen',
-];
 
 export default function ManageCategoriesScreen({ navigation }: any) {
   const { colors, gradient, radius } = useTheme();

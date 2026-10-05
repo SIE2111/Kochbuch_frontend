@@ -1,6 +1,19 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import { supabase } from './supabaseClient';
+import { Alert } from 'react-native';
 import { showBrutzelHinweis } from '../components/BrutzelHinweis';
+
+// AI Coins aufgebraucht: Die Figur der App zeigt die Meldung. Damit nicht zusaetzlich ein
+// nuechterner "Fehler"-Alert mit demselben Text aufgeht (die Aufrufer zeigen e.message an),
+// merken wir uns den Text kurz und schlucken genau diesen einen Alert.
+let _coinsText = '';
+let _coinsZeit = 0;
+function merkeCoinsMeldung(text: string) { _coinsText = text; _coinsZeit = Date.now(); }
+const _alertOriginal = Alert.alert.bind(Alert);
+Alert.alert = ((titel: string, nachricht?: string, ...rest: any[]) => {
+  if (_coinsText && nachricht && nachricht.includes(_coinsText) && Date.now() - _coinsZeit < 8000) return;
+  return (_alertOriginal as any)(titel, nachricht, ...rest);
+}) as typeof Alert.alert;
 
 // TODO: echte Backend-URL eintragen, sobald deployed (z.B. Render/Fly.io)
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'https://meinkochbuch-backend-production.up.railway.app';
@@ -14,6 +27,7 @@ function istCoinsLeer(data: unknown): boolean {
 }
 
 function coinsLeerMelden(detail: string) {
+  merkeCoinsMeldung(detail);
   showBrutzelHinweis({ title: 'AI Coins aufgebraucht', text: detail });
 }
 

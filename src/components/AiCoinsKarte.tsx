@@ -31,12 +31,14 @@ export default function AiCoinsKarte({ aiEnabled, speichert, onToggleAi, refresh
   }, []);
   useEffect(() => { laden(); }, [laden, refreshKey]);
 
-  const zeile = [st.row, { backgroundColor: colors.card, borderRadius: radius.md }];
+  const zeile = [st.zeile];
+  const mitTrenner = [st.zeile, st.trenner];
   return (
     <View>
       <Text style={[st.label, { color: colors.muted, marginTop: 22 }]}>{t('profil.aiCoins')}</Text>
 
-      <View style={zeile}>
+      <View style={[st.rahmen, { backgroundColor: colors.card, borderRadius: radius.md }]}>
+      <View style={mitTrenner}>
         <MaterialCommunityIcons name="circle-multiple-outline" size={20} color={colors.muted} style={st.icon} />
         <View style={{ flex: 1 }}>
           <Text style={[st.titel, { color: colors.text }]}>{t('profil.aiCoinsMonat')}</Text>
@@ -45,7 +47,7 @@ export default function AiCoinsKarte({ aiEnabled, speichert, onToggleAi, refresh
         {stand ? <Text style={[st.zahl, { color: colors.text }]}>{stand.monthly_remaining} / {stand.monthly_total}</Text> : <ActivityIndicator color={colors.muted} />}
       </View>
 
-      <View style={zeile}>
+      <View style={mitTrenner}>
         <MaterialCommunityIcons name="circle-multiple" size={20} color={colors.muted} style={st.icon} />
         <View style={{ flex: 1 }}>
           <Text style={[st.titel, { color: colors.text }]}>{t('profil.aiCoinsGekauft')}</Text>
@@ -54,7 +56,7 @@ export default function AiCoinsKarte({ aiEnabled, speichert, onToggleAi, refresh
         {stand ? <Text style={[st.zahl, { color: colors.text }]}>{stand.purchased}</Text> : null}
       </View>
 
-      <Pressable style={zeile} onPress={() => { setOffen(true); laden(); }}>
+      <Pressable style={mitTrenner} onPress={() => { setOffen(true); laden(); }}>
         <MaterialCommunityIcons name="format-list-bulleted" size={20} color={colors.muted} style={st.icon} />
         <Text style={[st.titel, { color: colors.text, flex: 1 }]}>{t('profil.aiCoinsWofuer')}</Text>
         <MaterialCommunityIcons name="chevron-right" size={22} color={colors.muted} />
@@ -69,6 +71,7 @@ export default function AiCoinsKarte({ aiEnabled, speichert, onToggleAi, refresh
         {speichert ? <ActivityIndicator color={colors.muted} /> : (
           <Switch value={aiEnabled} onValueChange={onToggleAi} trackColor={{ false: '#E7E1D4', true: gradient[0] }} thumbColor="#fff" />
         )}
+      </View>
       </View>
 
       <Modal visible={offen} transparent animationType="fade" onRequestClose={() => setOffen(false)}>
@@ -102,7 +105,9 @@ export default function AiCoinsKarte({ aiEnabled, speichert, onToggleAi, refresh
 
 const st = StyleSheet.create({
   label: { fontSize: 10.5, fontWeight: '700', letterSpacing: 0.5, marginBottom: 10 },
-  row: { flexDirection: 'row', alignItems: 'center', padding: 14, marginBottom: 8 },
+  rahmen: { marginBottom: 8, overflow: 'hidden' },
+  zeile: { flexDirection: 'row', alignItems: 'center', padding: 14 },
+  trenner: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#8884' },
   icon: { marginRight: 12 },
   titel: { fontSize: 13.5, fontWeight: '600' },
   sub: { fontSize: 10.5, marginTop: 2, lineHeight: 15 },

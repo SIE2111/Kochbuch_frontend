@@ -45,6 +45,7 @@ interface RecipeSummary {
   cover_image_url: string | null;
   tags: string[] | null;
   is_favorite: boolean;
+  folder_id?: string | null;
 }
 
 // Immer dasselbe Gold, unabhaengig von der gewaehlten Akzentfarbe
@@ -101,6 +102,9 @@ export default function WeeklyPlanScreen({ navigation }: Props) {
   // Rezepte-Tab, weil der Dialog ja ueber dem Wochenplan schwebt und
   // nicht selbst eine Route ist. Wird beim Schliessen zurueckgesetzt.
   const [pickerKategorie, setPickerKategorie] = useState<string | null>(null);
+  // Ordner (Gruppen) wie im Rezepte-Tab (05.10.2026): zusaetzlich zu den Schlagwoertern waehlbar. Gilt nur in diesem Dialog.
+  const [pickerOrdner, setPickerOrdner] = useState<string | null>(null);
+  const [ordnerListe, setOrdnerListe] = useState<{ id: string; name: string }[]>([]);
   const [defaultServings, setDefaultServings] = useState(4);
   const [servingsInput, setServingsInput] = useState('4');
   const [categoryOrder, setCategoryOrder] = useState<string[] | null>(null);
@@ -156,6 +160,7 @@ export default function WeeklyPlanScreen({ navigation }: Props) {
     if (allRecipes.length === 0) {
       api.get<RecipeSummary[]>('/recipes/').then(setAllRecipes).catch(() => {});
     }
+    api.get<{ id: string; name: string }[]>('/folders/').then(setOrdnerListe).catch(() => {});
   };
 
   const assignRecipe = async (recipeId: string) => {
@@ -333,6 +338,7 @@ export default function WeeklyPlanScreen({ navigation }: Props) {
     return [...festeReihenfolge, ...nachHaeufigkeit];
   })();
   const filteredRecipes = allRecipes
+    .filter((r) => !pickerOrdner || r.folder_id === pickerOrdner)
     .filter((r) => !recipeSearch.trim() || r.title.toLowerCase().includes(recipeSearch.trim().toLowerCase()))
     .filter((r) => {
       if (!pickerKategorie) return true;
@@ -542,6 +548,8 @@ export default function WeeklyPlanScreen({ navigation }: Props) {
               onPress={() => {
                 setPickerTarget(null);
                 setPickerKategorie(null);
+                setPickerOrdner(null);
+                setPickerOrdner(null);
               }}
               hitSlop={10}
             >
@@ -564,6 +572,38 @@ export default function WeeklyPlanScreen({ navigation }: Props) {
             value={recipeSearch}
             onChangeText={setRecipeSearch}
           />
+          {ordnerListe.length > 0 && (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 8, alignItems: 'center' }}
+              style={styles.pickerKategorienBar}
+            >
+              <Pressable
+                onPress={() => setPickerOrdner(null)}
+                style={[styles.pickerChip, { backgroundColor: !pickerOrdner ? gradient[0] : colors.card, borderRadius: radius.sm }]}
+              >
+                <Text style={{ color: !pickerOrdner ? '#fff' : colors.text, fontSize: 12.5, fontWeight: '600' }}>
+                  {t('rezepte.alle')} ({allRecipes.length})
+                </Text>
+              </Pressable>
+              {ordnerListe.map((ordner) => {
+                const aktiv = pickerOrdner === ordner.id;
+                const anzahl = allRecipes.filter((r) => r.folder_id === ordner.id).length;
+                return (
+                  <Pressable
+                    key={ordner.id}
+                    onPress={() => setPickerOrdner(aktiv ? null : ordner.id)}
+                    style={[styles.pickerChip, { backgroundColor: aktiv ? gradient[0] : colors.card, borderRadius: radius.sm }]}
+                  >
+                    <Text style={{ color: aktiv ? '#fff' : colors.text, fontSize: 12.5, fontWeight: '600' }}>
+                      {ordner.name} ({anzahl})
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          )}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}

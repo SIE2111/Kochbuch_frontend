@@ -3,7 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
  * Tipps des Maskottchens (04.10.2026, gleich in allen HomeArchive-Apps).
- * - Ein Tipp je App-Start, der Reihe nach; jeder nur einmal (gemerkt).
+ * - HOECHSTENS EIN Tipp je Tag und App (05.10.2026), der Reihe nach; jeder nur einmal (gemerkt).
+ *   Mehrere Starts am selben Tag zeigen keinen weiteren Tipp. "Naechster Tipp" bleibt, weil man ihn selbst antippt.
  * - Neue Tipps (hinten an die Liste) erscheinen automatisch, weil sie noch
  *   niemand gesehen hat - auch für "Neu: …"-Hinweise.
  * - Der erste Tipp "antippen" bleibt, bis man das Maskottchen einmal
@@ -24,6 +25,25 @@ export async function alsGesehen(id: string): Promise<void> {
   if (!l.includes(id)) await AsyncStorage.setItem(K('gesehen'), JSON.stringify([...l, id])).catch(() => {});
 }
 
+/** Hoechstens ein Tipp je Tag: Tag (lokal, JJJJ-MM-TT), an dem zuletzt ein Tipp gezeigt wurde. */
+const heute = (): string => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+// Der Tipp, der in DIESER App-Sitzung gerade gezeigt wird - bleibt sichtbar, wenn das Dashboard neu aufgebaut wird.
+let sitzungsTipp: string | null = null;
+export const sitzungsTippLesen = (): string | null => sitzungsTipp;
+export const sitzungsTippSetzen = (id: string | null): void => { sitzungsTipp = id; };
+
+export async function tippHeuteSchonGezeigt(): Promise<boolean> {
+  return (await AsyncStorage.getItem(K('tag')).catch(() => null)) === heute();
+}
+
+export async function tippHeuteMerken(id: string): Promise<void> {
+  sitzungsTipp = id;
+  await AsyncStorage.setItem(K('tag'), heute()).catch(() => {});
+}
+
 /** Lokaler Schalter (Spiegel des "… hilft dir"-Schalters im Profil). */
 export async function tippsErlaubt(): Promise<boolean> {
   return (await AsyncStorage.getItem(K('aus')).catch(() => null)) !== '1';
@@ -38,6 +58,7 @@ export async function tippsErlaubtSetzen(an: boolean): Promise<void> {
 export async function maskottchenAngetippt(): Promise<void> {
   await AsyncStorage.setItem(K('angetippt'), '1').catch(() => {});
   await alsGesehen('antippen');
+  if (sitzungsTipp === 'antippen') sitzungsTipp = null;
   melden();
 }
 

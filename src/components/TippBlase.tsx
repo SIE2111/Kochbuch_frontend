@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useUebersetzung } from '../i18n';
-import { alsGesehen, aufAenderungHoeren, gesehenLaden, tippsErlaubt } from '../utils/tipps';
+import { alsGesehen, aufAenderungHoeren, gesehenLaden, tippsErlaubt, tippHeuteSchonGezeigt, tippHeuteMerken, sitzungsTippLesen, sitzungsTippSetzen } from '../utils/tipps';
 
 /**
  * Sprechblase des Maskottchens mit einem Tipp je App-Start (siehe
@@ -27,9 +27,15 @@ export function TippBlase({ tipps, avatar, farben, erlaubt = true }: {
     let aktiv = true;
     (async () => {
       if (!erlaubt || !(await tippsErlaubt())) { if (aktiv) setId(null); return; }
+      // Läuft in dieser Sitzung schon ein Tipp (Dashboard wurde nur neu aufgebaut): weiter zeigen.
+      const laufend = sitzungsTippLesen();
+      if (laufend) { if (aktiv) setId(laufend); return; }
+      // Höchstens EIN Tipp je Tag und App: wurde heute schon einer gezeigt, kommt kein weiterer.
+      if (await tippHeuteSchonGezeigt()) { if (aktiv) setId(null); return; }
       const erster = await naechsterUngesehen();
       if (!aktiv) return;
       setId(erster);
+      if (erster) await tippHeuteMerken(erster);
       // Normale Tipps gelten als gesehen, sobald sie einmal da waren;
       // "antippen" bleibt, bis man das Maskottchen antippt oder ✕ drückt.
       if (erster && erster !== 'antippen') alsGesehen(erster);
@@ -53,12 +59,13 @@ export function TippBlase({ tipps, avatar, farben, erlaubt = true }: {
           await alsGesehen(id);
           const n = await naechsterUngesehen(id);
           setId(n);
+          sitzungsTippSetzen(n);   // vom Nutzer selbst angefordert: zählt nicht als zusätzlicher Tipp des Tages
           if (n && n !== 'antippen') alsGesehen(n);
         }}>
           <Text style={[styles.weiterText, { color: farben.akzent }]}>{t('tipps.naechster')}</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity hitSlop={10} onPress={() => { alsGesehen(id); setId(null); }} accessibilityLabel={t('tipps.schliessen')}>
+      <TouchableOpacity hitSlop={10} onPress={() => { alsGesehen(id); sitzungsTippSetzen(null); setId(null); }} accessibilityLabel={t('tipps.schliessen')}>
         <Text style={[styles.x, { color: farben.gedaempft }]}>✕</Text>
       </TouchableOpacity>
     </View>

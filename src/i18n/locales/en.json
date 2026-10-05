@@ -266,7 +266,8 @@
     "aiCoinsGekauft": "Purchased AI Coins",
     "aiCoinsGekauftHinweis": "Valid in all apps and never expire",
     "aiCoinsWofuer": "What AI Coins are used for",
-    "aiCoinsReihenfolge": "Monthly coins are used first, then purchased ones. When both are empty, upload and download are blocked."
+    "aiCoinsReihenfolge": "Monthly coins are used first, then purchased ones. When both are empty, upload and download are blocked.",
+    "aiCoinsKennenlernen": "Introductory offer: {basis} + {bonus} free coins until {datum}"
   },
   "detail": {
     "nichtGeladen": "The recipe could not be loaded",

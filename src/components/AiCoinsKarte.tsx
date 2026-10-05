@@ -9,7 +9,13 @@ import { useUebersetzung } from '../i18n';
 import { api } from '../api/client';
 
 type Eintrag = { key: string; label: string; label_en?: string; cost: string; cost_en?: string; note?: string; note_en?: string };
-type Stand = { monthly_total: number; monthly_remaining: number; purchased: number; items: Eintrag[] };
+type Stand = { monthly_total: number; monthly_remaining: number; purchased: number; trial_ends?: string | null; bonus?: number; items: Eintrag[] };
+
+// 'JJJJ-MM-TT' -> 'TT.MM.JJJJ'
+function datumAnzeige(iso: string): string {
+  const [j, m, t] = iso.split('-');
+  return `${t}.${m}.${j}`;
+}
 
 export default function AiCoinsKarte({ aiEnabled, speichert, onToggleAi, refreshKey }: {
   aiEnabled: boolean; speichert: boolean; onToggleAi: (v: boolean) => void; refreshKey?: number;
@@ -34,7 +40,7 @@ export default function AiCoinsKarte({ aiEnabled, speichert, onToggleAi, refresh
         <MaterialCommunityIcons name="circle-multiple-outline" size={20} color={colors.muted} style={st.icon} />
         <View style={{ flex: 1 }}>
           <Text style={[st.titel, { color: colors.text }]}>{t('profil.aiCoinsMonat')}</Text>
-          <Text style={[st.sub, { color: colors.muted }]}>{t('profil.aiCoinsMonatHinweis', { n: stand?.monthly_total ?? 50 })}</Text>
+          <Text style={[st.sub, { color: colors.muted }]}>{t('profil.aiCoinsMonatHinweis', { n: stand?.monthly_total ?? 50 })}{stand?.trial_ends ? '\n' + t('profil.aiCoinsKennenlernen', { basis: 50, bonus: stand.bonus ?? 50, datum: datumAnzeige(stand.trial_ends) }) : ''}</Text>
         </View>
         {stand ? <Text style={[st.zahl, { color: colors.text }]}>{stand.monthly_remaining} / {stand.monthly_total}</Text> : <ActivityIndicator color={colors.muted} />}
       </View>

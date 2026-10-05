@@ -266,7 +266,8 @@
     "aiCoinsGekauft": "Gekaufte AI Coins",
     "aiCoinsGekauftHinweis": "Gelten für alle Apps und verfallen nie",
     "aiCoinsWofuer": "Wofür AI Coins gebraucht werden",
-    "aiCoinsReihenfolge": "Abgezogen wird zuerst von den Monats-Coins, dann von den gekauften. Sind beide leer, sind Upload und Download gesperrt."
+    "aiCoinsReihenfolge": "Abgezogen wird zuerst von den Monats-Coins, dann von den gekauften. Sind beide leer, sind Upload und Download gesperrt.",
+    "aiCoinsKennenlernen": "Kennenlern-Aktion: {basis} + {bonus} Coins gratis bis {datum}"
   },
   "detail": {
     "nichtGeladen": "Rezept konnte nicht geladen werden",

@@ -39,6 +39,17 @@ export default function ImageCropper({ uri, onFertig, onAbbruch }: Props) {
   const [flaeche, setFlaeche] = useState<{ w: number; h: number } | null>(null);
   const [laeuft, setLaeuft] = useState(false);
 
+  // iOS: Der Foto-Picker (und die Kamera) schließt sich mit Animation, waehrend die Auswahl
+  // schon an die App zurueckgegeben wird. Ein Modal, das in diesem Moment aufgeht, wird von
+  // iOS verworfen - der Zuschnitt erschien dann nie, die Auswahl wurde nicht uebernommen.
+  // Deshalb das Fenster erst nach dem Schliessen des Pickers oeffnen.
+  const [bereit, setBereit] = useState(false);
+  useEffect(() => {
+    if (!uri) { setBereit(false); return; }
+    const timer = setTimeout(() => setBereit(true), 700);
+    return () => clearTimeout(timer);
+  }, [uri]);
+
   // Rahmen in Bildschirmkoordinaten, relativ zur angezeigten Bildflaeche.
   const [rahmen, setRahmen] = useState({ x: 0, y: 0, w: 0, h: 0 });
   const rahmenRef = useRef(rahmen);
@@ -152,7 +163,7 @@ export default function ImageCropper({ uri, onFertig, onAbbruch }: Props) {
   };
 
   return (
-    <Modal visible={!!uri} animationType="slide" onRequestClose={onAbbruch}>
+    <Modal visible={!!uri && bereit} animationType="slide" onRequestClose={onAbbruch}>
       <View style={styles.hintergrund}>
         <Text style={styles.hinweis}>{t('erfassen.zuschnittHinweis')}</Text>
 

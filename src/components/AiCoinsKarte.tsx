@@ -1,7 +1,8 @@
 // Profil-Block "AI COINS" (ersetzt "KI-FUNKTIONEN"): Monats-Coins, gekaufte Coins
 // (gelten fuer alle Apps), Liste "Wofuer AI Coins gebraucht werden" und KI-Schalter.
 // Stand und Liste: GET /coins
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, Pressable, Modal, ScrollView, Switch, ActivityIndicator, StyleSheet } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
@@ -29,7 +30,9 @@ export default function AiCoinsKarte({ aiEnabled, speichert, onToggleAi, refresh
   const laden = useCallback(async () => {
     try { setStand(await api.get<Stand>('/coins')); } catch { /* Anzeige bleibt leer */ }
   }, []);
-  useEffect(() => { laden(); }, [laden, refreshKey]);
+  // Bei JEDEM Anzeigen des Profils neu laden: Der Bildschirm bleibt im Tab-Wechsel erhalten, ein einmaliges
+  // Laden beim Start zeigte nach Uploads, Downloads und Analysen noch den alten Stand (05.10.2026).
+  useFocusEffect(useCallback(() => { laden(); }, [laden, refreshKey]));
 
   const zeile = [st.zeile];
   const mitTrenner = [st.zeile, st.trenner];

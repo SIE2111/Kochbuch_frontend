@@ -549,7 +549,6 @@ export default function WeeklyPlanScreen({ navigation }: Props) {
                 setPickerTarget(null);
                 setPickerKategorie(null);
                 setPickerOrdner(null);
-                setPickerOrdner(null);
               }}
               hitSlop={10}
             >

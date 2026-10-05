@@ -259,7 +259,14 @@
     "loginEndgueltigLoeschen": "Anmeldung endgültig löschen",
     "andereAppsBleiben": "Deine Daten bleiben unverändert in:",
     "animation": "Animation",
-    "darstellung": "Darstellung"
+    "darstellung": "Darstellung",
+    "aiCoins": "AI COINS",
+    "aiCoinsMonat": "Monats-AI-Coins",
+    "aiCoinsMonatHinweis": "Am 1. des Monats wieder auf {n} aufgeladen",
+    "aiCoinsGekauft": "Gekaufte AI Coins",
+    "aiCoinsGekauftHinweis": "Gelten für alle Apps und verfallen nie",
+    "aiCoinsWofuer": "Wofür AI Coins gebraucht werden",
+    "aiCoinsReihenfolge": "Abgezogen wird zuerst von den Monats-Coins, dann von den gekauften. Sind beide leer, sind Upload und Download gesperrt."
   },
   "detail": {
     "nichtGeladen": "Rezept konnte nicht geladen werden",

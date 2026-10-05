@@ -259,7 +259,14 @@
     "loginEndgueltigLoeschen": "Delete login permanently",
     "andereAppsBleiben": "Your data stays unchanged in:",
     "animation": "Animation",
-    "darstellung": "Display"
+    "darstellung": "Display",
+    "aiCoins": "AI COINS",
+    "aiCoinsMonat": "Monthly AI Coins",
+    "aiCoinsMonatHinweis": "Refilled to {n} on the 1st of each month",
+    "aiCoinsGekauft": "Purchased AI Coins",
+    "aiCoinsGekauftHinweis": "Valid in all apps and never expire",
+    "aiCoinsWofuer": "What AI Coins are used for",
+    "aiCoinsReihenfolge": "Monthly coins are used first, then purchased ones. When both are empty, upload and download are blocked."
   },
   "detail": {
     "nichtGeladen": "The recipe could not be loaded",

@@ -8,6 +8,7 @@ import { ThemeProvider } from './src/theme/ThemeContext';
 import { AuthProvider } from './src/context/AuthContext';
 import { ServerSyncProvider } from './src/context/ServerSyncContext';
 import AppNavigator from './src/navigation/AppNavigator';
+import BrutzelHinweisHost from './src/components/BrutzelHinweis';
 import { spracheLaden } from './src/i18n';
 import { TABLET_AB } from './src/utils/layout';
 
@@ -121,6 +122,7 @@ export default function App() {
             <ServerSyncProvider>
               <StatusBar style="auto" />
               <AppNavigator />
+              <BrutzelHinweisHost />
             </ServerSyncProvider>
           </AuthProvider>
         </ThemeProvider>

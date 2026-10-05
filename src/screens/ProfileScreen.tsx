@@ -6,6 +6,7 @@ import { useUebersetzung } from '../i18n';
 import { useAuth } from '../context/AuthContext';
 import { api, ApiError } from '../api/client';
 import MarkenZeile from '../components/MarkenZeile';
+import AiCoinsKarte from '../components/AiCoinsKarte';
 import AppSettingsScreen from './AppSettingsScreen';
 import * as Application from 'expo-application';
 import { useFocusEffect, type CompositeScreenProps } from '@react-navigation/native';
@@ -570,27 +571,8 @@ export default function ProfileScreen({ navigation }: Props) {
         )}
       </View>
 
-      <Text style={[styles.sectionLabel, { color: colors.muted, marginTop: 22 }]}>{t('profil.kiFunktionen')}</Text>
-      <View style={[styles.row, { backgroundColor: colors.card, borderRadius: radius.md }]}>
-        <MaterialCommunityIcons name="auto-fix" size={20} color={colors.muted} style={styles.rowIcon} />
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.rowTitle, { color: colors.text }]}>{t('profil.kiAnalyse')}</Text>
-          <Text style={[styles.rowSubtitle, { color: colors.muted }]}>
-            {t('profil.kiAnalyseSub')}
-            {t('profil.kiVerbrauch', { verbraucht: prefs.ai_calls_this_month, grenze: prefs.ai_monthly_limit })}
-          </Text>
-        </View>
-        {savingKey === 'ai_enabled' ? (
-          <ActivityIndicator color={colors.muted} />
-        ) : (
-          <Switch
-            value={prefs.ai_enabled}
-            onValueChange={(v) => handleToggle('ai_enabled', v)}
-            trackColor={{ false: '#E7E1D4', true: gradient[0] }}
-            thumbColor="#fff"
-          />
-        )}
-      </View>
+      {/* AI Coins: Monats-Coins, gekaufte Coins, Liste "wofuer" + KI-Schalter */}
+      <AiCoinsKarte aiEnabled={prefs.ai_enabled} speichert={savingKey === 'ai_enabled'} onToggleAi={(v) => handleToggle('ai_enabled', v)} />
 
       <Pressable onPress={() => signOut()} style={[styles.signOutButton, { borderColor: '#DC2626', borderRadius: radius.md, marginTop: 22 }]}>
         <Text style={styles.signOutText}>{t('profil.abmelden')}</Text>

@@ -1,8 +1,21 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import { supabase } from './supabaseClient';
+import { showBrutzelHinweis } from '../components/BrutzelHinweis';
 
 // TODO: echte Backend-URL eintragen, sobald deployed (z.B. Render/Fly.io)
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'https://meinkochbuch-backend-production.up.railway.app';
+
+export const AI_COINS_EMPTY = 'AI_COINS_EMPTY';
+
+// AI Coins aufgebraucht: HTTP 402 mit detail.code 'AI_COINS_EMPTY'. Das ist NICHT die abgelaufene
+// Testphase (ebenfalls 402) - hier zeigt Brutzel eine Meldung, der Sperrbildschirm bleibt aus.
+function istCoinsLeer(data: unknown): boolean {
+  return !!data && typeof data === 'object' && (data as { code?: string }).code === AI_COINS_EMPTY;
+}
+
+function coinsLeerMelden(detail: string) {
+  showBrutzelHinweis({ title: 'AI Coins aufgebraucht', text: detail });
+}
 
 class ApiError extends Error {
   status: number;
@@ -67,7 +80,9 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
     } catch {
       // Antwort war kein JSON - Standardmeldung behalten
     }
-    if (response.status === 402 && onTrialExpired) {
+    if (response.status === 402 && istCoinsLeer(data)) {
+      coinsLeerMelden(detail);
+    } else if (response.status === 402 && onTrialExpired) {
       onTrialExpired(detail);
     }
     throw new ApiError(response.status, detail, data);
@@ -159,16 +174,24 @@ export const api = {
 
     if (result.status < 200 || result.status >= 300) {
       let detail = `HTTP ${result.status}`;
+      let fehlerData: unknown;
       try {
         const body = JSON.parse(result.body);
-        detail = body.detail ?? detail;
+        if (typeof body.detail === 'string') {
+          detail = body.detail;
+        } else if (body.detail && typeof body.detail === 'object') {
+          detail = body.detail.message ?? detail;
+          fehlerData = body.detail;
+        }
       } catch {
         // Antwort war kein JSON
       }
-      if (result.status === 402 && onTrialExpired) {
+      if (result.status === 402 && istCoinsLeer(fehlerData)) {
+        coinsLeerMelden(detail);
+      } else if (result.status === 402 && onTrialExpired) {
         onTrialExpired(detail);
       }
-      throw new ApiError(result.status, detail);
+      throw new ApiError(result.status, detail, fehlerData);
     }
     return JSON.parse(result.body);
   },
@@ -186,6 +209,19 @@ export const api = {
     });
 
     if (result.status < 200 || result.status >= 300) {
+      // Bei 402 steht die Fehlermeldung des Backends in der heruntergeladenen Datei
+      if (result.status === 402) {
+        try {
+          const body = JSON.parse(await FileSystem.readAsStringAsync(result.uri));
+          if (istCoinsLeer(body.detail)) {
+            const text = body.detail.message ?? 'Deine AI Coins sind aufgebraucht.';
+            coinsLeerMelden(text);
+            throw new ApiError(402, text, body.detail);
+          }
+        } catch (e) {
+          if (e instanceof ApiError) throw e;
+        }
+      }
       throw new ApiError(result.status, `HTTP ${result.status}`);
     }
     return result.uri;

@@ -894,5 +894,11 @@
     "uebernehmen": "Import",
     "keine": "Nothing found – try another term.",
     "fehler": "The search failed."
+  },
+  "hinweis": {
+    "von": "Brutzel has a note",
+    "verstanden": "Got it",
+    "coinsTitel": "AI Coins used up",
+    "coinsText": "Your AI Coins are used up. Upload and download are blocked until new monthly coins arrive on the 1st of the month."
   }
 }

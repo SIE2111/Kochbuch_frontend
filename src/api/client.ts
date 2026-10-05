@@ -1,19 +1,7 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import { supabase } from './supabaseClient';
-import { Alert } from 'react-native';
-import { showBrutzelHinweis } from '../components/BrutzelHinweis';
-
-// AI Coins aufgebraucht: Die Figur der App zeigt die Meldung. Damit nicht zusaetzlich ein
-// nuechterner "Fehler"-Alert mit demselben Text aufgeht (die Aufrufer zeigen e.message an),
-// merken wir uns den Text kurz und schlucken genau diesen einen Alert.
-let _coinsText = '';
-let _coinsZeit = 0;
-function merkeCoinsMeldung(text: string) { _coinsText = text; _coinsZeit = Date.now(); }
-const _alertOriginal = Alert.alert.bind(Alert);
-Alert.alert = ((titel: string, nachricht?: string, ...rest: any[]) => {
-  if (_coinsText && nachricht && nachricht.includes(_coinsText) && Date.now() - _coinsZeit < 8000) return;
-  return (_alertOriginal as any)(titel, nachricht, ...rest);
-}) as typeof Alert.alert;
+import { showBrutzelHinweis, merkeCoinsMeldung } from '../components/BrutzelHinweis';
+import { t } from '../i18n';
 
 // TODO: echte Backend-URL eintragen, sobald deployed (z.B. Render/Fly.io)
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'https://meinkochbuch-backend-production.up.railway.app';
@@ -26,9 +14,12 @@ function istCoinsLeer(data: unknown): boolean {
   return !!data && typeof data === 'object' && (data as { code?: string }).code === AI_COINS_EMPTY;
 }
 
-function coinsLeerMelden(detail: string) {
-  merkeCoinsMeldung(detail);
-  showBrutzelHinweis({ title: 'AI Coins aufgebraucht', text: detail });
+// Text und Titel kommen aus den Uebersetzungen (Deutsch/Englisch), nicht vom Server
+function coinsLeerMelden(_detail: string): string {
+  const text = t('hinweis.coinsText');
+  merkeCoinsMeldung(text);
+  showBrutzelHinweis({ title: t('hinweis.coinsTitel'), text });
+  return text;
 }
 
 class ApiError extends Error {
@@ -95,7 +86,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
       // Antwort war kein JSON - Standardmeldung behalten
     }
     if (response.status === 402 && istCoinsLeer(data)) {
-      coinsLeerMelden(detail);
+      detail = coinsLeerMelden(detail);
     } else if (response.status === 402 && onTrialExpired) {
       onTrialExpired(detail);
     }
@@ -201,7 +192,7 @@ export const api = {
         // Antwort war kein JSON
       }
       if (result.status === 402 && istCoinsLeer(fehlerData)) {
-        coinsLeerMelden(detail);
+        detail = coinsLeerMelden(detail);
       } else if (result.status === 402 && onTrialExpired) {
         onTrialExpired(detail);
       }
@@ -228,8 +219,7 @@ export const api = {
         try {
           const body = JSON.parse(await FileSystem.readAsStringAsync(result.uri));
           if (istCoinsLeer(body.detail)) {
-            const text = body.detail.message ?? 'Deine AI Coins sind aufgebraucht.';
-            coinsLeerMelden(text);
+            const text = coinsLeerMelden(body.detail.message ?? '');
             throw new ApiError(402, text, body.detail);
           }
         } catch (e) {

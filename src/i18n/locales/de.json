@@ -894,5 +894,11 @@
     "uebernehmen": "Übernehmen",
     "keine": "Nichts gefunden – versuch einen anderen Begriff.",
     "fehler": "Die Suche hat nicht geklappt."
+  },
+  "hinweis": {
+    "von": "Brutzel hat einen Hinweis",
+    "verstanden": "Verstanden",
+    "coinsTitel": "AI Coins aufgebraucht",
+    "coinsText": "Deine AI Coins sind aufgebraucht. Upload und Download sind gesperrt, bis am 1. des Monats neue Monats-Coins kommen."
   }
 }

@@ -165,7 +165,7 @@ export default function ProfileScreen({ navigation }: Props) {
   // Wieder da (23.09.2026, vorher kurzzeitig komplett in AppSettingsScreen
   // ausgelagert) - nur noch fuer die zwei Zeilen, die dort wieder raus
   // sollten: Benachrichtigungen und KI-Analyse.
-  const handleToggle = async (key: 'notifications_enabled' | 'ai_enabled', value: boolean) => {
+  const handleToggle = async (key: 'notifications_enabled', value: boolean) => {
     if (!prefs) return;
     const vorher = prefs;
     setPrefs({ ...prefs, [key]: value });
@@ -571,8 +571,8 @@ export default function ProfileScreen({ navigation }: Props) {
         )}
       </View>
 
-      {/* AI Coins: Monats-Coins, gekaufte Coins, Liste "wofuer" + KI-Schalter */}
-      <AiCoinsKarte aiEnabled={prefs.ai_enabled} speichert={savingKey === 'ai_enabled'} onToggleAi={(v) => handleToggle('ai_enabled', v)} />
+      {/* AI Coins: Monats-Coins, zusaetzliche Coins, Liste "wofuer" (kein KI-Schalter mehr) */}
+      <AiCoinsKarte />
 
       <Pressable onPress={() => signOut()} style={[styles.signOutButton, { borderColor: '#DC2626', borderRadius: radius.md, marginTop: 22 }]}>
         <Text style={styles.signOutText}>{t('profil.abmelden')}</Text>

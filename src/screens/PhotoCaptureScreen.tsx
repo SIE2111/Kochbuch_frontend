@@ -293,7 +293,7 @@ export default function PhotoCaptureScreen({ navigation }: Props) {
         try {
           // Bei "nur lokal" bleibt das Bild am Geraet, sonst geht es wie
           // bisher zum Server bzw. in die verbundene Cloud.
-          const uploadResult = await titelbildAblegen(imageUri, storageMode);
+          const uploadResult = await titelbildAblegen(imageUri, storageMode, true);
           coverImageUrl = uploadResult.url;
           if (uploadResult.warnung) {
             // Fallback-Logik im Backend (storage-architektur-standard.md):

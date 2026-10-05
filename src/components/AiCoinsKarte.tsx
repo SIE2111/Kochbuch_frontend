@@ -3,7 +3,7 @@
 // Stand und Liste: GET /coins
 import React, { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, Pressable, Modal, ScrollView, Switch, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Modal, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
@@ -18,8 +18,8 @@ function datumAnzeige(iso: string): string {
   return `${t}.${m}.${j}`;
 }
 
-export default function AiCoinsKarte({ aiEnabled, speichert, onToggleAi, refreshKey }: {
-  aiEnabled: boolean; speichert: boolean; onToggleAi: (v: boolean) => void; refreshKey?: number;
+export default function AiCoinsKarte({ refreshKey }: {
+  refreshKey?: number;
 }) {
   const { colors, radius, gradient } = useTheme();
   const { t, sprache } = useUebersetzung();
@@ -59,22 +59,12 @@ export default function AiCoinsKarte({ aiEnabled, speichert, onToggleAi, refresh
         {stand ? <Text style={[st.zahl, { color: colors.text }]}>{stand.purchased}</Text> : null}
       </View>
 
-      <Pressable style={mitTrenner} onPress={() => { setOffen(true); laden(); }}>
+      <Pressable style={zeile} onPress={() => { setOffen(true); laden(); }}>
         <MaterialCommunityIcons name="format-list-bulleted" size={20} color={colors.muted} style={st.icon} />
         <Text style={[st.titel, { color: colors.text, flex: 1 }]}>{t('profil.aiCoinsWofuer')}</Text>
         <MaterialCommunityIcons name="chevron-right" size={22} color={colors.muted} />
       </Pressable>
 
-      <View style={zeile}>
-        <MaterialCommunityIcons name="auto-fix" size={20} color={colors.muted} style={st.icon} />
-        <View style={{ flex: 1 }}>
-          <Text style={[st.titel, { color: colors.text }]}>{t('profil.kiAnalyse')}</Text>
-          <Text style={[st.sub, { color: colors.muted }]}>{t('profil.kiAnalyseSub')}</Text>
-        </View>
-        {speichert ? <ActivityIndicator color={colors.muted} /> : (
-          <Switch value={aiEnabled} onValueChange={onToggleAi} trackColor={{ false: '#E7E1D4', true: gradient[0] }} thumbColor="#fff" />
-        )}
-      </View>
       </View>
 
       <Modal visible={offen} transparent animationType="fade" onRequestClose={() => setOffen(false)}>

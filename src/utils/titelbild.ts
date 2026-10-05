@@ -45,6 +45,8 @@ export type BildErgebnis = {
 export async function titelbildAblegen(
   uri: string,
   storageMode: string | null | undefined,
+  /** true: Das Foto eines eben ausgelesenen Rezepts - Auslesen und Hochladen zusammen kosten 1 AI Coin. */
+  inklusiveScan = false,
 ): Promise<BildErgebnis> {
   const dateiname = uri.split('/').pop() ?? 'bild.jpg';
   const endung = dateiname.split('.').pop()?.toLowerCase();
@@ -59,6 +61,6 @@ export async function titelbildAblegen(
     return { url: ziel, warnung: null, nurLokal: true };
   }
 
-  const ergebnis = await api.uploadImage('/images/upload', uri, dateiname, typ, {});
+  const ergebnis = await api.uploadImage('/images/upload', uri, dateiname, typ, inklusiveScan ? { inkl_scan: 'true' } : {});
   return { url: ergebnis.url, warnung: ergebnis.storage_warning, nurLokal: false };
 }

@@ -69,10 +69,11 @@ export default function PublishToPoolButton({
   // Schleife heraus fuer mehrere Pools auf einmal aufgerufen, da waere
   // ein Alert PRO Pool störend gestapelt. Die Zusammenfassung uebernimmt
   // veroeffentlicheAusgewaehlte() unten.
-  const publish = async (poolId: string): Promise<{ ok: true } | { ok: false; status?: number; detail: string }> => {
+  const publish = async (poolId: string): Promise<{ ok: true; coins: number } | { ok: false; status?: number; detail: string }> => {
     try {
-      await api.post('/pool/publish', { recipe_id: recipeId, pool_id: poolId });
-      return { ok: true };
+      // Im oeffentlichen Pool bekommt man 5 AI Coins gutgeschrieben (einmal je Rezept)
+      const antwort = await api.post<{ coins_gutgeschrieben?: number }>('/pool/publish', { recipe_id: recipeId, pool_id: poolId });
+      return { ok: true, coins: antwort?.coins_gutgeschrieben ?? 0 };
     } catch (err) {
       return {
         ok: false,
@@ -96,8 +97,14 @@ export default function PublishToPoolButton({
       const fehler = ergebnisse.filter((r) => !r.ok);
       if (erfolge > 0) setIsPublished(true);
 
+      const belohnung = ergebnisse.reduce((summe, r) => summe + (r.ok ? r.coins : 0), 0);
       if (fehler.length === 0) {
-        Alert.alert(t('sonstiges.veroeffentlicht'), t('sonstiges.veroeffentlichtText', { titel: recipeTitle }));
+        Alert.alert(
+          t('sonstiges.veroeffentlicht'),
+          belohnung > 0
+            ? t('sonstiges.veroeffentlichtBelohnung', { titel: recipeTitle, n: belohnung })
+            : t('sonstiges.veroeffentlichtText', { titel: recipeTitle }),
+        );
       } else {
         // Mind. ein Ziel fehlgeschlagen (z.B. Tageslimit) - konkret sagen,
         // wie viele es trotzdem geschafft haben, statt eines pauschalen

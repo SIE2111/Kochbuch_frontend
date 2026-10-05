@@ -263,8 +263,8 @@
     "aiCoins": "AI COINS",
     "aiCoinsMonat": "Monthly AI Coins",
     "aiCoinsMonatHinweis": "Refilled to {n} on the 1st of each month",
-    "aiCoinsGekauft": "Purchased AI Coins",
-    "aiCoinsGekauftHinweis": "Valid in all apps and never expire",
+    "aiCoinsGekauft": "Additional AI Coins",
+    "aiCoinsGekauftHinweis": "Purchased or earned, valid in all apps and never expire",
     "aiCoinsWofuer": "What AI Coins are used for",
     "aiCoinsReihenfolge": "Monthly coins are used first, then purchased ones. When both are empty, upload and download are blocked.",
     "aiCoinsKennenlernen": "Introductory offer: {basis} + {bonus} free coins until {datum}"
@@ -522,12 +522,7 @@
     "portionenBitteEintragen": "Please enter how many servings the recipe is for – all amounts depend on it. For a cake or a casserole in a dish, enter 0.",
     "portionenFehlen": "Servings missing",
     "portionenFehlenText": "Please enter the number of servings, or 0 if the recipe has no servings (e.g. a cake).",
-    "portionenNullHinweis": "0 = no servings, e.g. a cake or casserole. The amounts then apply to the whole recipe.",
-    "kiPremium": "★ Premium recipe (5 AI Coins)",
-    "kiPremiumHinweis": "Premium uses a stronger AI: more precise amounts and cooking times, techniques explained, tips and variations. The normal recipe costs 1 AI Coin.",
-    "kiPremiumFrage": "Create a premium recipe?",
-    "kiPremiumFrageText": "This costs 5 AI Coins.",
-    "kiPremiumJa": "Create"
+    "portionenNullHinweis": "0 = no servings, e.g. a cake or casserole. The amounts then apply to the whole recipe."
   },
   "haushalt": {
     "nichtGeladen": "The household could not be loaded",
@@ -803,7 +798,8 @@
     "teilweiseVeroeffentlicht": "Published in {erfolge} of {gesamt} pools. Error: {fehler}",
     "keinPoolMarkiert": "No pool selected",
     "keinPoolMarkiertText": "Please select at least one pool.",
-    "nasDatenHinweis": "Your recipes stay safely on the server; the NAS gets a recipe card (PDF) with picture for each recipe. If something is deleted there, the recipe stays in the app."
+    "nasDatenHinweis": "Your recipes stay safely on the server; the NAS gets a recipe card (PDF) with picture for each recipe. If something is deleted there, the recipe stays in the app.",
+    "veroeffentlichtBelohnung": "\"{titel}\" is now in the community pool. You get {n} AI Coins credited."
   },
   "uebersetzung": {
     "angebotTitel": "This recipe is written in {sprache}.",

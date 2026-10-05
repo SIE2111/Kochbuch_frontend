@@ -263,8 +263,8 @@
     "aiCoins": "AI COINS",
     "aiCoinsMonat": "Monats-AI-Coins",
     "aiCoinsMonatHinweis": "Am 1. des Monats wieder auf {n} aufgeladen",
-    "aiCoinsGekauft": "Gekaufte AI Coins",
-    "aiCoinsGekauftHinweis": "Gelten für alle Apps und verfallen nie",
+    "aiCoinsGekauft": "Zusätzliche AI Coins",
+    "aiCoinsGekauftHinweis": "Gekauft oder verdient, gelten für alle Apps und verfallen nie",
     "aiCoinsWofuer": "Wofür AI Coins gebraucht werden",
     "aiCoinsReihenfolge": "Abgezogen wird zuerst von den Monats-Coins, dann von den gekauften. Sind beide leer, sind Upload und Download gesperrt.",
     "aiCoinsKennenlernen": "Kennenlern-Aktion: {basis} + {bonus} Coins gratis bis {datum}"
@@ -522,12 +522,7 @@
     "portionenBitteEintragen": "Bitte trag ein, für wie viele Portionen das Rezept gedacht ist – davon hängen alle Mengen ab. Bei einer Torte oder einem Auflauf in der Form trägst du 0 ein.",
     "portionenFehlen": "Portionen fehlen",
     "portionenFehlenText": "Bitte eine Portionenzahl eintragen – oder 0, wenn das Rezept keine Portionen hat (z. B. eine Torte).",
-    "portionenNullHinweis": "0 = ohne Portionen, z. B. Torte oder Auflauf. Die Mengen gelten dann für das ganze Rezept.",
-    "kiPremium": "★ Premium-Rezept (5 AI Coins)",
-    "kiPremiumHinweis": "Premium nutzt eine stärkere KI: genauere Mengen und Garzeiten, Techniken erklärt, Tipps und Varianten. Das normale Rezept kostet 1 AI Coin.",
-    "kiPremiumFrage": "Premium-Rezept erstellen?",
-    "kiPremiumFrageText": "Das kostet 5 AI Coins.",
-    "kiPremiumJa": "Erstellen"
+    "portionenNullHinweis": "0 = ohne Portionen, z. B. Torte oder Auflauf. Die Mengen gelten dann für das ganze Rezept."
   },
   "haushalt": {
     "nichtGeladen": "Haushalt konnte nicht geladen werden",
@@ -803,7 +798,8 @@
     "teilweiseVeroeffentlicht": "In {erfolge} von {gesamt} Pools veröffentlicht. Fehler: {fehler}",
     "keinPoolMarkiert": "Kein Pool ausgewählt",
     "keinPoolMarkiertText": "Bitte mindestens einen Pool markieren.",
-    "nasDatenHinweis": "Deine Rezepte liegen sicher am Server, auf dem NAS landet je Rezept eine Rezeptkarte (PDF) mit Bild. Wird dort etwas gelöscht, bleibt das Rezept in der App."
+    "nasDatenHinweis": "Deine Rezepte liegen sicher am Server, auf dem NAS landet je Rezept eine Rezeptkarte (PDF) mit Bild. Wird dort etwas gelöscht, bleibt das Rezept in der App.",
+    "veroeffentlichtBelohnung": "\"{titel}\" steht jetzt im Community-Pool. Dafür bekommst du {n} AI Coins gutgeschrieben."
   },
   "uebersetzung": {
     "angebotTitel": "Dieses Rezept ist auf {sprache} verfasst.",

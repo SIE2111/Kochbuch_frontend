@@ -5,6 +5,7 @@ import { useTheme, type BackgroundStyle, type AccentColor } from '../theme/Theme
 import { useUebersetzung } from '../i18n';
 import { useAuth } from '../context/AuthContext';
 import { api, ApiError } from '../api/client';
+import RechtFenster from '../components/RechtFenster';
 import MarkenZeile from '../components/MarkenZeile';
 import AiCoinsKarte from '../components/AiCoinsKarte';
 import AppSettingsScreen from './AppSettingsScreen';
@@ -118,6 +119,7 @@ export default function ProfileScreen({ navigation }: Props) {
     versionAnzeige = null;
   }
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [legalUrl, setLegalUrl] = useState<string | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   // Moderations-Zeile nur für Moderatoren (MODERATOR_EMAILS am Server)
@@ -614,7 +616,7 @@ export default function ProfileScreen({ navigation }: Props) {
 
       <Text style={[styles.sectionLabel, { color: colors.muted, marginTop: 26 }]}>{t('profil.hilfe')}</Text>
       <Pressable
-        onPress={() => Linking.openURL(HILFE_URL).catch(() => {})}
+        onPress={() => setLegalUrl(HILFE_URL + '?embedded=1')}
         style={[styles.row, { backgroundColor: colors.card, borderRadius: radius.md }]}
       >
         <MaterialCommunityIcons name="help-circle-outline" size={20} color={colors.muted} style={styles.rowIcon} />
@@ -643,7 +645,7 @@ export default function ProfileScreen({ navigation }: Props) {
 
       <Text style={[styles.sectionLabel, { color: colors.muted, marginTop: 26 }]}>{t('profil.rechtliches')}</Text>
       <Pressable
-        onPress={() => Linking.openURL(AGB_URL).catch(() => {})}
+        onPress={() => setLegalUrl(AGB_URL + '?embedded=1')}
         style={[styles.row, { backgroundColor: colors.card, borderRadius: radius.md }]}
       >
         <MaterialCommunityIcons name="file-document-outline" size={20} color={colors.muted} style={styles.rowIcon} />
@@ -651,7 +653,7 @@ export default function ProfileScreen({ navigation }: Props) {
         <MaterialCommunityIcons name="open-in-new" size={15} color={colors.muted} />
       </Pressable>
       <Pressable
-        onPress={() => Linking.openURL(DATENSCHUTZ_URL).catch(() => {})}
+        onPress={() => setLegalUrl(DATENSCHUTZ_URL + '?embedded=1')}
         style={[styles.row, { backgroundColor: colors.card, borderRadius: radius.md }]}
       >
         <MaterialCommunityIcons name="shield-lock-outline" size={20} color={colors.muted} style={styles.rowIcon} />
@@ -688,6 +690,8 @@ export default function ProfileScreen({ navigation }: Props) {
         )}
         <UpdateInfo akzent={gradient[0]} gedaempft={colors.muted} />
       </View>
+
+      <RechtFenster titel={legalUrl?.includes('/hilfe') ? t('profil.hilfeAnleitung') : legalUrl?.includes('/datenschutz') ? t('auth.datenschutzLesen') : t('auth.agbLesen')} url={legalUrl} onClose={() => setLegalUrl(null)} />
 
       <Modal visible={showDeleteDialog} transparent animationType="fade" onRequestClose={() => setShowDeleteDialog(false)}>
         {/* KeyboardAvoidingView HIER, nicht nur um den Bildschirm herum:

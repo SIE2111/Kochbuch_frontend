@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import RechtFenster from '../components/RechtFenster';
 import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, Alert, Linking, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../theme/ThemeContext';
@@ -18,6 +19,7 @@ const DATENSCHUTZ_URL = 'https://www.homearchive.at/datenschutz';
 export default function RegisterScreen({ navigation }: Props) {
   const { colors, gradient, radius } = useTheme();
   const { t } = useUebersetzung();
+  const [legal, setLegal] = useState<null | 'agb' | 'datenschutz'>(null);
   const { registerWithCode } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -51,6 +53,7 @@ export default function RegisterScreen({ navigation }: Props) {
   };
 
   return (
+    <>
     <DismissKeyboardView style={[styles.container, { backgroundColor: colors.bg }]}>
       <View style={[styles.card, { backgroundColor: colors.bg, borderRadius: radius.lg }]}>
         <Image
@@ -108,11 +111,11 @@ export default function RegisterScreen({ navigation }: Props) {
         </Pressable>
 
         <View style={styles.legalLinksRow}>
-          <Text style={{ color: gradient[0], fontSize: 12, fontWeight: '600' }} onPress={() => Linking.openURL(AGB_URL).catch(() => {})}>
+          <Text style={{ color: gradient[0], fontSize: 12, fontWeight: '600' }} onPress={() => setLegal('agb')}>
             {t('auth.agbLesen')}
           </Text>
           <Text style={{ color: colors.muted, fontSize: 12 }}>·</Text>
-          <Text style={{ color: gradient[0], fontSize: 12, fontWeight: '600' }} onPress={() => Linking.openURL(DATENSCHUTZ_URL).catch(() => {})}>
+          <Text style={{ color: gradient[0], fontSize: 12, fontWeight: '600' }} onPress={() => setLegal('datenschutz')}>
             {t('auth.datenschutzLesen')}
           </Text>
         </View>
@@ -142,6 +145,8 @@ export default function RegisterScreen({ navigation }: Props) {
         <LanguageSwitchRow />
       </View>
     </DismissKeyboardView>
+    <RechtFenster titel={legal === 'agb' ? t('auth.agbLesen') : t('auth.datenschutzLesen')} url={legal ? (legal === 'agb' ? AGB_URL : DATENSCHUTZ_URL) + '?embedded=1' : null} onClose={() => setLegal(null)} />
+    </>
   );
 }
 

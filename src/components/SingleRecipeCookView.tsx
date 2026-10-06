@@ -827,13 +827,40 @@ export default function SingleRecipeCookView({ recipeId, isActive, onTitleLoaded
     setIsEditingTimer(false);
   };
 
-  const handleStartTimer = async () => {
+  const startTimerNow = async (seconds: number | null) => {
+    setRemainingSeconds(seconds);
     setIsTimerRunning(true);
     setActiveTimerStepIndex(currentIndex);
-    if (recipe && currentStep && remainingSeconds) {
-      const id = await scheduleTimerNotification(recipe.title, currentStep.text, remainingSeconds);
+    if (recipe && currentStep && seconds) {
+      const id = await scheduleTimerNotification(recipe.title, currentStep.text, seconds);
       setTimerNotificationId(id);
     }
+  };
+
+  const handleStartTimer = async () => {
+    // Laeuft schon ein Timer auf einem ANDEREN Schritt: Brutzel fragt nach,
+    // statt den laufenden Timer stillschweigend zu ueberschreiben.
+    if (isTimerRunning && activeTimerStepIndex !== null && activeTimerStepIndex !== currentIndex) {
+      const neueSekunden = currentStep ? getEffectiveTimerSeconds(currentStep) : null;
+      Alert.alert(
+        t('kochen.timerKonfliktTitel'),
+        t('kochen.timerKonfliktText', { minuten: Math.max(1, Math.ceil((remainingSeconds ?? 0) / 60)) }),
+        [
+          { text: t('kochen.timerWeiterlaufen'), style: 'cancel' },
+          {
+            text: t('kochen.timerAbbrechenNeuStarten'),
+            style: 'destructive',
+            onPress: () => {
+              cancelTimerNotification(timerNotificationIdRef.current);
+              setTimerNotificationId(null);
+              startTimerNow(neueSekunden);
+            },
+          },
+        ],
+      );
+      return;
+    }
+    await startTimerNow(remainingSeconds);
   };
 
   const handlePauseTimer = () => {

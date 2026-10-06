@@ -863,7 +863,12 @@
     "build": "Build-Stand",
     "fehler": "Die Prüfung hat nicht geklappt.",
     "protokoll": "Update-Protokoll",
-    "protokollLeer": "Keine Einträge."
+    "protokollLeer": "Keine Einträge.",
+    "teilen": "Teilen / Kopieren",
+    "anSupport": "An Support senden",
+    "gesendet": "Der Bericht wurde an den Support gesendet.",
+    "nichtGesendet": "Das Senden hat nicht geklappt. Bitte „Teilen / Kopieren“ verwenden.",
+    "schliessen": "Schließen"
   },
   "tipps": {
     "antippen": "Tipp: Tipp mich oben neben „Mein Kochbuch“ an – ich beantworte deine Fragen zur App! ↗",

@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react'
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import * as Updates from 'expo-updates';
 import { t } from '../i18n';
+import { FehlerBerichtFenster, BerichtSenden } from './FehlerBericht'
+import { api } from '../api/client'
+import { Platform } from 'react-native'
 
 /**
  * Update-Stand, "Nach Updates suchen" und "Update-Protokoll" (04.10.2026,
@@ -9,6 +12,8 @@ import { t } from '../i18n';
  * selbst und zeigt, warum ein Update nicht startet - so fanden wir beim
  * Weinkeller die fehlenden EXPO_PUBLIC-Werte in `eas update`.
  */
+type Zeige = (titel: string, text: string) => void
+
 export function versionsStand(): string {
   if (Updates.isEmbeddedLaunch || !Updates.updateId) return t('update.build');
   const datum = Updates.createdAt
@@ -17,7 +22,7 @@ export function versionsStand(): string {
   return [`Update ${Updates.updateId.slice(0, 8)}`, datum, Updates.channel || null].filter(Boolean).join(' · ');
 }
 
-async function suchen() {
+async function suchen(zeige: Zeige) {
   if (__DEV__ || !Updates.isEnabled) {
     Alert.alert(t('update.suchen'), t('update.aktuell'));
     return;
@@ -34,11 +39,13 @@ async function suchen() {
       { text: t('update.jetzt'), onPress: () => { Updates.reloadAsync().catch(() => {}); } },
     ]);
   } catch (e) {
-    Alert.alert(t('update.suchen'), `${t('update.fehler')}\n\n${e instanceof Error ? e.message : String(e)}`);
+    zeige(t('update.suchen'), `${t('update.fehler')}
+
+${e instanceof Error ? e.message : String(e)}`)
   }
 }
 
-async function protokoll() {
+async function protokoll(zeige: Zeige) {
   let text = '';
   try {
     const eintraege = await Updates.readLogEntriesAsync(3 * 24 * 60 * 60 * 1000);
@@ -49,19 +56,25 @@ async function protokoll() {
   } catch (e) {
     text = e instanceof Error ? e.message : String(e);
   }
-  Alert.alert(t('update.protokoll'), text || t('update.protokollLeer'));
+  zeige(t('update.protokoll'), text || t('update.protokollLeer'))
 }
 
 export function UpdateInfo({ akzent, gedaempft }: { akzent: string; gedaempft: string }) {
+  const [bericht, setBericht] = useState<{ titel: string; text: string } | null>(null)
+  const zeige: Zeige = (titel, text) => setBericht({ titel, text })
+  const senden: BerichtSenden = async (betreff, nachricht) => {
+    await api.post('/support/contact', { subject: betreff, message: nachricht, app_version: versionsStand(), platform: Platform.OS })
+  }
   return (
     <View style={{ alignItems: 'center', marginTop: 12, gap: 8 }}>
-      <TouchableOpacity onPress={suchen} hitSlop={8}>
+      <TouchableOpacity onPress={() => suchen(zeige)} hitSlop={8}>
         <Text style={{ fontSize: 13, color: akzent }}>{t('update.suchen')}</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={protokoll} hitSlop={8}>
+      <TouchableOpacity onPress={() => protokoll(zeige)} hitSlop={8}>
         <Text style={{ fontSize: 13, color: gedaempft }}>{t('update.protokoll')}</Text>
       </TouchableOpacity>
       <Text style={{ fontSize: 12, color: gedaempft, textAlign: 'center' }}>{versionsStand()}</Text>
+      {bericht && <FehlerBerichtFenster titel={bericht.titel} text={bericht.text} akzent={akzent} senden={senden} onClose={() => setBericht(null)} />}
     </View>
   );
 }

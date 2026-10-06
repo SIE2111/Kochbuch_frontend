@@ -863,7 +863,12 @@
     "build": "Build version",
     "fehler": "The check failed.",
     "protokoll": "Update log",
-    "protokollLeer": "No entries."
+    "protokollLeer": "No entries.",
+    "teilen": "Share / Copy",
+    "anSupport": "Send to support",
+    "gesendet": "The report was sent to support.",
+    "nichtGesendet": "Sending failed. Please use “Share / Copy”.",
+    "schliessen": "Close"
   },
   "tipps": {
     "antippen": "Tip: Tap me at the top next to the title – I'll answer your questions about the app! ↗",

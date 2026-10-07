@@ -277,7 +277,7 @@ export default function HouseholdScreen() {
     // Scrollbar, seit Einladungsformular und -liste dazugekommen sind:
     // Bei mehreren Einladungen passt der Inhalt sonst nicht mehr auf eine
     // Bildschirmhoehe und t('haushalt.haushaltVerlassen') liegt unerreichbar unten.
-    <ScrollView
+    <ScrollView automaticallyAdjustKeyboardInsets
       style={{ backgroundColor: colors.bg }}
       contentContainerStyle={[styles.scrollContent, inhaltsBreite]}
       keyboardShouldPersistTaps="handled"

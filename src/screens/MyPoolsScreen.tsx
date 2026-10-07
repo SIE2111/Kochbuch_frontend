@@ -247,7 +247,7 @@ export default function MyPoolsScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <ScrollView contentContainerStyle={[styles.container, inhaltsBreite]}>
+      <ScrollView automaticallyAdjustKeyboardInsets contentContainerStyle={[styles.container, inhaltsBreite]}>
         <Text style={[styles.hinweis, { color: colors.muted }]}>{t('sonstiges.poolsHinweis')}</Text>
 
         {pools.map((pool) => (

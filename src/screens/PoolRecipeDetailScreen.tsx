@@ -257,7 +257,7 @@ export default function PoolRecipeDetailScreen({ route, navigation, onClose, onO
         </Pressable>
       </View>
     )}
-    <ScrollView
+    <ScrollView automaticallyAdjustKeyboardInsets
       style={{ backgroundColor: colors.bg }}
       contentContainerStyle={[styles.container, inhaltsBreite]}
     >

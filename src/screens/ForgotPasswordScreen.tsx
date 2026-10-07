@@ -72,7 +72,7 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
   };
 
   return (
-    <ScrollView
+    <ScrollView automaticallyAdjustKeyboardInsets
       style={{ backgroundColor: colors.bg }}
       contentContainerStyle={[styles.container, inhaltsBreite]}
       keyboardShouldPersistTaps="handled"

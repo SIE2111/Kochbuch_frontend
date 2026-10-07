@@ -275,7 +275,7 @@ export default function StorageSettingsScreen({ navigation }: Props) {
   }
 
   return (
-    <ScrollView style={{ backgroundColor: colors.bg }} contentContainerStyle={[styles.container, inhaltsBreite]}>
+    <ScrollView automaticallyAdjustKeyboardInsets style={{ backgroundColor: colors.bg }} contentContainerStyle={[styles.container, inhaltsBreite]}>
       {STORAGE_OPTIONS.map((option) => {
         const isSelected = prefs.storage_mode === option.key;
         return (

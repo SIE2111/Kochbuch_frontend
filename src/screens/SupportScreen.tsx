@@ -77,7 +77,7 @@ export default function SupportScreen() {
   }
 
   return (
-    <ScrollView
+    <ScrollView automaticallyAdjustKeyboardInsets
       style={{ backgroundColor: colors.bg }}
       contentContainerStyle={[styles.container, inhaltsBreite]}
       keyboardShouldPersistTaps="handled"

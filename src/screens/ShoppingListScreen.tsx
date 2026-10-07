@@ -274,7 +274,7 @@ export default function ShoppingListScreen({ navigation }: Props) {
   // Einmal definiert, an beiden Einsatzorten verwendet (Modal bei Handy/
   // hochkant, eingebettet bei quer) - siehe Rueckgabe unten.
   const bearbeitenFormular = (
-    <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={quer ? { padding: 18 } : undefined}>
+    <ScrollView automaticallyAdjustKeyboardInsets keyboardShouldPersistTaps="handled" contentContainerStyle={quer ? { padding: 18 } : undefined}>
       <Text style={[styles.modalTitel, { color: colors.text }]}>{t('einkauf.postenBearbeiten')}</Text>
 
       <Text style={[styles.modalLabel, { color: colors.muted }]}>{t('einkauf.zutatPlatzhalter')}</Text>

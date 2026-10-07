@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, SafeAreaView, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, SafeAreaView, ActivityIndicator, Keyboard } from 'react-native';
 import { WebView } from 'react-native-webview';
 
 // react-native-webview's Typdefinitionen sind noch nicht auf React 19
@@ -33,6 +33,7 @@ export default function WebBrowseScreen({ navigation, route }: Props) {
   const handleSearch = () => {
     const trimmed = searchText.trim();
     if (!trimmed) return;
+    Keyboard.dismiss();
     setCurrentUrl(buildGoogleSearchUrl(trimmed));
   };
 

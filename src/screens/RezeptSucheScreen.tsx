@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, FlatList, ActivityIndicator, Image } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, FlatList, ActivityIndicator, Image, Keyboard } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../navigation/AppNavigator';
 import { useTheme } from '../theme/ThemeContext';
@@ -23,6 +23,7 @@ export default function RezeptSucheScreen({ navigation, route }: Props) {
   async function suchen(begriff = q) {
     const b = begriff.trim();
     if (b.length < 2 || laedt) return;
+    Keyboard.dismiss(); // Tastatur nach dem Absenden einklappen, damit die Treffer zu sehen sind
     setLaedt(true); setFehler(null);
     try {
       const r = await api.get<{ treffer: Treffer[] }>(`/rezept-suche?q=${encodeURIComponent(b)}`);
@@ -70,6 +71,7 @@ export default function RezeptSucheScreen({ navigation, route }: Props) {
         data={angezeigt}
         keyExtractor={(x) => x.url}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         contentContainerStyle={{ padding: 16, paddingTop: 4, paddingBottom: 40 }}
         ListEmptyComponent={treffer && !laedt ? <Text style={[styles.hinweis, { color: colors.muted, textAlign: 'center', marginTop: 32 }]}>{t('rezeptSuche.keine')}</Text> : null}
         renderItem={({ item }) => (

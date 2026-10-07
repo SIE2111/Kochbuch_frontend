@@ -19,7 +19,7 @@ export interface ThemeConfig {
 }
 
 const DEFAULT_THEME: ThemeConfig = {
-  accent: 'orange',
+  accent: 'bernstein',
   background: 'warm-hell',
   typography: 'weich',
   radius: 'weich',

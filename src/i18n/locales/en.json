@@ -896,6 +896,10 @@
     "ansehen": "Preview ›",
     "uebernehmen": "Import",
     "keine": "Nothing found – try another term.",
+    "sortRelevanz": "Best match",
+    "sortBewertung": "Top rated",
+    "sortieren": "Sort",
+    "keineBewertung": "no rating",
     "fehler": "The search failed."
   },
   "hinweis": {

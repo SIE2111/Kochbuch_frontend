@@ -896,6 +896,10 @@
     "ansehen": "Ansehen ›",
     "uebernehmen": "Übernehmen",
     "keine": "Nichts gefunden – versuch einen anderen Begriff.",
+    "sortRelevanz": "Beste Treffer",
+    "sortBewertung": "Beste Bewertung",
+    "sortieren": "Sortieren",
+    "keineBewertung": "ohne Bewertung",
     "fehler": "Die Suche hat nicht geklappt."
   },
   "hinweis": {

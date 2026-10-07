@@ -111,3 +111,15 @@ export function gleicherTitel(a: string, b: string): boolean {
   const n = (x: string) => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9äöüß]+/g, ' ').trim();
   return n(a) === n(b);
 }
+
+/** Ähnlicher Name: einer enthält den anderen (min. 2 Wörter bzw. 8 Zeichen),
+ * z. B. "Spargel mit Sauce Hollandaise" ~ "Spargel mit Hollandaise" ist KEIN Treffer,
+ * aber "Wiener Schnitzel" ~ "Wiener Schnitzel mit Erdäpfelsalat" schon. */
+export function aehnlicherTitel(a: string, b: string): boolean {
+  const n = (x: string) => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9äöüß]+/g, ' ').trim();
+  const x = n(a), y = n(b);
+  const kurz = x.length <= y.length ? x : y;
+  const lang = x.length <= y.length ? y : x;
+  if (kurz.length < 8 || kurz.split(' ').length < 2) return false;
+  return (' ' + lang + ' ').includes(' ' + kurz + ' ');
+}

@@ -81,6 +81,13 @@ export default function AIGenerateScreen({ navigation, route }: Props) {
   const [folders, setFolders] = useState<{ id: string; name: string }[]>([]);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
 
+  // Portionen aus den Voreinstellungen (Profil) vorbelegen
+  useEffect(() => {
+    api.get<{ default_servings: number }>('/preferences/')
+      .then((prefs) => { if (prefs?.default_servings) setServings((aktuell) => aktuell || String(prefs.default_servings)); })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     api.get<{ id: string; name: string }[]>('/folders/').then(setFolders).catch(() => {
       // Ordner sind hier nur "nice to have" - schlaegt das Laden fehl,

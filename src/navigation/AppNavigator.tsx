@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer, createNavigationContainerRef, type NavigatorScreenParams } from '@react-navigation/native';
 import { Linking } from 'react-native';
-import { parseRuecksprung, weinFuerRezeptSpeichern, gemerktenTitelHolen, parseGericht, gleicherTitel, GerichtAusWeinkeller } from '../utils/weinPairing';
+import { parseRuecksprung, weinFuerRezeptSpeichern, gemerktenTitelHolen, parseGericht, gleicherTitel, aehnlicherTitel, GerichtAusWeinkeller } from '../utils/weinPairing';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ActivityIndicator, View, Text, Pressable } from 'react-native';
@@ -317,7 +317,8 @@ export default function AppNavigator() {
     const g = offenesGericht;
     setOffenesGericht(null);
     api.get<{ id: string; title: string }[]>('/recipes/')
-      .then((liste) => liste.find((r) => gleicherTitel(r.title, g.name)) ?? null)
+      .then((liste) => liste.find((r) => gleicherTitel(r.title, g.name))
+        ?? liste.find((r) => aehnlicherTitel(r.title, g.name)) ?? null)
       .catch(() => null)
       .then((treffer) => {
         if (treffer) navigationRef.navigate('RecipeDetail', { recipeId: treffer.id, title: treffer.title });

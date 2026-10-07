@@ -15,7 +15,7 @@ import { mitStufenHinweis } from '../utils/stufenHinweis';
 import BrutzelAvatar from '../components/BrutzelAvatar';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../navigation/AppNavigator';
-import { useLayout } from '../utils/layout';
+import { useLayout, MAX_INHALTSBREITE } from '../utils/layout';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'RecipeDetail'> & {
   // Nur gesetzt, wenn der Bildschirm NICHT als eigener Stack-Screen laeuft,
@@ -763,30 +763,15 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
     );
   }
 
-  return (
+  const blockHero = (
     <>
-    {eingebettet && (
-      <View style={[styles.eingebetterHeader, { backgroundColor: colors.bg, borderBottomColor: colors.cardBorder }]}>
-        <Text style={[styles.eingebetterTitel, { color: colors.text }]} numberOfLines={1}>
-          {recipe.title}
-        </Text>
-        <Pressable onPress={schliessen} hitSlop={10} style={styles.eingebetterSchliessen}>
-          <MaterialCommunityIcons name="close" size={18} color={colors.text} />
-          <Text style={{ color: colors.text, fontSize: 13.5, fontWeight: '600' }}>{t('allgemein.schliessen')}</Text>
-        </Pressable>
-      </View>
-    )}
-    <ScrollView style={{ backgroundColor: colors.bg }} contentContainerStyle={[styles.container, inhaltsBreiteZweispaltig]}>
-      {/* Tablet: links das Rezept selbst (Bild, Titel, Portionen,
-          Ausruestung), rechts alles zum Handeln (Zubereitung starten,
-          Einkaufsliste, Beilagen, Naehrwerte). Untereinander scrollt man
-          auf 10 Zoll an halb leeren Zeilen vorbei. Auf dem Handy sind die
-          Spaltenstile undefined, die Reihenfolge bleibt. */}
-      <View style={istTablet ? styles.spaltenReihe : undefined}>
-      <View style={istTablet ? styles.spalteLinks : undefined}>
       {recipe.cover_image_url && (
         <Image source={{ uri: recipe.cover_image_url }} style={[styles.heroImage, { borderRadius: radius.md }]} />
       )}
+    </>
+  );
+  const blockTitel = (
+    <>
       <View style={styles.titleRow}>
         <Text style={[styles.title, { color: colors.text, flex: 1 }]}>
           {zeigtUebersetzung ? uebersetzung!.title : recipe.title}
@@ -844,7 +829,10 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
         {SOURCE_LABELS[recipe.source_type] ?? recipe.source_type}
         {recipe.owner_display_name ? ` · ${t('rezepte.vonMitglied', { name: recipe.owner_display_name })}` : ''}
       </Text>
-
+    </>
+  );
+  const blockPortionen = (
+    <>
       {ohnePortionen ? (
         <View style={[styles.servingsCard, { backgroundColor: colors.card, borderRadius: radius.md }]}>
           <Text style={[styles.servingsLabel, { color: colors.muted, marginBottom: 4 }]}>{t('detail.ganzesRezept')}</Text>
@@ -871,7 +859,10 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
         </View>
       </View>
       )}
-
+    </>
+  );
+  const blockAusruestung = (
+    <>
       {recipe.equipment && recipe.equipment.length > 0 && (
         <View style={[styles.equipmentCard, { backgroundColor: colors.card, borderRadius: radius.md }]}>
           <MaterialCommunityIcons name="pot-steam-outline" size={18} color={colors.muted} style={{ marginRight: 8 }} />
@@ -881,9 +872,10 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
           </Text>
         </View>
       )}
-
-      </View>
-      <View style={istTablet ? styles.spalteRechts : undefined}>
+    </>
+  );
+  const blockAktionen = (
+    <>
       <Pressable
         onPress={() => {
           // Merken, welche Beilagen tatsaechlich mitgekocht werden - beim
@@ -949,7 +941,10 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
         <MaterialCommunityIcons name="share-variant-outline" size={16} color={colors.text} />
         <Text style={[styles.shoppingListButtonText, { color: colors.text }]}>{t('detail.alsNachricht')}</Text>
       </Pressable>
-
+    </>
+  );
+  const blockBeilagen = (
+    <>
       <View style={[styles.sidesCard, { backgroundColor: colors.card, borderRadius: radius.md }]}>
         <View style={styles.sidesHeader}>
           <BrutzelAvatar size={52} />
@@ -1104,7 +1099,10 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
           </>
         )}
       </View>
-
+    </>
+  );
+  const blockUebersetzung = (
+    <>
       {brauchtUebersetzung && (
         <TranslationBanner
           quellsprache={quellsprache}
@@ -1116,7 +1114,10 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
           onUmschalten={() => setZeigeUebersetzung((v) => !v)}
         />
       )}
-
+    </>
+  );
+  const blockNaehrwerte = (
+    <>
       <NutritionCard
         recipeId={recipeId}
         gespeichert={{
@@ -1131,7 +1132,10 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
         recipe={{ id: recipe.id, title: recipe.title, ingredients: recipe.ingredients }}
         refreshKey={route.params.weinAktualisiert}
       />
-
+    </>
+  );
+  const blockZutaten = (
+    <>
       <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('detail.zutaten')}</Text>
       {/* anzeigeIngredients fuer den Text, currentIngredients fuers
           Bearbeiten (per Index i, siehe handleOpenIngredientEdit) - sonst
@@ -1156,7 +1160,10 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
           )}
         </Pressable>
       ))}
-
+    </>
+  );
+  const blockSchritte = (
+    <>
       <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('detail.zubereitung')}</Text>
       {currentSteps.map((step, i) => (
         <View key={step.order} style={[styles.stepCard, { backgroundColor: colors.card, borderRadius: radius.md }]}>
@@ -1174,16 +1181,74 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
           <Text style={[styles.stepText, { color: colors.text, fontSize: largeText ? 17 : 14, lineHeight: largeText ? 25 : 21 }]}>{step.text}</Text>
         </View>
       ))}
-
+    </>
+  );
+  const blockNotiz = (
+    <>
       {recipe.personal_note && (
         <View style={[styles.noteCard, { borderRadius: radius.md }]}>
           <Text style={styles.noteLabel}>{t('detail.deineNotiz')}</Text>
           <Text style={[styles.noteText, { color: colors.text }]}>{recipe.personal_note}</Text>
         </View>
       )}
+    </>
+  );
+
+  return (
+    <>
+    {eingebettet && (
+      <View style={[styles.eingebetterHeader, { backgroundColor: colors.bg, borderBottomColor: colors.cardBorder }]}>
+        <Text style={[styles.eingebetterTitel, { color: colors.text }]} numberOfLines={1}>
+          {recipe.title}
+        </Text>
+        <Pressable onPress={schliessen} hitSlop={10} style={styles.eingebetterSchliessen}>
+          <MaterialCommunityIcons name="close" size={18} color={colors.text} />
+          <Text style={{ color: colors.text, fontSize: 13.5, fontWeight: '600' }}>{t('allgemein.schliessen')}</Text>
+        </Pressable>
       </View>
+    )}
+    {istTablet ? (
+      // Tablet: zwei unabhaengig scrollende Spalten, links 40 % (Foto,
+      // Portionen, Zutaten), rechts 60 % (Titel, Zubereitung, Aktionen).
+      // flexBasis:0 ist noetig, weil ScrollView sonst flexGrow:1 mitbringt
+      // und die Spalten nicht im Verhaeltnis 4:6 aufteilt.
+      <View style={[styles.tabletReihe, { backgroundColor: colors.bg }]}>
+        <ScrollView style={styles.tabletLinks} contentContainerStyle={styles.tabletSpalteInhalt}>
+          {blockHero}
+          {blockPortionen}
+          {blockAusruestung}
+          {blockZutaten}
+        </ScrollView>
+        <ScrollView
+          style={[styles.tabletRechts, { borderLeftColor: colors.cardBorder }]}
+          contentContainerStyle={styles.tabletSpalteInhalt}
+        >
+          <View style={styles.tabletLesespalte}>
+            {blockTitel}
+            {blockUebersetzung}
+            {blockSchritte}
+            {blockNotiz}
+            {blockAktionen}
+            {blockBeilagen}
+            {blockNaehrwerte}
+          </View>
+        </ScrollView>
       </View>
+    ) : (
+    <ScrollView style={{ backgroundColor: colors.bg }} contentContainerStyle={[styles.container, inhaltsBreiteZweispaltig]}>
+      {blockHero}
+      {blockTitel}
+      {blockPortionen}
+      {blockAusruestung}
+      {blockAktionen}
+      {blockBeilagen}
+      {blockUebersetzung}
+      {blockNaehrwerte}
+      {blockZutaten}
+      {blockSchritte}
+      {blockNotiz}
     </ScrollView>
+    )}
 
     {/* Vorschau des ueberarbeiteten Rezepts - gespeichert wird erst auf
         ausdruecklichen Knopfdruck, siehe handleEntwurfSpeichern. */}
@@ -1400,9 +1465,11 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: '700' },
   metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 4, marginBottom: 20 },
   meta: { fontSize: 12 },
-  spaltenReihe: { flexDirection: 'row', gap: 22, alignItems: 'flex-start' },
-  spalteLinks: { width: 340 },
-  spalteRechts: { flex: 1 },
+  tabletReihe: { flex: 1, flexDirection: 'row' },
+  tabletLinks: { flex: 4, flexBasis: 0 },
+  tabletRechts: { flex: 6, flexBasis: 0, borderLeftWidth: StyleSheet.hairlineWidth },
+  tabletSpalteInhalt: { padding: 22, paddingBottom: 60 },
+  tabletLesespalte: { width: '100%', maxWidth: MAX_INHALTSBREITE },
   sourceHint: { fontSize: 10.5, marginTop: -12, marginBottom: 18 },
   servingsCard: { alignItems: 'center', padding: 16, marginBottom: 14 },
   servingsLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 0.5, marginBottom: 10, textTransform: 'uppercase' },

@@ -9,6 +9,7 @@ import { AuthProvider } from './src/context/AuthContext';
 import { ServerSyncProvider } from './src/context/ServerSyncContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import BrutzelHinweisHost from './src/components/BrutzelHinweis';
+import { UpdatePruefung } from './src/components/UpdatePruefung';
 import { spracheLaden } from './src/i18n';
 import { TABLET_AB } from './src/utils/layout';
 
@@ -123,6 +124,8 @@ export default function App() {
               <StatusBar style="auto" />
               <AppNavigator />
               <BrutzelHinweisHost />
+              {/* Start-Pruefung macht der Effekt oben (mit 4-Sekunden-Fenster); hier nur die Rueckkehr in die App */}
+              <UpdatePruefung beimStart={false} />
             </ServerSyncProvider>
           </AuthProvider>
         </ThemeProvider>

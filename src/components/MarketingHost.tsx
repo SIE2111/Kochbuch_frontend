@@ -2,7 +2,9 @@
 // Zeigt auf der Startseite (Home), hoechstens EIN Fenster je Pruefung und in dieser Reihenfolge:
 //   1. Fuehrung zum ersten Eintrag ("Fotografiere jetzt dein Lieblingsrezept") - nur beim ersten Start
 //   2. Bewertungsabfrage nach dem 5. Eintrag (System-Dialog, einmal je Nutzer und App)
-//   3. "Plus kommt bald - vormerken", wenn die AI Coins knapp werden (80 % verbraucht)
+//   3. "Plus ist da" (nur fuer Vormerker, nach dem Plus-Start)
+//   4. AI Coins knapp (80 % verbraucht): "Plus kommt bald - vormerken" bzw. (ab Plus-Start) Kaufhinweis
+//   5. Ende der Starteraktion naht (ab Plus-Start)
 // Alle Fenster kommen vom Maskottchen, nie als System-Alert. Fehler und fehlendes Netz stoeren nichts.
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
@@ -10,7 +12,7 @@ import { showBrutzelHinweis } from './BrutzelHinweis';
 import { t } from '../i18n';
 import { api } from '../api/client';
 import { bewertungGefragt, ersterSchrittErledigt, statusLaden } from '../api/marketing';
-import { plusVormerkenZeigen } from '../utils/plusHinweis';
+import { plusDaZeigen, plusVormerkenZeigen, setzeProfilAktion } from '../utils/plusHinweis';
 
 type Nav = {
   addListener: (event: 'state', cb: () => void) => () => void;
@@ -22,7 +24,8 @@ type Nav = {
 const MIN_ABSTAND_MS = 20000;   // nicht bei jedem Tab-Wechsel neu beim Server nachfragen
 const COINS_ANTEIL_KNAPP = 0.8;  // AI Coins: ab 80 % verbraucht
 
-type CoinsStand = { monthly_total: number; monthly_remaining: number; purchased: number };
+type CoinsStand = { monthly_total: number; monthly_remaining: number; purchased: number; trial_ends?: string | null };
+const STARTERAKTION_HINWEIS_TAGE = 14;   // so viele Tage vor dem Ende der Starteraktion
 
 async function bewertungAnzeigen(): Promise<boolean> {
   // Eigenes Bewertungsfenster von iOS/Android (expo-store-review). Das Modul kommt erst mit einem
@@ -41,14 +44,25 @@ async function bewertungAnzeigen(): Promise<boolean> {
   }
 }
 
-async function coinsKnapp(): Promise<boolean> {
-  try {
-    const c = await api.get<CoinsStand>('/coins');
-    if (!c || c.monthly_total <= 0 || c.purchased > 0) return false;
-    return c.monthly_remaining > 0 && c.monthly_remaining <= c.monthly_total * (1 - COINS_ANTEIL_KNAPP);
-  } catch {
-    return false;
-  }
+async function coinsLaden(): Promise<CoinsStand | null> {
+  try { return await api.get<CoinsStand>('/coins'); } catch { return null; }
+}
+
+function coinsKnapp(c: CoinsStand): boolean {
+  if (c.monthly_total <= 0 || c.purchased > 0) return false;
+  return c.monthly_remaining > 0 && c.monthly_remaining <= c.monthly_total * (1 - COINS_ANTEIL_KNAPP);
+}
+
+/** Tage bis zum Ende der Starteraktion (null = laeuft nicht), Datum 'JJJJ-MM-TT'. */
+function tageBisStarteraktionEnde(c: CoinsStand): number | null {
+  if (!c.trial_ends) return null;
+  const ende = new Date(c.trial_ends + 'T23:59:59');
+  return Math.ceil((ende.getTime() - Date.now()) / 86400000);
+}
+
+function datumAnzeige(iso: string): string {
+  const [j, m, tag] = iso.split('-');
+  return `${tag}.${m}.${j}`;
 }
 
 export default function MarketingHost({ navigationRef }: { navigationRef: Nav }) {
@@ -93,8 +107,17 @@ export default function MarketingHost({ navigationRef }: { navigationRef: Nav })
           if (await bewertungAnzeigen()) return;
         }
 
-        if (status.plus_vormerken_anbieten && (await coinsKnapp())) {
-          await plusVormerkenZeigen('coins_80');
+        if (status.plus_da_hinweis && (await plusDaZeigen())) return;
+
+        if (status.plus_vormerken_anbieten || status.kaeufe_aktiv) {
+          const coins = await coinsLaden();
+          if (coins) {
+            if (coinsKnapp(coins) && (await plusVormerkenZeigen('coins_80'))) return;
+            const tage = tageBisStarteraktionEnde(coins);
+            if (status.kaeufe_aktiv && tage !== null && tage >= 0 && tage <= STARTERAKTION_HINWEIS_TAGE) {
+              await plusVormerkenZeigen('starteraktion_ende', { werte: { datum: datumAnzeige(coins.trial_ends as string) } });
+            }
+          }
         }
       } catch {
         // kein Netz o. ae.: beim naechsten Mal wieder
@@ -103,10 +126,11 @@ export default function MarketingHost({ navigationRef }: { navigationRef: Nav })
       }
     };
 
+    setzeProfilAktion(() => navigationRef.navigate('MainTabs', { screen: 'Profil' }));
     const abmelden = navigationRef.addListener('state', () => { void pruefen(); });
     const app = AppState.addEventListener('change', (s) => { if (s === 'active') { letzte.current = 0; void pruefen(); } });
     void pruefen();
-    return () => { abmelden(); app.remove(); };
+    return () => { abmelden(); app.remove(); setzeProfilAktion(null); };
   }, [navigationRef]);
 
   return null;

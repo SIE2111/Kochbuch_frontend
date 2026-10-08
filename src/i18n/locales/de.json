@@ -937,6 +937,20 @@
       "mailGesendet": "Ich habe dir eine Mail geschickt. Tippe darin auf den Knopf, dann bist du dabei. Erst danach bekommst du Tipps und Angebote von mir.",
       "abgemeldet": "Okay, ich schicke dir keine Tipps und Angebote mehr.",
       "fehler": "Das hat gerade nicht geklappt. Versuch es später noch einmal."
+    },
+    "kauf": {
+      "titel": "Mehr mit Plus",
+      "ansehen": "Plus ansehen",
+      "spaeter": "Später",
+      "coins_80": "Deine AI Coins werden knapp. Mit Plus bekommst du jeden Monat 150 statt 50 AI Coins.",
+      "coins_leer": "Mit Plus bekommst du jeden Monat 150 statt 50 AI Coins. Nächsten Monat bekommst du auch ohne Plus wieder neue.",
+      "teilen": "Mit Plus teilst du dein Kochbuch mit deiner Familie und bekommst 150 statt 50 AI Coins im Monat.",
+      "speicher_80": "Dein Speicherplatz wird knapp. Mit Plus bekommst du mehr Speicher, mehr AI Coins und kannst mit der Familie teilen.",
+      "starteraktion_ende": "Deine Starteraktion endet am {datum}. Danach bekommst du wieder 50 AI Coins im Monat. Mit Plus sind es 150."
+    },
+    "plusDa": {
+      "titel": "Plus ist da!",
+      "text": "Du wolltest Bescheid wissen: Mit Plus bekommst du 150 statt 50 AI Coins im Monat und teilst dein Kochbuch mit deiner Familie. Für Frühstarter gibt es ein besonderes Angebot."
     }
   },
   "nachSpeichern": {
@@ -946,5 +960,4 @@
     "ansehen": "Ansehen",
     "kochen": "Jetzt kochen"
   }
-
 }

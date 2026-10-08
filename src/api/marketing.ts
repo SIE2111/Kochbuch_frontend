@@ -4,6 +4,8 @@ import { api } from './client';
 
 /** Anlaesse, an denen spaeter Kaufhinweise erscheinen - bis zum Plus-Start nur "Plus kommt bald". */
 export type PlusAnlass = 'coins_80' | 'coins_leer' | 'teilen' | 'speicher_80';
+/** Anlaesse nur fuer Kaufhinweise (gibt es nach dem Plus-Start): Ende der Starteraktion. */
+export type KaufAnlass = PlusAnlass | 'starteraktion_ende';
 
 export type MarketingStatus = {
   /** Schalter PURCHASES_ENABLED im Backend. false = es gibt keine Kaufoptionen und keine Kaufhinweise. */
@@ -11,6 +13,8 @@ export type MarketingStatus = {
   /** Vormerk-Hinweis ("Plus kommt bald") darf noch gezeigt werden: Kaeufe aus und noch nicht vorgemerkt. */
   plus_vormerken_anbieten: boolean;
   plus_vorgemerkt: boolean;
+  /** Plus ist gestartet und der Nutzer hatte sich vormerken lassen: einmal "Plus ist da" zeigen. */
+  plus_da_hinweis: boolean;
   eintraege: number;
   erster_schritt_offen: boolean;
   bewertung_faellig: boolean;

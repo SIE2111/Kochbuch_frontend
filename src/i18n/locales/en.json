@@ -265,9 +265,10 @@
     "aiCoinsGekauftHinweis": "Purchased or earned, valid in all apps and never expire",
     "aiCoinsWofuer": "What AI Coins are used for",
     "aiCoinsReihenfolge": "Monthly coins are used first, then purchased ones. When both are empty, upload and download are blocked.",
-    "aiCoinsKennenlernen": "Introductory offer: {basis} + {bonus} free coins until {datum}",
-    "aiCoinsGeschenk": "Claim {n} AI Coins for free",
-    "aiCoinsGeschenkHinweis": "One time only, works in all apps and never expires"
+    "aiCoinsKennenlernen": "Starter offer: {basis} + {bonus} AI Coins per month",
+    "aiCoinsGeschenk": "Buy AI Coins",
+    "aiCoinsGeschenkHinweis": "Pack: {n} AI Coins · one time · 0 € for now",
+    "aiCoinsKaufenSpaeter": "You have already claimed the pack · more to come"
   },
   "detail": {
     "nichtGeladen": "The recipe could not be loaded",
@@ -909,12 +910,14 @@
     "verstanden": "Got it",
     "coinsTitel": "AI Coins used up",
     "coinsText": "Your AI Coins are used up. Upload and download are blocked until new monthly coins arrive on the 1st of the month.",
-    "coinsTextGeschenk": "Your AI Coins are used up. You can now claim {n} AI Coins for free, once – they never expire and work in all apps.",
-    "geschenkHolen": "Claim {n} AI Coins for free",
+    "coinsTextGeschenk": "Your AI Coins are used up. You can now pick up {n} AI Coins once, at no cost for now. They never expire and work in all apps.",
+    "geschenkHolen": "Pick up {n} AI Coins",
     "spaeter": "Later",
     "geschenkTitel": "Done!",
     "geschenkText": "{n} AI Coins have been added. Enjoy!",
-    "geschenkSchonGeholt": "You have already claimed the free pack."
+    "geschenkSchonGeholt": "You have already picked up the pack. More packs will follow.",
+    "kaufenTitel": "Buy AI Coins",
+    "kaufenText": "Pack: {n} AI Coins, one time and at no cost for now. The coins work in all apps and never expire. More packs will follow."
   },
   "marketing": {
     "registrierenHaken": "I would like to receive tips and offers by email",

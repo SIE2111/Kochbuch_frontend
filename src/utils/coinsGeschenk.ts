@@ -34,3 +34,19 @@ export async function geschenkHolen(): Promise<boolean> {
     return false;
   }
 }
+
+/** Profil: "AI Coins kaufen" - bis es Bezahlung gibt, ist das Paket mit 100 AI Coins einmalig und vorerst ohne Kosten abholbar. */
+export function kaufenZeigen(verfuegbar: boolean, n: number, danach?: () => void) {
+  if (!verfuegbar) {
+    showBrutzelHinweis({ title: t('hinweis.kaufenTitel'), text: t('hinweis.geschenkSchonGeholt') });
+    return;
+  }
+  showBrutzelHinweis({
+    title: t('hinweis.kaufenTitel'),
+    text: t('hinweis.kaufenText', { n }),
+    buttons: [
+      { text: t('hinweis.geschenkHolen', { n }), onPress: () => { geschenkHolen().then(() => danach && danach()); } },
+      { text: t('hinweis.spaeter'), style: 'cancel' },
+    ],
+  });
+}

@@ -8,7 +8,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
 import { api } from '../api/client';
-import { geschenkHolen } from '../utils/coinsGeschenk';
+import { kaufenZeigen } from '../utils/coinsGeschenk';
 
 type Eintrag = { key: string; label: string; label_en?: string; cost: string; cost_en?: string; note?: string; note_en?: string };
 type Stand = { monthly_total: number; monthly_remaining: number; purchased: number; trial_ends?: string | null; bonus?: number; gift_available?: boolean; gift_amount?: number; items: Eintrag[] };
@@ -46,7 +46,7 @@ export default function AiCoinsKarte({ refreshKey }: {
         <MaterialCommunityIcons name="circle-multiple-outline" size={20} color={colors.muted} style={st.icon} />
         <View style={{ flex: 1 }}>
           <Text style={[st.titel, { color: colors.text }]}>{t('profil.aiCoinsMonat')}</Text>
-          <Text style={[st.sub, { color: colors.muted }]}>{t('profil.aiCoinsMonatHinweis', { n: stand?.monthly_total ?? 25 })}{stand?.trial_ends ? '\n' + t('profil.aiCoinsKennenlernen', { basis: 25, bonus: stand.bonus ?? 25, datum: datumAnzeige(stand.trial_ends) }) : ''}</Text>
+          <Text style={[st.sub, { color: colors.muted }]}>{t('profil.aiCoinsMonatHinweis', { n: stand?.monthly_total ?? 25 })}{stand?.trial_ends ? '\n' + t('profil.aiCoinsKennenlernen', { basis: 25, bonus: stand.bonus ?? 25 }) : ''}</Text>
         </View>
         {stand ? <Text style={[st.zahl, { color: colors.text }]}>{stand.monthly_remaining} / {stand.monthly_total}</Text> : <ActivityIndicator color={colors.muted} />}
       </View>
@@ -60,16 +60,14 @@ export default function AiCoinsKarte({ refreshKey }: {
         {stand ? <Text style={[st.zahl, { color: colors.text }]}>{stand.purchased}</Text> : null}
       </View>
 
-      {stand?.gift_available ? (
-        <Pressable style={mitTrenner} onPress={async () => { await geschenkHolen(); laden(); }}>
-          <MaterialCommunityIcons name="gift-outline" size={20} color={colors.muted} style={st.icon} />
-          <View style={{ flex: 1 }}>
-            <Text style={[st.titel, { color: colors.text, fontWeight: '800' }]}>{t('profil.aiCoinsGeschenk', { n: stand.gift_amount ?? 100 })}</Text>
-            <Text style={[st.sub, { color: colors.muted }]}>{t('profil.aiCoinsGeschenkHinweis')}</Text>
-          </View>
-          <MaterialCommunityIcons name="chevron-right" size={22} color={colors.muted} />
-        </Pressable>
-      ) : null}
+      <Pressable style={mitTrenner} onPress={() => kaufenZeigen(!!stand?.gift_available, stand?.gift_amount ?? 100, laden)}>
+        <MaterialCommunityIcons name="gift-outline" size={20} color={colors.muted} style={st.icon} />
+        <View style={{ flex: 1 }}>
+          <Text style={[st.titel, { color: colors.text }, stand?.gift_available ? { fontWeight: '800' } : null]}>{t('profil.aiCoinsGeschenk')}</Text>
+          <Text style={[st.sub, { color: colors.muted }]}>{stand?.gift_available ? t('profil.aiCoinsGeschenkHinweis', { n: stand.gift_amount ?? 100 }) : t('profil.aiCoinsKaufenSpaeter')}</Text>
+        </View>
+        <MaterialCommunityIcons name="chevron-right" size={22} color={colors.muted} />
+      </Pressable>
 
       <Pressable style={zeile} onPress={() => { setOffen(true); laden(); }}>
         <MaterialCommunityIcons name="format-list-bulleted" size={20} color={colors.muted} style={st.icon} />

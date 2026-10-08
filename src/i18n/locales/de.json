@@ -265,7 +265,9 @@
     "aiCoinsGekauftHinweis": "Gekauft oder verdient, gelten für alle Apps und verfallen nie",
     "aiCoinsWofuer": "Wofür AI Coins gebraucht werden",
     "aiCoinsReihenfolge": "Abgezogen wird zuerst von den Monats-Coins, dann von den gekauften. Sind beide leer, sind Upload und Download gesperrt.",
-    "aiCoinsKennenlernen": "Kennenlern-Aktion: {basis} + {bonus} Coins gratis bis {datum}"
+    "aiCoinsKennenlernen": "Kennenlern-Aktion: {basis} + {bonus} Coins gratis bis {datum}",
+    "aiCoinsGeschenk": "{n} AI Coins gratis holen",
+    "aiCoinsGeschenkHinweis": "Einmalig, gilt für alle Apps und verfällt nie"
   },
   "detail": {
     "nichtGeladen": "Rezept konnte nicht geladen werden",
@@ -906,7 +908,13 @@
     "von": "Brutzel hat einen Hinweis",
     "verstanden": "Verstanden",
     "coinsTitel": "AI Coins aufgebraucht",
-    "coinsText": "Deine AI Coins sind aufgebraucht. Upload und Download sind gesperrt, bis am 1. des Monats neue Monats-Coins kommen."
+    "coinsText": "Deine AI Coins sind aufgebraucht. Upload und Download sind gesperrt, bis am 1. des Monats neue Monats-Coins kommen.",
+    "coinsTextGeschenk": "Deine AI Coins sind aufgebraucht. Du kannst jetzt einmalig {n} AI Coins gratis holen – sie verfallen nie und gelten in allen Apps.",
+    "geschenkHolen": "{n} AI Coins gratis holen",
+    "spaeter": "Später",
+    "geschenkTitel": "Geschafft!",
+    "geschenkText": "{n} AI Coins sind gutgeschrieben. Viel Freude damit!",
+    "geschenkSchonGeholt": "Das Gratis-Paket hast du schon geholt."
   },
   "marketing": {
     "registrierenHaken": "Ich möchte Tipps und Angebote per E-Mail erhalten",
@@ -942,15 +950,15 @@
       "titel": "Mehr mit Plus",
       "ansehen": "Plus ansehen",
       "spaeter": "Später",
-      "coins_80": "Deine AI Coins werden knapp. Mit Plus bekommst du jeden Monat 150 statt 50 AI Coins.",
-      "coins_leer": "Mit Plus bekommst du jeden Monat 150 statt 50 AI Coins. Nächsten Monat bekommst du auch ohne Plus wieder neue.",
-      "teilen": "Mit Plus teilst du dein Kochbuch mit deiner Familie und bekommst 150 statt 50 AI Coins im Monat.",
+      "coins_80": "Deine AI Coins werden knapp. Mit Plus bekommst du jeden Monat 100 statt 25 AI Coins.",
+      "coins_leer": "Mit Plus bekommst du jeden Monat 100 statt 25 AI Coins. Nächsten Monat bekommst du auch ohne Plus wieder neue.",
+      "teilen": "Mit Plus teilst du dein Kochbuch mit deiner Familie und bekommst 100 statt 25 AI Coins im Monat.",
       "speicher_80": "Dein Speicherplatz wird knapp. Mit Plus bekommst du mehr Speicher, mehr AI Coins und kannst mit der Familie teilen.",
-      "starteraktion_ende": "Deine Starteraktion endet am {datum}. Danach bekommst du wieder 50 AI Coins im Monat. Mit Plus sind es 150."
+      "starteraktion_ende": "Deine Starteraktion endet am {datum}. Danach bekommst du wieder 25 AI Coins im Monat. Mit Plus sind es 100."
     },
     "plusDa": {
       "titel": "Plus ist da!",
-      "text": "Du wolltest Bescheid wissen: Mit Plus bekommst du 150 statt 50 AI Coins im Monat und teilst dein Kochbuch mit deiner Familie. Für Frühstarter gibt es ein besonderes Angebot."
+      "text": "Du wolltest Bescheid wissen: Mit Plus bekommst du 100 statt 25 AI Coins im Monat und teilst dein Kochbuch mit deiner Familie. Für Frühstarter gibt es ein besonderes Angebot."
     },
     "einladung": {
       "titel": "Freunde einladen",

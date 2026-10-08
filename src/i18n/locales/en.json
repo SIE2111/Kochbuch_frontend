@@ -265,7 +265,9 @@
     "aiCoinsGekauftHinweis": "Purchased or earned, valid in all apps and never expire",
     "aiCoinsWofuer": "What AI Coins are used for",
     "aiCoinsReihenfolge": "Monthly coins are used first, then purchased ones. When both are empty, upload and download are blocked.",
-    "aiCoinsKennenlernen": "Introductory offer: {basis} + {bonus} free coins until {datum}"
+    "aiCoinsKennenlernen": "Introductory offer: {basis} + {bonus} free coins until {datum}",
+    "aiCoinsGeschenk": "Claim {n} AI Coins for free",
+    "aiCoinsGeschenkHinweis": "One time only, works in all apps and never expires"
   },
   "detail": {
     "nichtGeladen": "The recipe could not be loaded",
@@ -906,7 +908,13 @@
     "von": "Brutzel has a note",
     "verstanden": "Got it",
     "coinsTitel": "AI Coins used up",
-    "coinsText": "Your AI Coins are used up. Upload and download are blocked until new monthly coins arrive on the 1st of the month."
+    "coinsText": "Your AI Coins are used up. Upload and download are blocked until new monthly coins arrive on the 1st of the month.",
+    "coinsTextGeschenk": "Your AI Coins are used up. You can now claim {n} AI Coins for free, once – they never expire and work in all apps.",
+    "geschenkHolen": "Claim {n} AI Coins for free",
+    "spaeter": "Later",
+    "geschenkTitel": "Done!",
+    "geschenkText": "{n} AI Coins have been added. Enjoy!",
+    "geschenkSchonGeholt": "You have already claimed the free pack."
   },
   "marketing": {
     "registrierenHaken": "I would like to receive tips and offers by email",
@@ -942,15 +950,15 @@
       "titel": "More with Plus",
       "ansehen": "View Plus",
       "spaeter": "Later",
-      "coins_80": "Your AI Coins are running low. With Plus you get 150 instead of 50 AI Coins every month.",
-      "coins_leer": "With Plus you get 150 instead of 50 AI Coins every month. You'll get new ones next month even without Plus.",
-      "teilen": "With Plus you share your cookbook with your family and get 150 instead of 50 AI Coins a month.",
+      "coins_80": "Your AI Coins are running low. With Plus you get 100 instead of 25 AI Coins every month.",
+      "coins_leer": "With Plus you get 100 instead of 25 AI Coins every month. You'll get new ones next month even without Plus.",
+      "teilen": "With Plus you share your cookbook with your family and get 100 instead of 25 AI Coins a month.",
       "speicher_80": "Your storage is running low. With Plus you get more storage, more AI Coins and can share with your family.",
-      "starteraktion_ende": "Your welcome offer ends on {datum}. After that you get 50 AI Coins a month again. With Plus it's 150."
+      "starteraktion_ende": "Your welcome offer ends on {datum}. After that you get 25 AI Coins a month again. With Plus it's 100."
     },
     "plusDa": {
       "titel": "Plus is here!",
-      "text": "You wanted to know: with Plus you get 150 instead of 50 AI Coins a month and share your cookbook with your family. There's a special offer for early birds."
+      "text": "You wanted to know: with Plus you get 100 instead of 25 AI Coins a month and share your cookbook with your family. There's a special offer for early birds."
     },
     "einladung": {
       "titel": "Invite friends",

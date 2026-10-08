@@ -23,9 +23,13 @@ function coinsLeerMelden(_detail: string): string {
   // require erst beim Aufruf: marketing.ts und plusHinweis.ts importieren selbst diese Datei.
   const titel = t('hinweis.coinsTitel');
   const { plusVormerkenZeigen } = require('../utils/plusHinweis') as typeof import('../utils/plusHinweis');
-  plusVormerkenZeigen('coins_leer', { titel, vorText: text, immer: true })
+  const normal = () => plusVormerkenZeigen('coins_leer', { titel, vorText: text, immer: true })
     .then((gezeigt) => { if (!gezeigt) showBrutzelHinweis({ title: titel, text }); })
     .catch(() => showBrutzelHinweis({ title: titel, text }));
+  // Einmaliges Gratis-Paket noch offen? Dann zuerst mit Knopf anbieten (solange es keine Kaeufe gibt).
+  require('../utils/coinsGeschenk').geschenkAnbieten(titel)
+    .then((angeboten: boolean) => { if (!angeboten) return normal(); })
+    .catch(() => normal());
   return text;
 }
 

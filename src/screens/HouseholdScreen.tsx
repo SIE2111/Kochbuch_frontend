@@ -4,6 +4,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
 import { api, ApiError } from '../api/client';
+import { supabase } from '../api/supabaseClient';
 import { plusVormerkenZeigen } from '../utils/plusHinweis';
 import { useLayout } from '../utils/layout';
 
@@ -35,6 +36,35 @@ export default function HouseholdScreen() {
   const { inhaltsBreite } = useLayout();
   const { t } = useUebersetzung();
   const [household, setHousehold] = useState<Household | null | undefined>(undefined);
+
+  // Haushaltsname nachträglich ändern (nur Owner, das Backend prüft ebenfalls).
+  const [myUserId, setMyUserId] = useState<string | null>(null);
+  const [renaming, setRenaming] = useState(false);
+  const [renameValue, setRenameValue] = useState('');
+  const [renameBusy, setRenameBusy] = useState(false);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setMyUserId(data.session?.user?.id ?? null));
+  }, []);
+  const isOwner = !!household?.members?.some((m) => m.user_id === myUserId && m.role === 'owner');
+
+  async function handleRename() {
+    const newName = renameValue.trim();
+    if (!newName || !household) return;
+    if (newName === household.name) {
+      setRenaming(false);
+      return;
+    }
+    setRenameBusy(true);
+    try {
+      const updated = await api.patch<Household>('/households/', { name: newName });
+      setHousehold(updated);
+      setRenaming(false);
+    } catch (e: any) {
+      Alert.alert(t('allgemein.fehler'), e?.message || t('haushalt.fehlgeschlagen'));
+    } finally {
+      setRenameBusy(false);
+    }
+  }
   const [error, setError] = useState<string | null>(null);
 
   const [newHouseholdName, setNewHouseholdName] = useState('');
@@ -285,7 +315,36 @@ export default function HouseholdScreen() {
       contentContainerStyle={[styles.scrollContent, inhaltsBreite]}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={[styles.householdName, { color: colors.text }]}>{household.name}</Text>
+      {renaming ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <TextInput
+            value={renameValue}
+            onChangeText={setRenameValue}
+            autoFocus
+            maxLength={80}
+            placeholder={t('haushalt.namePlatzhalter')}
+            placeholderTextColor={colors.muted}
+            returnKeyType="done"
+            onSubmitEditing={handleRename}
+            style={[styles.input, { flex: 1, marginBottom: 0, backgroundColor: colors.card, color: colors.text, borderRadius: radius.md }]}
+          />
+          <Pressable onPress={handleRename} disabled={!renameValue.trim() || renameBusy} hitSlop={8}>
+            {renameBusy ? <ActivityIndicator color={colors.muted} /> : <MaterialCommunityIcons name="check" size={24} color={colors.text} />}
+          </Pressable>
+          <Pressable onPress={() => setRenaming(false)} disabled={renameBusy} hitSlop={8}>
+            <MaterialCommunityIcons name="close" size={24} color={colors.muted} />
+          </Pressable>
+        </View>
+      ) : (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Text style={[styles.householdName, { color: colors.text, flexShrink: 1 }]}>{household.name}</Text>
+          {isOwner && (
+            <Pressable onPress={() => { setRenameValue(household.name); setRenaming(true); }} hitSlop={10}>
+              <MaterialCommunityIcons name="pencil-outline" size={18} color={colors.muted} />
+            </Pressable>
+          )}
+        </View>
+      )}
       <Text style={[styles.hint, { color: colors.muted, marginTop: 14 }]}>
         Alle Mitglieder sehen dieselben Rezepte, dieselbe Einkaufsliste und denselben Wochenplan.
         Ändern und löschen kann ein Rezept nur, wer es angelegt hat.

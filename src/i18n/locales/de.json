@@ -907,5 +907,44 @@
     "verstanden": "Verstanden",
     "coinsTitel": "AI Coins aufgebraucht",
     "coinsText": "Deine AI Coins sind aufgebraucht. Upload und Download sind gesperrt, bis am 1. des Monats neue Monats-Coins kommen."
+  },
+  "marketing": {
+    "registrierenHaken": "Ich möchte Tipps und Angebote per E-Mail erhalten",
+    "ersterSchritt": {
+      "titel": "Los geht's!",
+      "text": "Fotografiere jetzt dein Lieblingsrezept. Ich lese Zutaten, Schritte und Timer für dich heraus – du kannst alles noch ändern, bevor du speicherst.",
+      "foto": "Foto aufnehmen",
+      "spaeter": "Später"
+    },
+    "erkannt": "Das habe ich erkannt:\nZutaten: {zutaten} · Schritte: {schritte} · Timer: {timer}\nSchau alles in Ruhe durch – du kannst jederzeit etwas ändern.",
+    "plus": {
+      "titel": "Plus kommt bald",
+      "coins_80": "Deine AI Coins werden knapp. Mehr AI Coins und Teilen mit der Familie gibt es bald mit Plus. Soll ich dir Bescheid geben?",
+      "coins_leer": "Nächsten Monat bekommst du wieder neue AI Coins. Mehr AI Coins und Teilen mit der Familie gibt es bald mit Plus. Soll ich dir Bescheid geben?",
+      "teilen": "Mehr AI Coins und Teilen mit der Familie gibt es bald mit Plus. Soll ich dir Bescheid geben?",
+      "speicher_80": "Dein Speicherplatz wird knapp. Mehr Speicher, mehr AI Coins und Teilen mit der Familie gibt es bald mit Plus. Soll ich dir Bescheid geben?",
+      "ja": "Ja, vormerken",
+      "spaeter": "Später",
+      "danke": "Alles klar, ich gebe dir Bescheid, sobald Plus da ist.",
+      "fehler": "Das hat gerade nicht geklappt. Versuch es später noch einmal."
+    },
+    "einstellung": {
+      "abschnitt": "E-Mail",
+      "titel": "Tipps und Angebote per E-Mail",
+      "subAus": "Aus – ich schicke dir keine Werbe-Mails",
+      "subAngefragt": "Bestätigungs-Mail gesendet – tippe darin auf den Knopf",
+      "subBestaetigt": "Bestätigt – ich schicke dir ab und zu Post",
+      "mailGesendet": "Ich habe dir eine Mail geschickt. Tippe darin auf den Knopf, dann bist du dabei. Erst danach bekommst du Tipps und Angebote von mir.",
+      "abgemeldet": "Okay, ich schicke dir keine Tipps und Angebote mehr.",
+      "fehler": "Das hat gerade nicht geklappt. Versuch es später noch einmal."
+    }
+  },
+  "nachSpeichern": {
+    "titel": "Rezept gespeichert",
+    "text": "„{titel}“ liegt jetzt in deinem Kochbuch.",
+    "abbrechen": "Abbrechen",
+    "ansehen": "Ansehen",
+    "kochen": "Jetzt kochen"
   }
+
 }

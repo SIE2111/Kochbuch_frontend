@@ -40,6 +40,7 @@ import AppSettingsScreen from '../screens/AppSettingsScreen';
 import MyPoolsScreen from '../screens/MyPoolsScreen';
 import StorageSettingsScreen from '../screens/StorageSettingsScreen';
 import PhotoCaptureScreen from '../screens/PhotoCaptureScreen';
+import MarketingHost from '../components/MarketingHost';
 import ManageCategoriesScreen from '../screens/ManageCategoriesScreen';
 
 export type AuthStackParamList = {
@@ -360,7 +361,13 @@ export default function AppNavigator() {
   return (
     <NavigationContainer ref={navigationRef} onReady={() => setNavBereit(true)}>
       {session
-        ? <MainNavigator startOnOnboarding={!!justRegistered || !!firstLoginThisApp} />
+        ? (
+          <>
+            <MainNavigator startOnOnboarding={!!justRegistered || !!firstLoginThisApp} />
+            {/* Marketing-Hinweise des Maskottchens (erster Eintrag, Bewertung, Plus vormerken) */}
+            <MarketingHost navigationRef={navigationRef} />
+          </>
+        )
         : <AuthNavigator />}
     </NavigationContainer>
   );

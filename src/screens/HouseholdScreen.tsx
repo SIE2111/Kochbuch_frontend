@@ -4,6 +4,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
 import { api, ApiError } from '../api/client';
+import { plusVormerkenZeigen } from '../utils/plusHinweis';
 import { useLayout } from '../utils/layout';
 
 interface Member {
@@ -126,6 +127,7 @@ export default function HouseholdScreen() {
           `Die Einladung wurde angelegt, die E-Mail ging aber nicht raus. Gib den Code ${invite.code} direkt weiter.`,
         );
       }
+      void plusVormerkenZeigen('teilen');
     } catch (err) {
       Alert.alert(t('haushalt.einladenFehlgeschlagen'), err instanceof ApiError ? err.detail : t('profil.unbekannterFehler'));
     } finally {
@@ -163,6 +165,7 @@ export default function HouseholdScreen() {
       const invite = await api.post<{ code: string; expires_at: string; share_text: string }>('/households/invite');
       setInviteCode(invite.code);
       setInviteShareText(invite.share_text);
+      void plusVormerkenZeigen('teilen');
     } catch (err) {
       Alert.alert(t('haushalt.einladungFehlgeschlagen'), err instanceof ApiError ? err.detail : t('profil.unbekannterFehler'));
     } finally {

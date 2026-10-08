@@ -3,7 +3,9 @@ import { View, Text, Switch, StyleSheet, ScrollView, ActivityIndicator, Alert, P
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
-import { useUebersetzung } from '../i18n';
+import { useUebersetzung, getSprache } from '../i18n';
+import { einwilligungAnfragen, statusLaden } from '../api/marketing';
+import { showBrutzelHinweis } from '../components/BrutzelHinweis';
 import { api, ApiError } from '../api/client';
 import { useServerSync } from '../context/ServerSyncContext';
 import { useLayout } from '../utils/layout';
@@ -59,6 +61,9 @@ export default function AppSettingsScreen() {
   const navigation = useNavigation<any>();
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [savingKey, setSavingKey] = useState<PreferenceKey | null>(null);
+  // Tipps und Angebote per E-Mail: 'aus' | 'angefragt' (Bestaetigungs-Mail unterwegs) | 'bestaetigt'
+  const [mailStand, setMailStand] = useState<'aus' | 'angefragt' | 'bestaetigt' | null>(null);
+  const [mailSpeichert, setMailSpeichert] = useState(false);
 
   useEffect(() => {
     api
@@ -66,6 +71,30 @@ export default function AppSettingsScreen() {
       .then(setPrefs)
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    statusLaden()
+      .then((s) => setMailStand(s.einwilligung.bestaetigt ? 'bestaetigt' : s.einwilligung.angefragt ? 'angefragt' : 'aus'))
+      .catch(() => setMailStand(null));
+  }, []);
+
+  const handleMailToggle = async (an: boolean) => {
+    setMailSpeichert(true);
+    try {
+      await einwilligungAnfragen(an, getSprache());
+      if (an) {
+        setMailStand('angefragt');
+        showBrutzelHinweis({ title: t('marketing.einstellung.titel'), text: t('marketing.einstellung.mailGesendet') });
+      } else {
+        setMailStand('aus');
+        showBrutzelHinweis({ title: t('marketing.einstellung.titel'), text: t('marketing.einstellung.abgemeldet') });
+      }
+    } catch {
+      showBrutzelHinweis({ title: t('marketing.einstellung.titel'), text: t('marketing.einstellung.fehler') });
+    } finally {
+      setMailSpeichert(false);
+    }
+  };
 
   const handleToggle = async (key: PreferenceKey, value: boolean) => {
     if (!prefs) return;
@@ -154,6 +183,34 @@ export default function AppSettingsScreen() {
       {DARSTELLUNG_ROWS.map((zeile) => (
         <Zeile key={zeile.key} zeile={zeile} />
       ))}
+
+      {/* Tipps und Angebote per E-Mail (Double-Opt-in): der Schalter fordert die Bestaetigungs-Mail an,
+          gueltig ist die Einwilligung erst nach dem Tipp auf den Link darin. */}
+      {mailStand !== null && (
+        <>
+          <Text style={[styles.label, { color: colors.muted, marginTop: 20 }]}>{t('marketing.einstellung.abschnitt')}</Text>
+          <View style={[styles.row, { backgroundColor: colors.card, borderRadius: radius.md }]}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.rowTitle, { color: colors.text }]}>{t('marketing.einstellung.titel')}</Text>
+              <Text style={[styles.rowSubtitle, { color: colors.muted }]}>
+                {t(mailStand === 'bestaetigt' ? 'marketing.einstellung.subBestaetigt'
+                  : mailStand === 'angefragt' ? 'marketing.einstellung.subAngefragt'
+                  : 'marketing.einstellung.subAus')}
+              </Text>
+            </View>
+            {mailSpeichert ? (
+              <ActivityIndicator color={colors.muted} />
+            ) : (
+              <Switch
+                value={mailStand !== 'aus'}
+                onValueChange={handleMailToggle}
+                trackColor={{ false: '#E7E1D4', true: gradient[0] }}
+                thumbColor="#fff"
+              />
+            )}
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 }

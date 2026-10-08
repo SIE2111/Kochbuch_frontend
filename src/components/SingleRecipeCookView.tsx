@@ -75,7 +75,7 @@ function parseDurationSecondsFromText(text: string): number | null {
   return seconds >= 120 ? Math.round(seconds) : null;
 }
 
-function getEffectiveTimerSeconds(step: { timer_seconds?: number | null; text: string }): number | null {
+export function getEffectiveTimerSeconds(step: { timer_seconds?: number | null; text: string }): number | null {
   return step.timer_seconds ?? parseDurationSecondsFromText(step.text);
 }
 

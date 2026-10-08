@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { spracheZumServer } from '../i18n';
+import { spracheZumServer, getSprache } from '../i18n';
+import { einwilligungAnfragen } from '../api/marketing';
 import { supabase } from '../api/supabaseClient';
 import { api, setOnTrialExpired } from '../api/client';
 
@@ -35,7 +36,7 @@ interface AuthContextValue {
   clearJustRegistered: () => void;
   signInWithPassword: (email: string, password: string) => Promise<void>;
   /** Legt das Konto an und schickt den 4-stelligen Code per Mail. */
-  registerWithCode: (email: string, password: string) => Promise<void>;
+  registerWithCode: (email: string, password: string, marketingOptIn?: boolean) => Promise<void>;
   /** Prueft den Code und loggt den Nutzer direkt ein. */
   verifyCode: (email: string, code: string) => Promise<void>;
   /** Fordert einen neuen Code an. */
@@ -63,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Navigations-State kann von React Navigation persistiert und in
   // Entwickler-Werkzeugen angezeigt werden, ein Ref lebt nur im
   // Arbeitsspeicher und ist beim naechsten App-Start weg.
-  const pendingPassword = useRef<{ email: string; password: string } | null>(null);
+  const pendingPassword = useRef<{ email: string; password: string; marketingOptIn: boolean } | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -102,10 +103,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       },
-      registerWithCode: async (email, password) => {
+      registerWithCode: async (email, password, marketingOptIn = false) => {
         const normalized = email.trim().toLowerCase();
         await api.post('/auth/register', { email: normalized, password });
-        pendingPassword.current = { email: normalized, password };
+        pendingPassword.current = { email: normalized, password, marketingOptIn };
       },
       verifyCode: async (email, code) => {
         const normalized = email.trim().toLowerCase();
@@ -125,8 +126,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           password: pending.password,
         });
         if (error) throw error;
+        const mitEinwilligung = pending.marketingOptIn;
         pendingPassword.current = null;
         setJustRegistered(true);
+        // Haekchen "Tipps und Angebote per E-Mail": jetzt (eingeloggt) die Bestaetigungs-Mail
+        // anfordern. Scheitert das, bleibt die Registrierung unberuehrt - in den Einstellungen
+        // laesst sich die Einwilligung jederzeit nachholen.
+        if (mitEinwilligung) void einwilligungAnfragen(true, getSprache()).catch(() => undefined);
       },
       resendCode: async (email) => {
         await api.post('/auth/resend-code', { email: email.trim().toLowerCase() });

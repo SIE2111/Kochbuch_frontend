@@ -25,6 +25,8 @@ export default function RegisterScreen({ navigation }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
+  // Einwilligung in Tipps und Angebote per E-Mail: NICHT vorausgewaehlt, getrennt von den AGB.
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleRegister = async () => {
@@ -42,7 +44,7 @@ export default function RegisterScreen({ navigation }: Props) {
       // Das Konto wird angelegt und ein 4-stelliger Code per Mail
       // verschickt. Bestaetigt wird auf dem naechsten Screen durch
       // Abtippen des Codes - ohne Link, ohne Ruecksprung in die App.
-      await registerWithCode(email, password);
+      await registerWithCode(email, password, marketingOptIn);
       navigation.navigate('ConfirmEmail', { email: email.trim().toLowerCase() });
     } catch (err) {
       const message = err instanceof Error ? err.message : t('auth.registrierungFehlgeschlagen');
@@ -119,6 +121,23 @@ export default function RegisterScreen({ navigation }: Props) {
             {t('auth.datenschutzLesen')}
           </Text>
         </View>
+
+        {/* Eigenes Haekchen fuer Tipps und Angebote per E-Mail - freiwillig und nicht vorausgewaehlt.
+            Gueltig wird die Einwilligung erst, wenn der Link in der Bestaetigungs-Mail (Double-Opt-in)
+            angetippt wurde. */}
+        <Pressable onPress={() => setMarketingOptIn((prev) => !prev)} style={styles.checkboxRow}>
+          <View
+            style={[
+              styles.checkbox,
+              { borderRadius: radius.sm, backgroundColor: marketingOptIn ? gradient[0] : 'transparent', borderColor: gradient[0] },
+            ]}
+          >
+            {marketingOptIn && <Text style={styles.checkboxMark}>✓</Text>}
+          </View>
+          <Text style={[styles.checkboxLabel, { color: colors.muted }]}>
+            {t('marketing.registrierenHaken')}
+          </Text>
+        </Pressable>
 
         <Pressable onPress={handleRegister} disabled={isSubmitting} style={{ marginTop: 12 }}>
           <LinearGradient

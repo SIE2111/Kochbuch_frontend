@@ -907,5 +907,44 @@
     "verstanden": "Got it",
     "coinsTitel": "AI Coins used up",
     "coinsText": "Your AI Coins are used up. Upload and download are blocked until new monthly coins arrive on the 1st of the month."
+  },
+  "marketing": {
+    "registrierenHaken": "I would like to receive tips and offers by email",
+    "ersterSchritt": {
+      "titel": "Let's go!",
+      "text": "Take a photo of your favourite recipe now. I read out the ingredients, steps and timers for you – you can still change everything before you save.",
+      "foto": "Take photo",
+      "spaeter": "Later"
+    },
+    "erkannt": "This is what I recognised:\nIngredients: {zutaten} · Steps: {schritte} · Timers: {timer}\nTake your time to look it over – you can change anything at any time.",
+    "plus": {
+      "titel": "Plus is coming soon",
+      "coins_80": "Your AI Coins are running low. More AI Coins and sharing with the family are coming soon with Plus. Shall I let you know?",
+      "coins_leer": "You'll get new AI Coins next month. More AI Coins and sharing with the family are coming soon with Plus. Shall I let you know?",
+      "teilen": "More AI Coins and sharing with the family are coming soon with Plus. Shall I let you know?",
+      "speicher_80": "Your storage is running low. More storage, more AI Coins and sharing with the family are coming soon with Plus. Shall I let you know?",
+      "ja": "Yes, remind me",
+      "spaeter": "Later",
+      "danke": "Got it, I'll let you know as soon as Plus is here.",
+      "fehler": "That didn't work just now. Please try again later."
+    },
+    "einstellung": {
+      "abschnitt": "Email",
+      "titel": "Tips and offers by email",
+      "subAus": "Off – I won't send you promotional emails",
+      "subAngefragt": "Confirmation email sent – tap the button in it",
+      "subBestaetigt": "Confirmed – I'll send you mail every now and then",
+      "mailGesendet": "I've sent you an email. Tap the button in it and you're in. Only then will you receive tips and offers from me.",
+      "abgemeldet": "Okay, I won't send you tips and offers any more.",
+      "fehler": "That didn't work just now. Please try again later."
+    }
+  },
+  "nachSpeichern": {
+    "titel": "Recipe saved",
+    "text": "“{titel}” is now in your cookbook.",
+    "abbrechen": "Cancel",
+    "ansehen": "View",
+    "kochen": "Cook now"
   }
+
 }

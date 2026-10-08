@@ -11,6 +11,7 @@ import ImageCropper from '../components/ImageCropper';
 import { zutatZerlegen } from '../utils/zutaten';
 import { titelbildAblegen } from '../utils/titelbild';
 import { askWhatNext } from '../utils/afterRecipeSaved';
+import { getEffectiveTimerSeconds } from '../components/SingleRecipeCookView';
 import { api, ApiError } from '../api/client';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../navigation/AppNavigator';
@@ -315,7 +316,11 @@ export default function PhotoCaptureScreen({ navigation }: Props) {
       const saved = await api.post<{ id: string; title: string }>('/recipes/', { title: title.trim(), servings: servings ? Number(servings) : null, ingredients, steps, cover_image_url: coverImageUrl, folder_id: selectedFolderId, tags, personal_note: notiz.trim() || null, source_type: 'photo_scan' });
       gespeichertRef.current = true;
       ungespeichertRef.current = false;
-      askWhatNext(navigation, { id: saved.id, title: saved.title }, cookOnly);
+      askWhatNext(navigation, { id: saved.id, title: saved.title }, cookOnly, {
+        zutaten: ingredients.length,
+        schritte: steps.length,
+        timer: steps.filter((s) => getEffectiveTimerSeconds(s) !== null).length,
+      });
     } catch (err) {
       Alert.alert(t('erfassen.speichernFehlgeschlagen'), err instanceof ApiError ? err.detail : t('profil.unbekannterFehler'));
     } finally {

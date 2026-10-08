@@ -18,7 +18,14 @@ function istCoinsLeer(data: unknown): boolean {
 function coinsLeerMelden(_detail: string): string {
   const text = t('hinweis.coinsText');
   merkeCoinsMeldung(text);
-  showBrutzelHinweis({ title: t('hinweis.coinsTitel'), text });
+  // Solange es keine Kaufoptionen gibt (PURCHASES_ENABLED aus): dieselbe Meldung, dazu "Plus kommt bald -
+  // vormerken?". Ist das nicht dran (schon vorgemerkt, Kaeufe aktiv, kein Netz), bleibt es bei der Meldung.
+  // require erst beim Aufruf: marketing.ts und plusHinweis.ts importieren selbst diese Datei.
+  const titel = t('hinweis.coinsTitel');
+  const { plusVormerkenZeigen } = require('../utils/plusHinweis') as typeof import('../utils/plusHinweis');
+  plusVormerkenZeigen('coins_leer', { titel, vorText: text, immer: true })
+    .then((gezeigt) => { if (!gezeigt) showBrutzelHinweis({ title: titel, text }); })
+    .catch(() => showBrutzelHinweis({ title: titel, text }));
   return text;
 }
 

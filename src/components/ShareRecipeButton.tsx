@@ -4,6 +4,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
 import { api, ApiError } from '../api/client';
+import { plusVormerkenZeigen } from '../utils/plusHinweis';
 
 /**
  * Ein Rezept an eine bestimmte Person schicken.
@@ -55,6 +56,7 @@ export default function ShareRecipeButton({
       setEmail('');
       setMessage('');
       Alert.alert(t('teilen.verschickt'), `„${recipeTitle}" ist unterwegs.`);
+      void plusVormerkenZeigen('teilen');
     } catch (err) {
       Alert.alert(t('teilen.verschickenFehlgeschlagen'), err instanceof ApiError ? err.detail : t('profil.unbekannterFehler'));
     } finally {

@@ -6,6 +6,7 @@ import CategoryPicker from '../components/CategoryPicker';
 import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
 import { askWhatNext } from '../utils/afterRecipeSaved';
+import { getEffectiveTimerSeconds } from '../components/SingleRecipeCookView';
 import { api, ApiError } from '../api/client';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../navigation/AppNavigator';
@@ -257,7 +258,11 @@ export default function WebImportScreen({ navigation, route }: Props) {
         tags: tags.length > 0 ? tags : undefined,
         folder_id: selectedFolderId,
       });
-      askWhatNext(navigation, { id: saved.id, title: saved.title }, cookOnly);
+      askWhatNext(navigation, { id: saved.id, title: saved.title }, cookOnly, {
+        zutaten: cleanIngredients.length,
+        schritte: cleanSteps.length,
+        timer: cleanSteps.filter((s) => getEffectiveTimerSeconds(s) !== null).length,
+      });
     } catch (err) {
       Alert.alert(t('erfassen.speichernFehlgeschlagen'), err instanceof ApiError ? err.detail : t('profil.unbekannterFehler'));
     } finally {

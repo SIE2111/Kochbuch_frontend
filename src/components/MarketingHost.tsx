@@ -9,6 +9,7 @@
 // Alle Fenster kommen vom Maskottchen, nie als System-Alert. Fehler und fehlendes Netz stoeren nichts.
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
+import { requireOptionalNativeModule } from 'expo';
 import { showBrutzelHinweis } from './BrutzelHinweis';
 import { t } from '../i18n';
 import { api } from '../api/client';
@@ -34,7 +35,11 @@ async function bewertungAnzeigen(): Promise<boolean> {
   // vollen Build; in aelteren Builds fehlt es, dann geschieht hier nichts - und es wird NICHT als
   // "gefragt" vermerkt, damit die Abfrage nach dem naechsten Build noch kommt.
   let modul: { isAvailableAsync?: () => Promise<boolean>; requestReview: () => Promise<void> } | null = null;
-  try { modul = require('expo-store-review'); } catch { modul = null; }
+  try {
+    // try/catch um require() allein reicht nicht: Metro meldet den Ladefehler vorab als FATAL (Absturz im Weinkeller 08.10.2026)
+    if (!requireOptionalNativeModule('ExpoStoreReview')) return false;
+    modul = require('expo-store-review');
+  } catch { modul = null; }
   if (!modul) return false;
   try {
     if (modul.isAvailableAsync && !(await modul.isAvailableAsync())) return false;

@@ -5,13 +5,15 @@
 //   3. "Plus ist da" (nur fuer Vormerker, nach dem Plus-Start)
 //   4. AI Coins knapp (80 % verbraucht): "Plus kommt bald - vormerken" bzw. (ab Plus-Start) Kaufhinweis
 //   5. Ende der Starteraktion naht (ab Plus-Start)
+//   6. Freunde einladen, einmalig nach dem 10. Eintrag
 // Alle Fenster kommen vom Maskottchen, nie als System-Alert. Fehler und fehlendes Netz stoeren nichts.
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { showBrutzelHinweis } from './BrutzelHinweis';
 import { t } from '../i18n';
 import { api } from '../api/client';
-import { bewertungGefragt, ersterSchrittErledigt, statusLaden } from '../api/marketing';
+import { bewertungGefragt, einladungGezeigt, ersterSchrittErledigt, statusLaden } from '../api/marketing';
+import { einladungTeilen } from '../utils/einladung';
 import { plusDaZeigen, plusVormerkenZeigen, setzeProfilAktion } from '../utils/plusHinweis';
 
 type Nav = {
@@ -108,6 +110,19 @@ export default function MarketingHost({ navigationRef }: { navigationRef: Nav })
         }
 
         if (status.plus_da_hinweis && (await plusDaZeigen())) return;
+
+        if (status.einladung_faellig) {
+          einladungGezeigt().catch(() => undefined);   // nur EINMAL anbieten, egal wie die Antwort ausfaellt
+          showBrutzelHinweis({
+            title: t('marketing.einladung.titel'),
+            text: t('marketing.einladung.angebot'),
+            buttons: [
+              { text: t('marketing.einladung.einladen'), onPress: () => { void einladungTeilen(); } },
+              { text: t('marketing.einladung.spaeter'), style: 'cancel' },
+            ],
+          });
+          return;
+        }
 
         if (status.plus_vormerken_anbieten || status.kaeufe_aktiv) {
           const coins = await coinsLaden();

@@ -951,6 +951,28 @@
     "plusDa": {
       "titel": "Plus ist da!",
       "text": "Du wolltest Bescheid wissen: Mit Plus bekommst du 150 statt 50 AI Coins im Monat und teilst dein Kochbuch mit deiner Familie. Für Frühstarter gibt es ein besonderes Angebot."
+    },
+    "einladung": {
+      "titel": "Freunde einladen",
+      "angebot": "Du hast schon 10 Rezepte gesammelt – das freut mich! Lade Freunde ein: Wenn sie sich mit deinem Code anmelden, bekommt ihr beide 50 AI Coins geschenkt.",
+      "einladen": "Freunde einladen",
+      "spaeter": "Später",
+      "teilenFehler": "Das hat gerade nicht geklappt. Versuch es später noch einmal.",
+      "registrierenFeld": "Einladungscode (freiwillig)",
+      "platzhalter": "z. B. ABCD-2345",
+      "abschnitt": "Freunde",
+      "einladenTitel": "Freunde einladen",
+      "einladenSub": "Ihr bekommt beide 50 AI Coins, wenn dein Freund deinen Code eingibt",
+      "einloesenKnopf": "Einlösen",
+      "status": {
+        "ok": "Prima, der Code gilt! Ihr bekommt beide {bonus} AI Coins geschenkt.",
+        "ungueltig": "Diesen Code kenne ich nicht. Bitte prüfe die Schreibweise.",
+        "eigener": "Den eigenen Code kannst du leider nicht einlösen.",
+        "schon_eingeloest": "Du hast schon einen Einladungscode eingelöst.",
+        "zu_alt": "Einladungscodes gelten nur für neue Konten, in den ersten 7 Tagen.",
+        "limit_erreicht": "Dieser Code kann gerade nicht eingelöst werden.",
+        "fehler": "Das hat gerade nicht geklappt. Versuch es später noch einmal."
+      }
     }
   },
   "nachSpeichern": {

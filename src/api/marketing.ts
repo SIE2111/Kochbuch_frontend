@@ -15,6 +15,10 @@ export type MarketingStatus = {
   plus_vorgemerkt: boolean;
   /** Plus ist gestartet und der Nutzer hatte sich vormerken lassen: einmal "Plus ist da" zeigen. */
   plus_da_hinweis: boolean;
+  /** Freunde einladen: nach dem 10. Eintrag einmal anbieten. */
+  einladung_faellig: boolean;
+  /** Neues Konto, das noch einen Einladungscode eingeben darf. */
+  einladung_einloesbar: boolean;
   eintraege: number;
   erster_schritt_offen: boolean;
   bewertung_faellig: boolean;
@@ -54,4 +58,19 @@ export async function bewertungGefragt(): Promise<void> {
 export async function plusVormerken(anlass: PlusAnlass): Promise<void> {
   await api.post('/marketing/plus-vormerken', { anlass });
   statusMerken({ plus_vorgemerkt: true, plus_vormerken_anbieten: false });
+}
+
+export type EinladungInfo = { code: string; text: string; bonus: number; eingeladen_diesen_monat: number; limit_pro_monat: number };
+export type EinloeseStatus = 'ok' | 'ungueltig' | 'eigener' | 'schon_eingeloest' | 'zu_alt' | 'limit_erreicht';
+
+export async function einladungLaden(sprache: string): Promise<EinladungInfo> {
+  return api.get<EinladungInfo>(`/marketing/einladung?sprache=${encodeURIComponent(sprache)}`);
+}
+
+export async function einladungEinloesen(code: string): Promise<{ status: EinloeseStatus; bonus: number }> {
+  return api.post<{ status: EinloeseStatus; bonus: number }>('/marketing/einladung/einloesen', { code });
+}
+
+export async function einladungGezeigt(): Promise<void> {
+  await api.post('/marketing/einladung-gezeigt');
 }

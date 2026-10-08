@@ -27,6 +27,8 @@ export default function RegisterScreen({ navigation }: Props) {
   const [termsAccepted, setTermsAccepted] = useState(false);
   // Einwilligung in Tipps und Angebote per E-Mail: NICHT vorausgewaehlt, getrennt von den AGB.
   const [marketingOptIn, setMarketingOptIn] = useState(false);
+  // Einladungscode eines Freundes (freiwillig): beide bekommen 50 AI Coins.
+  const [einladungscode, setEinladungscode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleRegister = async () => {
@@ -44,7 +46,7 @@ export default function RegisterScreen({ navigation }: Props) {
       // Das Konto wird angelegt und ein 4-stelliger Code per Mail
       // verschickt. Bestaetigt wird auf dem naechsten Screen durch
       // Abtippen des Codes - ohne Link, ohne Ruecksprung in die App.
-      await registerWithCode(email, password, marketingOptIn);
+      await registerWithCode(email, password, marketingOptIn, einladungscode);
       navigation.navigate('ConfirmEmail', { email: email.trim().toLowerCase() });
     } catch (err) {
       const message = err instanceof Error ? err.message : t('auth.registrierungFehlgeschlagen');
@@ -91,6 +93,17 @@ export default function RegisterScreen({ navigation }: Props) {
           placeholder="••••••••••"
           value={password}
           onChangeText={setPassword}
+        />
+
+        <Text style={[styles.label, { color: colors.muted }]}>{t('marketing.einladung.registrierenFeld')}</Text>
+        <TextInput
+          style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderRadius: radius.md }]}
+          placeholder={t('marketing.einladung.platzhalter')}
+          placeholderTextColor={colors.muted}
+          autoCapitalize="characters"
+          autoCorrect={false}
+          value={einladungscode}
+          onChangeText={setEinladungscode}
         />
 
         {/* EIN Haekchen fuer beides. Vorher waren es zwei getrennte - das

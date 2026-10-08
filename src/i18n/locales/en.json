@@ -951,6 +951,28 @@
     "plusDa": {
       "titel": "Plus is here!",
       "text": "You wanted to know: with Plus you get 150 instead of 50 AI Coins a month and share your cookbook with your family. There's a special offer for early birds."
+    },
+    "einladung": {
+      "titel": "Invite friends",
+      "angebot": "You've already collected 10 recipes – lovely! Invite friends: when they sign up with your code, you both get 50 AI Coins as a gift.",
+      "einladen": "Invite friends",
+      "spaeter": "Later",
+      "teilenFehler": "That didn't work just now. Please try again later.",
+      "registrierenFeld": "Invitation code (optional)",
+      "platzhalter": "e.g. ABCD-2345",
+      "abschnitt": "Friends",
+      "einladenTitel": "Invite friends",
+      "einladenSub": "You both get 50 AI Coins when your friend enters your code",
+      "einloesenKnopf": "Redeem",
+      "status": {
+        "ok": "Great, the code works! You both get {bonus} AI Coins as a gift.",
+        "ungueltig": "I don't know this code. Please check the spelling.",
+        "eigener": "Unfortunately you can't redeem your own code.",
+        "schon_eingeloest": "You have already redeemed an invitation code.",
+        "zu_alt": "Invitation codes only work for new accounts, within the first 7 days.",
+        "limit_erreicht": "This code can't be redeemed right now.",
+        "fehler": "That didn't work just now. Please try again later."
+      }
     }
   },
   "nachSpeichern": {

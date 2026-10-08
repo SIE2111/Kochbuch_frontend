@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Switch, StyleSheet, ScrollView, ActivityIndicator, Alert, Pressable } from 'react-native';
+import { View, Text, Switch, StyleSheet, ScrollView, ActivityIndicator, Alert, Pressable, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung, getSprache } from '../i18n';
 import { einwilligungAnfragen, statusLaden } from '../api/marketing';
 import { showBrutzelHinweis } from '../components/BrutzelHinweis';
+import { einladungEinloesenMitHinweis, einladungTeilen } from '../utils/einladung';
 import { api, ApiError } from '../api/client';
 import { useServerSync } from '../context/ServerSyncContext';
 import { useLayout } from '../utils/layout';
@@ -64,6 +65,10 @@ export default function AppSettingsScreen() {
   // Tipps und Angebote per E-Mail: 'aus' | 'angefragt' (Bestaetigungs-Mail unterwegs) | 'bestaetigt'
   const [mailStand, setMailStand] = useState<'aus' | 'angefragt' | 'bestaetigt' | null>(null);
   const [mailSpeichert, setMailSpeichert] = useState(false);
+  // Freunde einladen: Code eingeben nur fuer neue Konten, die noch keinen eingeloest haben
+  const [einloesbar, setEinloesbar] = useState(false);
+  const [codeEingabe, setCodeEingabe] = useState('');
+  const [codePruefung, setCodePruefung] = useState(false);
 
   useEffect(() => {
     api
@@ -74,9 +79,20 @@ export default function AppSettingsScreen() {
 
   useEffect(() => {
     statusLaden()
-      .then((s) => setMailStand(s.einwilligung.bestaetigt ? 'bestaetigt' : s.einwilligung.angefragt ? 'angefragt' : 'aus'))
+      .then((s) => {
+        setMailStand(s.einwilligung.bestaetigt ? 'bestaetigt' : s.einwilligung.angefragt ? 'angefragt' : 'aus');
+        setEinloesbar(!!s.einladung_einloesbar);
+      })
       .catch(() => setMailStand(null));
   }, []);
+
+  const handleCodeEinloesen = async () => {
+    if (!codeEingabe.trim()) return;
+    setCodePruefung(true);
+    const ok = await einladungEinloesenMitHinweis(codeEingabe);
+    setCodePruefung(false);
+    if (ok) { setEinloesbar(false); setCodeEingabe(''); }
+  };
 
   const handleMailToggle = async (an: boolean) => {
     setMailSpeichert(true);
@@ -183,6 +199,40 @@ export default function AppSettingsScreen() {
       {DARSTELLUNG_ROWS.map((zeile) => (
         <Zeile key={zeile.key} zeile={zeile} />
       ))}
+
+      {/* Freunde einladen: beide bekommen 50 AI Coins, sobald der Freund den Code eingibt */}
+      <Text style={[styles.label, { color: colors.muted, marginTop: 20 }]}>{t('marketing.einladung.abschnitt')}</Text>
+      <Pressable
+        onPress={() => { void einladungTeilen(); }}
+        style={[styles.row, { backgroundColor: colors.card, borderRadius: radius.md }]}
+      >
+        <MaterialCommunityIcons name="account-multiple-plus-outline" size={20} color={colors.muted} style={styles.rowIcon} />
+        <View style={{ flex: 1 }}>
+          <Text style={[styles.rowTitle, { color: colors.text }]}>{t('marketing.einladung.einladenTitel')}</Text>
+          <Text style={[styles.rowSubtitle, { color: colors.muted }]}>{t('marketing.einladung.einladenSub')}</Text>
+        </View>
+        <Text style={{ color: colors.muted, fontSize: 16 }}>›</Text>
+      </Pressable>
+      {einloesbar && (
+        <View style={[styles.row, { backgroundColor: colors.card, borderRadius: radius.md }]}>
+          <TextInput
+            style={{ flex: 1, color: colors.text, fontSize: 14.5, paddingVertical: 4 }}
+            placeholder={t('marketing.einladung.platzhalter')}
+            placeholderTextColor={colors.muted}
+            autoCapitalize="characters"
+            autoCorrect={false}
+            value={codeEingabe}
+            onChangeText={setCodeEingabe}
+          />
+          {codePruefung ? (
+            <ActivityIndicator color={colors.muted} />
+          ) : (
+            <Pressable onPress={handleCodeEinloesen} hitSlop={8}>
+              <Text style={{ color: gradient[0], fontWeight: '700', fontSize: 14 }}>{t('marketing.einladung.einloesenKnopf')}</Text>
+            </Pressable>
+          )}
+        </View>
+      )}
 
       {/* Tipps und Angebote per E-Mail (Double-Opt-in): der Schalter fordert die Bestaetigungs-Mail an,
           gueltig ist die Einwilligung erst nach dem Tipp auf den Link darin. */}

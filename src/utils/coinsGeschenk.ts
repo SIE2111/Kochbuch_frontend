@@ -38,14 +38,16 @@ export async function geschenkHolen(): Promise<boolean> {
 /** Profil: "AI Coins kaufen" - bis es Bezahlung gibt, ist das Paket mit 100 AI Coins einmalig und vorerst ohne Kosten abholbar. */
 export function kaufenZeigen(verfuegbar: boolean, n: number, danach?: () => void) {
   if (!verfuegbar) {
-    showBrutzelHinweis({ title: t('hinweis.kaufenTitel'), text: t('hinweis.geschenkSchonGeholt') });
+    showBrutzelHinweis({ title: t('hinweis.kaufenTitel'), text: t('hinweis.schonAbgeholt', { n }) });
     return;
   }
   showBrutzelHinweis({
     title: t('hinweis.kaufenTitel'),
-    text: t('hinweis.kaufenText', { n }),
+    gross: String(n),
+    grossText: t('hinweis.kaufenGross'),
+    text: t('hinweis.kaufenText'),
     buttons: [
-      { text: t('hinweis.geschenkHolen', { n }), onPress: () => { geschenkHolen().then(() => danach && danach()); } },
+      { text: t('hinweis.bestaetigenAbholen'), onPress: () => { geschenkHolen().then(() => danach && danach()); } },
       { text: t('hinweis.spaeter'), style: 'cancel' },
     ],
   });

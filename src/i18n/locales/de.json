@@ -266,9 +266,9 @@
     "aiCoinsWofuer": "Wofür AI Coins gebraucht werden",
     "aiCoinsReihenfolge": "Abgezogen wird zuerst von den Monats-Coins, dann von den gekauften. Sind beide leer, sind Upload und Download gesperrt.",
     "aiCoinsKennenlernen": "Starteraktion: {basis} + {bonus} AI Coins im Monat",
-    "aiCoinsGeschenk": "AI Coins kaufen",
-    "aiCoinsGeschenkHinweis": "Paket: {n} AI Coins · einmalig · vorerst 0 €",
-    "aiCoinsKaufenSpaeter": "Du hast das Paket schon abgeholt · weitere folgen"
+    "aiCoinsGeschenk": "AI Coins beziehen",
+    "aiCoinsGeschenkHinweis": "{n} AI Coins · einmalig · vorerst ohne Kosten",
+    "aiCoinsKaufenSpaeter": "Du hast die AI Coins schon abgeholt"
   },
   "detail": {
     "nichtGeladen": "Rezept konnte nicht geladen werden",
@@ -916,8 +916,11 @@
     "geschenkTitel": "Geschafft!",
     "geschenkText": "{n} AI Coins sind gutgeschrieben. Viel Freude damit!",
     "geschenkSchonGeholt": "Das Paket hast du schon abgeholt. Weitere Pakete folgen.",
-    "kaufenTitel": "AI Coins kaufen",
-    "kaufenText": "Paket: {n} AI Coins, einmalig und vorerst ohne Kosten. Die Coins gelten in allen Apps und verfallen nie. Weitere Pakete folgen."
+    "kaufenTitel": "AI Coins beziehen",
+    "kaufenText": "Einmalig und vorerst ohne Kosten. Die Coins gelten in allen Apps und verfallen nie. Bitte bestätige, dass du sie jetzt abholen möchtest.",
+    "kaufenGross": "AI Coins geschenkt",
+    "bestaetigenAbholen": "Bestätigen und abholen",
+    "schonAbgeholt": "Du hast die {n} AI Coins schon abgeholt. Weitere Pakete gibt es später."
   },
   "marketing": {
     "registrierenHaken": "Ich möchte Tipps und Angebote per E-Mail erhalten",

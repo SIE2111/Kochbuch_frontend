@@ -266,9 +266,9 @@
     "aiCoinsWofuer": "What AI Coins are used for",
     "aiCoinsReihenfolge": "Monthly coins are used first, then purchased ones. When both are empty, upload and download are blocked.",
     "aiCoinsKennenlernen": "Starter offer: {basis} + {bonus} AI Coins per month",
-    "aiCoinsGeschenk": "Buy AI Coins",
-    "aiCoinsGeschenkHinweis": "Pack: {n} AI Coins · one time · 0 € for now",
-    "aiCoinsKaufenSpaeter": "You have already claimed the pack · more to come"
+    "aiCoinsGeschenk": "Get AI Coins",
+    "aiCoinsGeschenkHinweis": "{n} AI Coins · one time · no cost for now",
+    "aiCoinsKaufenSpaeter": "You have already picked up the AI Coins"
   },
   "detail": {
     "nichtGeladen": "The recipe could not be loaded",
@@ -916,8 +916,11 @@
     "geschenkTitel": "Done!",
     "geschenkText": "{n} AI Coins have been added. Enjoy!",
     "geschenkSchonGeholt": "You have already picked up the pack. More packs will follow.",
-    "kaufenTitel": "Buy AI Coins",
-    "kaufenText": "Pack: {n} AI Coins, one time and at no cost for now. The coins work in all apps and never expire. More packs will follow."
+    "kaufenTitel": "Get AI Coins",
+    "kaufenText": "One time only and at no cost for now. The coins work in all apps and never expire. Please confirm that you want to pick them up now.",
+    "kaufenGross": "AI Coins as a gift",
+    "bestaetigenAbholen": "Confirm and pick up",
+    "schonAbgeholt": "You have already picked up the {n} AI Coins. More packs will follow later."
   },
   "marketing": {
     "registrierenHaken": "I would like to receive tips and offers by email",

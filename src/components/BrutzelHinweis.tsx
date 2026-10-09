@@ -14,7 +14,7 @@ import { useUebersetzung } from '../i18n';
 import BrutzelAvatar from './BrutzelAvatar';
 
 export type HinweisKnopf = { text: string; style?: 'default' | 'cancel' | 'destructive'; onPress?: () => void };
-type Hinweis = { title: string; text: string; knopf?: string; danach?: () => void; buttons?: HinweisKnopf[] };
+type Hinweis = { title: string; text: string; gross?: string; grossText?: string; knopf?: string; danach?: () => void; buttons?: HinweisKnopf[] };
 
 let aktuell: Hinweis | null = null;
 const warteschlange: Hinweis[] = [];
@@ -104,6 +104,12 @@ export default function BrutzelHinweisHost() {
             <Text style={[st.titel, { color: colors.text }]}>{h.title}</Text>
           </View>
         </View>
+{!!h.gross && (
+          <View style={{ alignItems: 'center', marginVertical: 14 }}>
+            <Text style={{ fontSize: 60, fontWeight: '800', lineHeight: 66, color: gradient[0] }}>{h.gross}</Text>
+            {!!h.grossText && <Text style={{ fontSize: 19, fontWeight: '700', textAlign: 'center', color: colors.text }}>{h.grossText}</Text>}
+          </View>
+        )}
         {!!h.text && (
           <ScrollView style={{ maxHeight: 320 }}>
             <Text style={[st.text, { color: colors.text }]}>{h.text}</Text>

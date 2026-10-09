@@ -10,6 +10,7 @@ import { api, ApiError } from '../api/client';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../navigation/AppNavigator';
 import { useLayout } from '../utils/layout';
+import { DIAET_KATEGORIEN } from '../utils/kategorien';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'AIGenerate'>;
 
@@ -306,6 +307,18 @@ export default function AIGenerateScreen({ navigation, route }: Props) {
           value={diet}
           onChangeText={setDiet}
         />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+          {DIAET_KATEGORIEN.map((d) => {
+            const teile = diet.split(',').map((x) => x.trim()).filter(Boolean);
+            const an = teile.some((x) => x.toLowerCase() === d.toLowerCase());
+            return (
+              <Pressable key={d} onPress={() => setDiet((an ? teile.filter((x) => x.toLowerCase() !== d.toLowerCase()) : [...teile, d]).join(', '))}
+                style={{ backgroundColor: an ? gradient[0] : colors.card, borderRadius: radius.sm, paddingHorizontal: 10, paddingVertical: 6 }}>
+                <Text style={{ color: an ? '#fff' : colors.text, fontSize: 12, fontWeight: '600' }}>{d}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
 
         <View style={styles.row}>
           <View style={{ flex: 1 }}>

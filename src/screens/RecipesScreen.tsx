@@ -200,28 +200,30 @@ export default function RecipesScreen({ navigation, route }: Props) {
     }
   };
 
-  let visibleRecipes = selectedFolderId ? recipes.filter((r) => r.folder_id === selectedFolderId) : recipes;
-  if (filterTag) {
-    visibleRecipes = visibleRecipes.filter((r) => r.tags?.includes(filterTag));
-  }
+  // Erst Ordner/Favoriten/"Meine" anwenden, DANN erst den Kategorie-Filter: Die Kategorie-Chips
+  // zeigen nur Kategorien, die in dieser Auswahl auch Rezepte haben. Vorher standen auch Kategorien
+  // da, die unter dem (gemerkten) Filter "Meine" leer waren - z.B. "Vegetarisch", dessen Rezepte
+  // meist aus den Starter-Paketen stammen: Antippen = leere Liste.
+  let scoped = selectedFolderId ? recipes.filter((r) => r.folder_id === selectedFolderId) : recipes;
   if (favoritesOnly) {
-    visibleRecipes = visibleRecipes.filter((r) => r.is_favorite);
+    scoped = scoped.filter((r) => r.is_favorite);
   }
   if (onlyMine) {
     // Eigene Rezepte, aber ohne unveraenderte Starter-Pack-Importe -
     // fremde Haushalts-Rezepte (owner_display_name gesetzt) sind ohnehin
     // nie "meine" (siehe Auftrag Punkt 5).
-    visibleRecipes = visibleRecipes.filter(
+    scoped = scoped.filter(
       (r) => !r.owner_display_name && !(r.source_type === 'starter_pack' && !r.is_modified),
     );
   }
+  let visibleRecipes = filterTag ? scoped.filter((r) => r.tags?.includes(filterTag)) : scoped;
 
-  // Fuer die Kategorie-Auswahl direkt hier auf dem Screen - vorher konnte
-  // man einen Kategorie-Filter nur ueber den Umweg der Dashboard-Kacheln
-  // setzen, hier selbst aber keinen auswaehlen.
-  const availableCategories = Array.from(new Set(recipes.flatMap((r) => r.tags ?? []))).sort((a, b) =>
-    a.localeCompare(b, 'de'),
-  );
+  // Fuer die Kategorie-Auswahl direkt hier auf dem Screen. Die gerade gewaehlte Kategorie bleibt
+  // immer sichtbar (zum Abwaehlen), auch wenn sie in der Auswahl leer ist.
+  const availableCategories = Array.from(new Set([
+    ...scoped.flatMap((r) => r.tags ?? []),
+    ...(filterTag ? [filterTag] : []),
+  ])).sort((a, b) => a.localeCompare(b, 'de'));
   visibleRecipes = [...visibleRecipes].sort((a, b) => {
     if (sortOption === 'az') return a.title.localeCompare(b.title, 'de');
     // Starter-Rezepte stehen bei der Datumssortierung immer hinten. Ein
@@ -429,12 +431,12 @@ export default function RecipesScreen({ navigation, route }: Props) {
             <Text style={[styles.emptyText, { color: colors.muted }]}>
               {searchText.trim()
                 ? t('rezepte.keineTreffer', { suche: searchText.trim() })
-                : favoritesOnly
-                  ? t('rezepte.keineFavoriten')
-                  : onlyMine
-                    ? t('rezepte.keineEigenen')
-                    : filterTag
-                      ? t('rezepte.keineMitTag', { tag: filterTag })
+                : filterTag
+                  ? t('rezepte.keineMitTag', { tag: filterTag })
+                  : favoritesOnly
+                    ? t('rezepte.keineFavoriten')
+                    : onlyMine
+                      ? t('rezepte.keineEigenen')
                       : selectedFolderId
                         ? t('rezepte.ordnerLeer')
                         : t('rezepte.nochKeine')}

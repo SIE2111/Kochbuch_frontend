@@ -133,10 +133,6 @@ export default function MarketingHost({ navigationRef }: { navigationRef: Nav })
           const coins = await coinsLaden();
           if (coins) {
             if (coinsKnapp(coins) && (await plusVormerkenZeigen('coins_80'))) return;
-            const tage = tageBisStarteraktionEnde(coins);
-            if (status.kaeufe_aktiv && tage !== null && tage >= 0 && tage <= STARTERAKTION_HINWEIS_TAGE) {
-              await plusVormerkenZeigen('starteraktion_ende', { werte: { datum: datumAnzeige(coins.trial_ends as string) } });
-            }
           }
         }
       } catch {

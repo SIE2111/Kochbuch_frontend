@@ -12,7 +12,6 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { MainTabParamList, MainStackParamList } from '../navigation/AppNavigator';
 import { useLayout } from '../utils/layout';
-import KochplanKarte from '../components/KochplanKarte';
 import ZutatBild from '../components/ZutatBild';
 import { showBrutzelHinweis } from '../components/BrutzelHinweis';
 
@@ -426,7 +425,6 @@ export default function ShoppingListScreen({ navigation }: Props) {
         sections={sections}
         keyExtractor={(item) => item.id}
         contentContainerStyle={[{ paddingBottom: 40 }, inhaltsBreite]}
-        ListHeaderComponent={<KochplanKarte />}
         ListEmptyComponent={
           !error ? (
             <Text style={[styles.emptyText, { color: colors.muted }]}>

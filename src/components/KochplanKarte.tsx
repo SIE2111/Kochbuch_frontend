@@ -7,7 +7,7 @@ import { kochplanLaden, kochplanEntfernen, KochplanEintrag } from '../utils/koch
 
 /**
  * "Bereit zum Kochen" - Rezepte, die in die Einkaufsliste übernommen wurden.
- * Oben in Einkaufsliste und Startseite; "Jetzt kochen" startet den
+ * Oben auf der Startseite (Dashboard); "Jetzt kochen" startet den
  * Koch-Modus direkt mit Hauptgericht + Beilagen und der gemerkten
  * Portionenzahl. Unsichtbar, wenn der Kochplan leer ist.
  */

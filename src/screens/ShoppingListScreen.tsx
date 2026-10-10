@@ -523,7 +523,8 @@ export default function ShoppingListScreen({ navigation }: Props) {
         </View>
       )}
       <Modal visible={neueListeOffen} transparent animationType="fade" onRequestClose={() => setNeueListeOffen(false)}>
-        <View style={styles.modalUeberlagerung}>
+        <View style={[styles.modalUeberlagerung, { justifyContent: 'flex-start', paddingTop: 90 }]}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={Keyboard.dismiss} accessible={false} />
           <View style={[styles.modalKarte, { backgroundColor: colors.card, borderRadius: radius.md }]}>
             <Text style={[styles.modalTitel, { color: colors.text }]}>{t('einkauf.neueListe')}</Text>
             <TextInput
@@ -533,7 +534,8 @@ export default function ShoppingListScreen({ navigation }: Props) {
               placeholderTextColor={colors.muted}
               autoFocus
               maxLength={40}
-              onSubmitEditing={listeAnlegen}
+              returnKeyType="done"
+              onSubmitEditing={() => { Keyboard.dismiss(); listeAnlegen(); }}
               style={[styles.modalInput, { backgroundColor: colors.bg, color: colors.text, borderRadius: radius.sm }]}
             />
             <Text style={{ color: colors.muted, fontSize: 12, marginTop: 8, lineHeight: 17 }}>{t('einkauf.neueListeHinweis')}</Text>

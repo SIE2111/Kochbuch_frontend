@@ -49,6 +49,7 @@ export default function ZutatenWaehlenScreen({ navigation, route }: Props) {
   const kiErstellen = async () => {
     const wunsch = kiWunsch.trim();
     if (!wunsch || kiLaeuft) return;
+    Keyboard.dismiss();
     setKiLaeuft(true);
     try {
       const r = await api.post<{ neu: number }>('/shopping-list/ki-liste', { wunsch, liste: listeId });
@@ -230,7 +231,7 @@ export default function ZutatenWaehlenScreen({ navigation, route }: Props) {
         })}
       </ScrollView>
 
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 110, paddingHorizontal: 12 }}>
+      <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={{ paddingBottom: 110, paddingHorizontal: 12 }}>
         {laedt ? (
           <ActivityIndicator color={colors.text} style={{ marginTop: 40 }} />
         ) : liste ? (
@@ -278,6 +279,7 @@ export default function ZutatenWaehlenScreen({ navigation, route }: Props) {
 
       <Modal visible={kiOffen} transparent animationType="fade" onRequestClose={() => setKiOffen(false)}>
         <View style={styles.modalUeber}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={Keyboard.dismiss} accessible={false} />
           <View style={[styles.modalKarte, { backgroundColor: colors.card, borderRadius: radius.md }]}>
             <Text style={{ color: colors.text, fontSize: 17, fontWeight: '700', marginBottom: 10 }}>{t('einkauf.kiTitel')}</Text>
             <TextInput
@@ -286,6 +288,9 @@ export default function ZutatenWaehlenScreen({ navigation, route }: Props) {
               placeholder={t('einkauf.kiPlatzhalter')}
               placeholderTextColor={colors.muted}
               multiline
+              blurOnSubmit
+              returnKeyType="done"
+              onSubmitEditing={() => { Keyboard.dismiss(); kiErstellen(); }}
               maxLength={300}
               autoFocus
               style={{ backgroundColor: colors.bg, color: colors.text, borderRadius: radius.sm, padding: 12, minHeight: 80, fontSize: 14, textAlignVertical: 'top' }}
@@ -320,7 +325,7 @@ export default function ZutatenWaehlenScreen({ navigation, route }: Props) {
 
 const styles = StyleSheet.create({
   kiZeile: { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 12, marginBottom: 8, paddingHorizontal: 14, height: 44 },
-  modalUeber: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', padding: 24 },
+  modalUeber: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-start', paddingTop: 90, paddingHorizontal: 24 },
   modalKarte: { padding: 20 },
   modalKnopf: { flex: 1, height: 46, alignItems: 'center', justifyContent: 'center' },
   kopf: { paddingHorizontal: 12, paddingTop: 12, paddingBottom: 8 },

@@ -60,7 +60,7 @@ export function zutatenSymbol(name: string, abteilung?: string | null): any {
 // Spezielles vor Allgemeinem). Kurze Stichworte (unter 4 Buchstaben) muessen
 // das ganze Wort sein, laengere duerfen im Wort stecken (Basmatireis).
 const EMOJIS: [string, string][] = [
-  ['paprikapulver', '🧂'], ['dosentomaten', '🥫'], ['tomatenmark', '🥫'], ['passiert', '🥫'], ['konserve', '🥫'],
+  ['paprikapulver', '🧂'], ['gemüse', '🥦'], ['dosentomaten', '🥫'], ['tomatenmark', '🥫'], ['passiert', '🥫'], ['konserve', '🥫'],
   ['kokosmilch', '🥥'], ['leberkäse', '🥩'], ['eisberg', '🥬'], ['süßkartoffel', '🍠'], ['kartoffel', '🥔'],
   ['erdapfel', '🥔'], ['pommes', '🍟'], ['salat', '🥬'], ['spinat', '🥬'], ['rucola', '🥬'], ['kohlrabi', '🥬'],
   ['lauch', '🥬'], ['sellerie', '🥬'], ['karotte', '🥕'], ['möhre', '🥕'], ['zwiebel', '🧅'], ['knoblauch', '🧄'],

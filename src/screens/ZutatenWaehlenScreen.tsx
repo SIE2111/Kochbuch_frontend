@@ -198,7 +198,7 @@ export default function ZutatenWaehlenScreen({ navigation, route }: Props) {
         <Text style={{ color: gradient[0], fontSize: 12, fontWeight: '700' }}>{t('einkauf.kiPreis')}</Text>
       </Pressable>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0, flexShrink: 0, height: 46 }}
         contentContainerStyle={styles.reiter}>
         {[null, ...(start.kategorien ?? [])].map((k) => {
           const aktiv = kategorie === k && !suchtext;
@@ -300,8 +300,8 @@ const styles = StyleSheet.create({
   kopf: { paddingHorizontal: 12, paddingTop: 12, paddingBottom: 8 },
   suchfeld: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 46 },
   sucheInput: { flex: 1, fontSize: 15, height: 46 },
-  reiter: { paddingHorizontal: 12, gap: 8, paddingBottom: 8 },
-  reiterChip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 18, borderWidth: 1 },
+  reiter: { paddingHorizontal: 12, gap: 8, paddingBottom: 8, alignItems: 'center' },
+  reiterChip: { paddingHorizontal: 14, height: 36, borderRadius: 18, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   titel: { fontSize: 11, fontWeight: '700', letterSpacing: 0.5, marginTop: 14, marginBottom: 6, marginLeft: 4, textTransform: 'uppercase' },
   hinweis: { fontSize: 12, textAlign: 'center', marginTop: 16, lineHeight: 18 },
   raster: { flexDirection: 'row', flexWrap: 'wrap' },

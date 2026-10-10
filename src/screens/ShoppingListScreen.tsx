@@ -392,8 +392,8 @@ export default function ShoppingListScreen({ navigation }: Props) {
 
       {error && <Text style={[styles.errorText, { color: '#DC2626' }]}>{error}</Text>}
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0, marginBottom: 12 }}
-        contentContainerStyle={{ gap: 8 }}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0, flexShrink: 0, height: 44, marginBottom: 10 }}
+        contentContainerStyle={{ gap: 8, alignItems: 'center' }}>
         {listen.map((l) => {
           const istAktiv = l.id === aktiv;
           return (
@@ -593,7 +593,7 @@ const styles = StyleSheet.create({
   backText: { fontSize: 14, fontWeight: '600', marginLeft: 2 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   errorText: { fontSize: 12, marginBottom: 12 },
-  listenChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 18, borderWidth: 1, justifyContent: 'center' },
+  listenChip: { paddingHorizontal: 14, height: 38, borderRadius: 19, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   waehlenKnopf: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 50, marginBottom: 14 },
   waehlenText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   addRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },

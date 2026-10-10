@@ -25,4 +25,7 @@ Write-Host "Leere Metro-Zwischenspeicher..." -ForegroundColor Cyan
 Remove-Item -Recurse -Force (Join-Path $env:TEMP "metro-cache") -ErrorAction SilentlyContinue
 Write-Host "Veroeffentliche Update auf 'production': $Message" -ForegroundColor Cyan
 # --environment production: keine Rueckfrage "Select environment" (04.10.2026)
-npx eas update --branch production --environment production --platform ios --message $Message
+npx eas update --branch production --environment production --platform all --message $Message
+# Android-Tablet/Emulator (APK mit Kanal 'preview'): bekommt denselben Stand (Okt 2026)
+Write-Host "Veroeffentliche Update fuer Android-Test (Kanal 'preview')..." -ForegroundColor Cyan
+npx eas update --branch preview --environment production --platform android --message $Message

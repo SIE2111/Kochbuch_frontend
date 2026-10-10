@@ -42,6 +42,7 @@ import StorageSettingsScreen from '../screens/StorageSettingsScreen';
 import PhotoCaptureScreen from '../screens/PhotoCaptureScreen';
 import MarketingHost from '../components/MarketingHost';
 import ManageCategoriesScreen from '../screens/ManageCategoriesScreen';
+import ZutatenWaehlenScreen from '../screens/ZutatenWaehlenScreen';
 
 export type AuthStackParamList = {
   ForgotPassword: undefined;
@@ -98,6 +99,7 @@ export type MainStackParamList = {
   Onboarding: undefined;
   StarterPacks: undefined;
   ManageCategories: undefined;
+  ZutatenWaehlen: undefined;
   LanguageSettings: undefined;
   StorageSettings: undefined;
   AppSettings: undefined;
@@ -246,6 +248,7 @@ function MainNavigator({ startOnOnboarding }: { startOnOnboarding: boolean }) {
       <MainStack.Screen name="Onboarding" component={OnboardingScreen} options={{ headerShown: false, gestureEnabled: false }} />
       <MainStack.Screen name="StarterPacks" component={StarterPacksScreen} options={{ headerShown: false }} />
       <MainStack.Screen name="ManageCategories" component={ManageCategoriesScreen} options={{ headerShown: false }} />
+      <MainStack.Screen name="ZutatenWaehlen" component={ZutatenWaehlenScreen} options={{ title: 'Zutaten wählen' }} />
       <MainStack.Screen name="LanguageSettings" component={LanguageSettingsScreen} options={{ headerShown: false }} />
       <MainStack.Screen name="AppSettings" component={AppSettingsScreen} options={{ title: 'Einstellungen' }} />
       <MainStack.Screen name="MyPools" component={MyPoolsScreen} options={{ title: 'Meine Pools' }} />

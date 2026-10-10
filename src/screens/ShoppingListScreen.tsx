@@ -13,6 +13,7 @@ import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { MainTabParamList, MainStackParamList } from '../navigation/AppNavigator';
 import { useLayout } from '../utils/layout';
 import KochplanKarte from '../components/KochplanKarte';
+import ZutatBild from '../components/ZutatBild';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'Einkauf'>,
@@ -28,6 +29,7 @@ interface ShoppingItem {
   checked: boolean;
   source_recipe_id: string | null;
   note: string | null;
+  bild?: string | null;
 }
 
 export default function ShoppingListScreen({ navigation }: Props) {
@@ -37,10 +39,6 @@ export default function ShoppingListScreen({ navigation }: Props) {
   const [sections, setSections] = useState<{ title: string; data: ShoppingItem[] }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [newItemName, setNewItemName] = useState('');
-  const [newItemAmount, setNewItemAmount] = useState('');
-  const [newItemUnit, setNewItemUnit] = useState('');
-  const [isAdding, setIsAdding] = useState(false);
 
   // Bearbeiten-Dialog: Name, Menge, Einheit und Notiz je Posten. Tippen
   // schaltet weiterhin ab/an, Lang-Druecken loescht weiterhin - das
@@ -238,28 +236,6 @@ export default function ShoppingListScreen({ navigation }: Props) {
     ]);
   };
 
-  const handleAddManual = async () => {
-    const name = newItemName.trim();
-    if (!name) return;
-    Keyboard.dismiss();
-    setIsAdding(true);
-    try {
-      await api.post('/shopping-list/manual', {
-        ingredient_name: name,
-        amount: newItemAmount.trim() ? Number(newItemAmount.trim()) : null,
-        unit: newItemUnit.trim() || null,
-      });
-      setNewItemName('');
-      setNewItemAmount('');
-      setNewItemUnit('');
-      await load();
-    } catch (err) {
-      Alert.alert(t('allgemein.fehler'), err instanceof ApiError ? err.detail : t('einkauf.nichtHinzugefuegt'));
-    } finally {
-      setIsAdding(false);
-    }
-  };
-
   const hasCheckedItems = sections.some((s) => s.data.some((i) => i.checked));
   const hasAnyItems = sections.some((s) => s.data.length > 0);
 
@@ -365,40 +341,13 @@ export default function ShoppingListScreen({ navigation }: Props) {
 
       {error && <Text style={[styles.errorText, { color: '#DC2626' }]}>{error}</Text>}
 
-      <View style={styles.addRow}>
-        <TextInput
-          value={newItemName}
-          onChangeText={setNewItemName}
-          placeholder={t('einkauf.zutatPlatzhalter')}
-          placeholderTextColor={colors.muted}
-          onSubmitEditing={handleAddManual}
-          style={[styles.addInput, { backgroundColor: colors.card, color: colors.text, borderRadius: radius.md }]}
-        />
-        <TextInput
-          value={newItemAmount}
-          onChangeText={setNewItemAmount}
-          placeholder={t('einkauf.mengePlatzhalter')}
-          placeholderTextColor={colors.muted}
-          keyboardType="numeric"
-          onSubmitEditing={handleAddManual}
-          style={[styles.addAmountInput, { backgroundColor: colors.card, color: colors.text, borderRadius: radius.md }]}
-        />
-        <TextInput
-          value={newItemUnit}
-          onChangeText={setNewItemUnit}
-          placeholder={t('einkauf.einheitPlatzhalter')}
-          placeholderTextColor={colors.muted}
-          onSubmitEditing={handleAddManual}
-          style={[styles.addUnitInput, { backgroundColor: colors.card, color: colors.text, borderRadius: radius.md }]}
-        />
-        <Pressable
-          onPress={handleAddManual}
-          disabled={isAdding || !newItemName.trim()}
-          style={[styles.addButton, { backgroundColor: gradient[0], borderRadius: radius.md, opacity: isAdding ? 0.6 : 1 }]}
-        >
-          <MaterialCommunityIcons name="plus" size={20} color="#fff" />
-        </Pressable>
-      </View>
+      <Pressable
+        onPress={() => navigation.navigate('ZutatenWaehlen')}
+        style={[styles.waehlenKnopf, { backgroundColor: gradient[0], borderRadius: radius.md }]}
+      >
+        <MaterialCommunityIcons name="plus-circle-outline" size={22} color="#fff" />
+        <Text style={styles.waehlenText}>{t('einkauf.zutatenHinzufuegen')}</Text>
+      </Pressable>
 
       <SectionList
         sections={sections}
@@ -408,7 +357,7 @@ export default function ShoppingListScreen({ navigation }: Props) {
         ListEmptyComponent={
           !error ? (
             <Text style={[styles.emptyText, { color: colors.muted }]}>
-              Einkaufszettel ist leer – füg Zutaten über ein Rezept oder manuell hinzu.
+              {t('einkauf.leerHinweis')}
             </Text>
           ) : null
         }
@@ -421,11 +370,9 @@ export default function ShoppingListScreen({ navigation }: Props) {
             onLongPress={() => handleDelete(item)}
             style={[styles.itemRow, { backgroundColor: colors.card, borderRadius: radius.sm }]}
           >
-            <MaterialCommunityIcons
-              name={item.checked ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline'}
-              size={22}
-              color={item.checked ? gradient[0] : colors.muted}
-            />
+            <View style={{ opacity: item.checked ? 0.45 : 1 }}>
+              <ZutatBild name={item.ingredient_name} abteilung={item.category} bild={item.bild} groesse={40} />
+            </View>
             <View style={{ flex: 1 }}>
               <Text
                 style={[
@@ -435,14 +382,23 @@ export default function ShoppingListScreen({ navigation }: Props) {
                 ]}
               >
                 {item.ingredient_name}
-                {item.amount ? `  ·  ${item.amount}${item.unit ?? ''}` : ''}
               </Text>
+              {!!item.amount && (
+                <Text style={[styles.itemNote, { color: colors.muted, fontStyle: 'normal' }]}>
+                  {item.amount}{item.unit ? ` ${item.unit}` : ''}
+                </Text>
+              )}
               {!!item.note && (
                 <Text style={[styles.itemNote, { color: colors.muted }]} numberOfLines={2}>
                   {item.note}
                 </Text>
               )}
             </View>
+            <MaterialCommunityIcons
+              name={item.checked ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline'}
+              size={24}
+              color={item.checked ? gradient[0] : colors.muted}
+            />
             <Pressable onPress={() => oeffneBearbeiten(item)} hitSlop={10} style={{ padding: 4 }}>
               <MaterialCommunityIcons name="pencil-outline" size={17} color={colors.muted} />
             </Pressable>
@@ -536,6 +492,8 @@ const styles = StyleSheet.create({
   backText: { fontSize: 14, fontWeight: '600', marginLeft: 2 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   errorText: { fontSize: 12, marginBottom: 12 },
+  waehlenKnopf: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 50, marginBottom: 14 },
+  waehlenText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   addRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
   addInput: { flex: 1, height: 44, paddingHorizontal: 14, fontSize: 13.5 },
   addAmountInput: { width: 56, height: 44, paddingHorizontal: 8, fontSize: 13.5, textAlign: 'center' },

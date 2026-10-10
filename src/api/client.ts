@@ -4,7 +4,7 @@ import { showBrutzelHinweis, merkeCoinsMeldung } from '../components/BrutzelHinw
 import { t } from '../i18n';
 
 // TODO: echte Backend-URL eintragen, sobald deployed (z.B. Render/Fly.io)
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'https://meinkochbuch-backend-production.up.railway.app';
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'https://meinkochbuch-backend-production.up.railway.app';
 
 export const AI_COINS_EMPTY = 'AI_COINS_EMPTY';
 

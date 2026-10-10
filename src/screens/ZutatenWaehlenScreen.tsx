@@ -156,7 +156,7 @@ export default function ZutatenWaehlenScreen({ navigation, route }: Props) {
             </View>
           )}
         </View>
-        <Text numberOfLines={2} style={[styles.kachelName, { color: colors.text }]}>{v.name}</Text>
+        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} style={[styles.kachelName, { color: colors.text }]}>{v.name}</Text>
       </Pressable>
     );
   };
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
   hinweis: { fontSize: 12, textAlign: 'center', marginTop: 16, lineHeight: 18 },
   raster: { flexDirection: 'row', flexWrap: 'wrap' },
   kachel: { width: '25%', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 2 },
-  kachelName: { fontSize: 11.5, textAlign: 'center', marginTop: 5, minHeight: 28 },
+  kachelName: { fontSize: 12, textAlign: 'center', marginTop: 5, width: '100%' },
   abzeichen: { position: 'absolute', top: -4, right: -4, minWidth: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 5 },
   abzeichenText: { color: '#fff', fontSize: 11, fontWeight: '700' },
   neuZeile: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, marginTop: 6, marginHorizontal: 2 },

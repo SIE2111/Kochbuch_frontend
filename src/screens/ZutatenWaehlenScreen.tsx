@@ -124,6 +124,22 @@ export default function ZutatenWaehlenScreen({ navigation, route }: Props) {
     }
   };
 
+  // Freier Text (z. B. "Kuchen fuer Samstag bestellen"): kommt als eigener Posten auf die Liste,
+  // wird aber nicht als Zutat gemerkt und keiner Abteilung zugeordnet.
+  const textHinzufuegen = async (text: string) => {
+    const name = text.trim();
+    if (!name) return;
+    setSuche('');
+    Keyboard.dismiss();
+    setAnzahl((a) => a + 1);
+    try {
+      await api.post('/shopping-list/manual', { ingredient_name: name, freitext: true, liste: listeId });
+    } catch (err) {
+      setAnzahl((a) => Math.max(0, a - 1));
+      meldeFehler(err);
+    }
+  };
+
   const vergessen = (v: Vorschlag) => {
     showBrutzelHinweis({
       title: t('einkauf.vergessenTitel'),
@@ -224,6 +240,16 @@ export default function ZutatenWaehlenScreen({ navigation, route }: Props) {
                 style={[styles.neuZeile, { backgroundColor: colors.card, borderRadius: radius.md }]}>
                 <MaterialCommunityIcons name="plus-circle" size={22} color={gradient[0]} />
                 <Text style={{ color: colors.text, fontSize: 14, flex: 1 }}>{t('einkauf.neuAnlegen', { name: suchtext })}</Text>
+              </Pressable>
+            ) : null}
+            {suchtext ? (
+              <Pressable onPress={() => textHinzufuegen(suchtext)}
+                style={[styles.neuZeile, { backgroundColor: colors.card, borderRadius: radius.md }]}>
+                <MaterialCommunityIcons name="text-box-plus-outline" size={22} color={gradient[0]} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: colors.text, fontSize: 14 }}>{t('einkauf.alsText', { name: suchtext })}</Text>
+                  <Text style={{ color: colors.muted, fontSize: 11.5, marginTop: 2 }}>{t('einkauf.alsTextHinweis')}</Text>
+                </View>
               </Pressable>
             ) : null}
             {raster(liste, 'l')}

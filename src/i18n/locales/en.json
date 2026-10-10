@@ -94,7 +94,9 @@
     "kiHinweis": "AI suggests items. You can change everything afterwards. Costs 1 AI Coin.",
     "kiErstellen": "Suggest",
     "kiFertigTitel": "Done!",
-    "kiFertigText": "{n} items are on the list."
+    "kiFertigText": "{n} items are on the list.",
+    "alsText": "Add “{name}” as plain text",
+    "alsTextHinweis": "For anything that isn’t an ingredient, e.g. “order cake”. Not remembered."
   },
   "rezepte": {
     "suchen": "Search recipes or ingredients…",

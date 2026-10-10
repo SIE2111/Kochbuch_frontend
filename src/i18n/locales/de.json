@@ -94,7 +94,9 @@
     "kiHinweis": "Die KI schlägt Artikel vor. Du kannst danach alles ändern. Kostet 1 AI Coin.",
     "kiErstellen": "Vorschlagen",
     "kiFertigTitel": "Fertig!",
-    "kiFertigText": "{n} Artikel sind auf der Liste."
+    "kiFertigText": "{n} Artikel sind auf der Liste.",
+    "alsText": "„{name}“ nur als Text hinzufügen",
+    "alsTextHinweis": "Für alles, was keine Zutat ist, z. B. „Kuchen bestellen“. Wird nicht gemerkt."
   },
   "rezepte": {
     "suchen": "Rezept oder Zutat suchen…",

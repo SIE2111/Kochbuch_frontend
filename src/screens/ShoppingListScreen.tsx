@@ -14,6 +14,7 @@ import type { MainTabParamList, MainStackParamList } from '../navigation/AppNavi
 import { useLayout } from '../utils/layout';
 import KochplanKarte from '../components/KochplanKarte';
 import ZutatBild from '../components/ZutatBild';
+import { showBrutzelHinweis } from '../components/BrutzelHinweis';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'Einkauf'>,
@@ -38,6 +39,54 @@ export default function ShoppingListScreen({ navigation }: Props) {
   const { t } = useUebersetzung();
   const [sections, setSections] = useState<{ title: string; data: ShoppingItem[] }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  // Mehrere Listen: null = Hauptliste. Jede weitere startet leer und bleibt, bis sie geloescht wird.
+  const [listen, setListen] = useState<{ id: string | null; name: string; offen: number; haupt: boolean }[]>([]);
+  const [aktiv, setAktiv] = useState<string | null>(null);
+  const [neueListeOffen, setNeueListeOffen] = useState(false);
+  const [neuerName, setNeuerName] = useState('');
+  const lq = aktiv ? `?liste=${encodeURIComponent(aktiv)}` : '';
+
+  const ladeListen = useCallback(async () => {
+    try {
+      setListen(await api.get('/shopping-list/lists'));
+    } catch { /* Auswahl bleibt wie sie war */ }
+  }, []);
+
+  const listeAnlegen = async () => {
+    const name = neuerName.trim();
+    if (!name) return;
+    try {
+      const neu = await api.post<{ id: string }>('/shopping-list/lists', { name });
+      setNeueListeOffen(false);
+      setNeuerName('');
+      await ladeListen();
+      setAktiv(neu.id);
+    } catch (err) {
+      showBrutzelHinweis({ title: t('allgemein.fehler'), text: err instanceof ApiError ? err.detail : t('profil.unbekannterFehler') });
+    }
+  };
+
+  const listeLoeschen = (id: string, name: string) => {
+    showBrutzelHinweis({
+      title: t('einkauf.listeLoeschenTitel'),
+      text: t('einkauf.listeLoeschenText', { name }),
+      buttons: [
+        { text: t('allgemein.abbrechen'), style: 'cancel' },
+        {
+          text: t('allgemein.loeschen'), style: 'destructive',
+          onPress: async () => {
+            try {
+              await api.delete(`/shopping-list/lists/${id}`);
+              if (aktiv === id) setAktiv(null);
+              ladeListen();
+            } catch (err) {
+              showBrutzelHinweis({ title: t('allgemein.fehler'), text: err instanceof ApiError ? err.detail : t('einkauf.nichtGeloescht') });
+            }
+          },
+        },
+      ],
+    });
+  };
   const [error, setError] = useState<string | null>(null);
 
   // Bearbeiten-Dialog: Name, Menge, Einheit und Notiz je Posten. Tippen
@@ -89,7 +138,7 @@ export default function ShoppingListScreen({ navigation }: Props) {
   const load = useCallback(async () => {
     try {
       const data = await api.get<{ categories: Record<string, ShoppingItem[]>; order?: string[] }>(
-        '/shopping-list/',
+        `/shopping-list/${lq}`,
       );
       // Das Backend gibt die Reihenfolge der Abteilungen vor - Weg durch den
       // Supermarkt, nicht Alphabet. Faellt 'order' weg (aeltere Version),
@@ -109,11 +158,12 @@ export default function ShoppingListScreen({ navigation }: Props) {
     } catch (err) {
       setError(err instanceof ApiError ? err.detail : t('einkauf.nichtGeladen'));
     }
-  }, []);
+  }, [lq]);
 
   useEffect(() => {
     load().finally(() => setIsLoading(false));
-  }, [load]);
+    ladeListen();
+  }, [load, ladeListen]);
 
   // Bei jeder Rueckkehr auf diesen Tab neu laden.
   //
@@ -125,7 +175,8 @@ export default function ShoppingListScreen({ navigation }: Props) {
   useFocusEffect(
     useCallback(() => {
       load();
-    }, [load]),
+      ladeListen();
+    }, [load, ladeListen]),
   );
 
   const [isExporting, setIsExporting] = useState(false);
@@ -138,7 +189,7 @@ export default function ShoppingListScreen({ navigation }: Props) {
   const handlePrint = async () => {
     setIsExporting(true);
     try {
-      const localUri = await api.downloadFile('/shopping-list/pdf', 'einkaufsliste.pdf');
+      const localUri = await api.downloadFile(`/shopping-list/pdf${lq}`, 'einkaufsliste.pdf');
       if (!(await Sharing.isAvailableAsync())) {
         Alert.alert(t('einkauf.nichtVerfuegbar'), t('einkauf.teilenNichtUnterstuetzt'));
         return;
@@ -162,7 +213,7 @@ export default function ShoppingListScreen({ navigation }: Props) {
           onPress: async () => {
             setIsMailing(true);
             try {
-              await api.post('/shopping-list/email', {});
+              await api.post('/shopping-list/email', { liste: aktiv });
               Alert.alert(t('einkauf.verschickt'), t('einkauf.unterwegs'));
             } catch (err) {
               Alert.alert(t('einkauf.nichtVerschickt'), err instanceof ApiError ? err.detail : t('profil.unbekannterFehler'));
@@ -211,7 +262,7 @@ export default function ShoppingListScreen({ navigation }: Props) {
 
   const handleClearChecked = async () => {
     try {
-      await api.delete('/shopping-list/checked');
+      await api.delete(`/shopping-list/checked${lq}`);
       load();
     } catch (err) {
       Alert.alert(t('allgemein.fehler'), err instanceof ApiError ? err.detail : t('einkauf.nichtGeleert'));
@@ -226,7 +277,7 @@ export default function ShoppingListScreen({ navigation }: Props) {
         style: 'destructive',
         onPress: async () => {
           try {
-            await api.delete('/shopping-list/all');
+            await api.delete(`/shopping-list/all${lq}`);
             load();
           } catch (err) {
             Alert.alert(t('allgemein.fehler'), err instanceof ApiError ? err.detail : t('einkauf.nichtGeloescht'));
@@ -341,8 +392,30 @@ export default function ShoppingListScreen({ navigation }: Props) {
 
       {error && <Text style={[styles.errorText, { color: '#DC2626' }]}>{error}</Text>}
 
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0, marginBottom: 12 }}
+        contentContainerStyle={{ gap: 8 }}>
+        {listen.map((l) => {
+          const istAktiv = l.id === aktiv;
+          return (
+            <Pressable key={l.id ?? 'haupt'} onPress={() => setAktiv(l.id)}
+              onLongPress={() => { if (l.id) listeLoeschen(l.id, l.name); }}
+              style={[styles.listenChip, { borderColor: istAktiv ? 'transparent' : colors.cardBorder,
+                backgroundColor: istAktiv ? gradient[0] : colors.card }]}>
+              <Text style={{ color: istAktiv ? '#fff' : colors.text, fontSize: 12.5, fontWeight: '600' }}>
+                {l.name}{l.offen ? `  ${l.offen}` : ''}
+              </Text>
+            </Pressable>
+          );
+        })}
+        <Pressable onPress={() => setNeueListeOffen(true)}
+          style={[styles.listenChip, { borderColor: colors.cardBorder, backgroundColor: 'transparent', flexDirection: 'row', gap: 4 }]}>
+          <MaterialCommunityIcons name="plus" size={15} color={colors.text} />
+          <Text style={{ color: colors.text, fontSize: 12.5, fontWeight: '600' }}>{t('einkauf.neueListe')}</Text>
+        </Pressable>
+      </ScrollView>
+
       <Pressable
-        onPress={() => navigation.navigate('ZutatenWaehlen')}
+        onPress={() => navigation.navigate('ZutatenWaehlen', { liste: aktiv })}
         style={[styles.waehlenKnopf, { backgroundColor: gradient[0], borderRadius: radius.md }]}
       >
         <MaterialCommunityIcons name="plus-circle-outline" size={22} color="#fff" />
@@ -449,6 +522,34 @@ export default function ShoppingListScreen({ navigation }: Props) {
           )}
         </View>
       )}
+      <Modal visible={neueListeOffen} transparent animationType="fade" onRequestClose={() => setNeueListeOffen(false)}>
+        <View style={styles.modalUeberlagerung}>
+          <View style={[styles.modalKarte, { backgroundColor: colors.card, borderRadius: radius.md }]}>
+            <Text style={[styles.modalTitel, { color: colors.text }]}>{t('einkauf.neueListe')}</Text>
+            <TextInput
+              value={neuerName}
+              onChangeText={setNeuerName}
+              placeholder={t('einkauf.listenName')}
+              placeholderTextColor={colors.muted}
+              autoFocus
+              maxLength={40}
+              onSubmitEditing={listeAnlegen}
+              style={[styles.modalInput, { backgroundColor: colors.bg, color: colors.text, borderRadius: radius.sm }]}
+            />
+            <Text style={{ color: colors.muted, fontSize: 12, marginTop: 8, lineHeight: 17 }}>{t('einkauf.neueListeHinweis')}</Text>
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 16 }}>
+              <Pressable onPress={() => { setNeueListeOffen(false); setNeuerName(''); }}
+                style={[styles.modalKnopf, { borderColor: colors.muted, borderWidth: 1, borderRadius: radius.sm }]}>
+                <Text style={{ color: colors.muted, fontWeight: '600' }}>{t('allgemein.abbrechen')}</Text>
+              </Pressable>
+              <Pressable onPress={listeAnlegen} disabled={!neuerName.trim()}
+                style={[styles.modalKnopf, { backgroundColor: gradient[0], borderRadius: radius.sm, opacity: neuerName.trim() ? 1 : 0.5 }]}>
+                <Text style={{ color: '#fff', fontWeight: '700' }}>{t('einkauf.listeAnlegen')}</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
       <ScanFab />
 
       {/* Formularinhalt einmal definiert, einmal verwendet - je nach
@@ -492,6 +593,7 @@ const styles = StyleSheet.create({
   backText: { fontSize: 14, fontWeight: '600', marginLeft: 2 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   errorText: { fontSize: 12, marginBottom: 12 },
+  listenChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 18, borderWidth: 1, justifyContent: 'center' },
   waehlenKnopf: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 50, marginBottom: 14 },
   waehlenText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   addRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },

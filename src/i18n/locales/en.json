@@ -80,7 +80,21 @@
     "vergessenTitel": "Remove from remembered items?",
     "vergessenText": "“{name}” will no longer appear under Often bought. Your shopping list stays as it is.",
     "vergessen": "Remove",
-    "leerHinweis": "Your shopping list is empty. Tap “Add items” above or add ingredients from a recipe."
+    "leerHinweis": "Your shopping list is empty. Tap “Add items” above or add ingredients from a recipe.",
+    "neueListe": "New list",
+    "listenName": "Name, e.g. Barbecue",
+    "listeAnlegen": "Create",
+    "neueListeHinweis": "The new list starts empty and stays until you delete it (long-press its name). From 10 items it costs 1 AI Coin once.",
+    "listeLoeschenTitel": "Delete list?",
+    "listeLoeschenText": "“{name}” and all items on it will be deleted.",
+    "kiKnopf": "Let AI suggest a list",
+    "kiPreis": "1 AI Coin",
+    "kiTitel": "What are you shopping for?",
+    "kiPlatzhalter": "e.g. barbecue for 6 people, Sunday brunch, birthday cake …",
+    "kiHinweis": "AI suggests items. You can change everything afterwards. Costs 1 AI Coin.",
+    "kiErstellen": "Suggest",
+    "kiFertigTitel": "Done!",
+    "kiFertigText": "{n} items are on the list."
   },
   "rezepte": {
     "suchen": "Search recipes or ingredients…",

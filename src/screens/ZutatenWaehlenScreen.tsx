@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, TextInput, ScrollView, ActivityIndicator, Keyboard } from 'react-native';
+import { View, Text, Pressable, StyleSheet, TextInput, ScrollView, ActivityIndicator, Keyboard, Modal } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from '../theme/ThemeContext';
@@ -29,7 +29,9 @@ interface Start {
 
 // Einkaufsliste erfassen wie bei Bring!: antippen statt tippen. Die Zutat
 // landet sofort auf der Liste, ein weiterer Tipp erhoeht die Menge.
-export default function ZutatenWaehlenScreen({ navigation }: Props) {
+export default function ZutatenWaehlenScreen({ navigation, route }: Props) {
+  const listeId = route.params?.liste ?? null;
+  const lParam = listeId ? `&liste=${encodeURIComponent(listeId)}` : '';
   const { colors, gradient, radius } = useTheme();
   const { t } = useUebersetzung();
   const [start, setStart] = useState<Start>({});
@@ -40,13 +42,37 @@ export default function ZutatenWaehlenScreen({ navigation }: Props) {
   const [anzahl, setAnzahl] = useState(0);                         // Tipps in dieser Sitzung
   const [menge, setMenge] = useState<Record<string, number>>({});  // aktueller Stand je Name
   const sucheZaehler = useRef(0);
+  const [kiOffen, setKiOffen] = useState(false);
+  const [kiWunsch, setKiWunsch] = useState('');
+  const [kiLaeuft, setKiLaeuft] = useState(false);
+
+  const kiErstellen = async () => {
+    const wunsch = kiWunsch.trim();
+    if (!wunsch || kiLaeuft) return;
+    setKiLaeuft(true);
+    try {
+      const r = await api.post<{ neu: number }>('/shopping-list/ki-liste', { wunsch, liste: listeId });
+      setKiOffen(false);
+      setKiWunsch('');
+      setAnzahl((a) => a + (r?.neu ?? 0));
+      showBrutzelHinweis({ title: t('einkauf.kiFertigTitel'), text: t('einkauf.kiFertigText', { n: r?.neu ?? 0 }),
+        knopf: t('einkauf.fertig'), danach: () => navigation.goBack() });
+    } catch (err) {
+      // 402 (Coins leer) meldet der Client selbst ueber Brutzel
+      if (!(err instanceof ApiError && err.status === 402)) {
+        showBrutzelHinweis({ title: t('allgemein.fehler'), text: err instanceof ApiError ? err.detail : t('profil.unbekannterFehler') });
+      }
+    } finally {
+      setKiLaeuft(false);
+    }
+  };
 
   const meldeFehler = (err: unknown) =>
     showBrutzelHinweis({ title: t('einkauf.nichtHinzugefuegt'), text: err instanceof ApiError ? err.detail : t('profil.unbekannterFehler') });
 
   const ladeStart = useCallback(async () => {
     try {
-      const d = await api.get<Start>('/shopping-list/vorschlaege');
+      const d = await api.get<Start>(`/shopping-list/vorschlaege?x=1${lParam}`);
       setStart(d);
       const m: Record<string, number> = {};
       [...(d.haeufig ?? []), ...(d.zuletzt ?? []), ...(d.start ?? [])].forEach((v) => { if (v.auf_liste) m[v.name.toLowerCase()] = v.auf_liste; });
@@ -64,7 +90,7 @@ export default function ZutatenWaehlenScreen({ navigation }: Props) {
     if (!q.trim() && !kat) { setListe(null); return; }
     const nr = ++sucheZaehler.current;
     try {
-      const d = await api.get<Start>(`/shopping-list/vorschlaege?q=${encodeURIComponent(q.trim())}&kategorie=${encodeURIComponent(q.trim() ? '' : kat ?? '')}`);
+      const d = await api.get<Start>(`/shopping-list/vorschlaege?q=${encodeURIComponent(q.trim())}&kategorie=${encodeURIComponent(q.trim() ? '' : kat ?? '')}${lParam}`);
       if (nr !== sucheZaehler.current) return;
       const m: Record<string, number> = {};
       (d.items ?? []).forEach((v) => { if (v.auf_liste) m[v.name.toLowerCase()] = v.auf_liste; });
@@ -88,7 +114,7 @@ export default function ZutatenWaehlenScreen({ navigation }: Props) {
     setAnzahl((a) => a + 1);
     try {
       const r = await api.post<{ amount: number | null }>('/shopping-list/manual', {
-        ingredient_name: name.trim(), unit, amount: 1, zusammenfassen: true,
+        ingredient_name: name.trim(), unit, amount: 1, zusammenfassen: true, liste: listeId,
       });
       if (r?.amount != null) setMenge((m) => ({ ...m, [schluessel]: r.amount as number }));
     } catch (err) {
@@ -165,6 +191,13 @@ export default function ZutatenWaehlenScreen({ navigation }: Props) {
         </View>
       </View>
 
+      <Pressable onPress={() => setKiOffen(true)}
+        style={[styles.kiZeile, { backgroundColor: gradient[0] + '1F', borderRadius: radius.md }]}>
+        <MaterialCommunityIcons name="auto-fix" size={18} color={gradient[0]} />
+        <Text style={{ color: colors.text, fontSize: 13, flex: 1 }}>{t('einkauf.kiKnopf')}</Text>
+        <Text style={{ color: gradient[0], fontSize: 12, fontWeight: '700' }}>{t('einkauf.kiPreis')}</Text>
+      </Pressable>
+
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}
         contentContainerStyle={styles.reiter}>
         {[null, ...(start.kategorien ?? [])].map((k) => {
@@ -217,6 +250,35 @@ export default function ZutatenWaehlenScreen({ navigation }: Props) {
         )}
       </ScrollView>
 
+      <Modal visible={kiOffen} transparent animationType="fade" onRequestClose={() => setKiOffen(false)}>
+        <View style={styles.modalUeber}>
+          <View style={[styles.modalKarte, { backgroundColor: colors.card, borderRadius: radius.md }]}>
+            <Text style={{ color: colors.text, fontSize: 17, fontWeight: '700', marginBottom: 10 }}>{t('einkauf.kiTitel')}</Text>
+            <TextInput
+              value={kiWunsch}
+              onChangeText={setKiWunsch}
+              placeholder={t('einkauf.kiPlatzhalter')}
+              placeholderTextColor={colors.muted}
+              multiline
+              maxLength={300}
+              autoFocus
+              style={{ backgroundColor: colors.bg, color: colors.text, borderRadius: radius.sm, padding: 12, minHeight: 80, fontSize: 14, textAlignVertical: 'top' }}
+            />
+            <Text style={{ color: colors.muted, fontSize: 12, marginTop: 8 }}>{t('einkauf.kiHinweis')}</Text>
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 16 }}>
+              <Pressable onPress={() => setKiOffen(false)} disabled={kiLaeuft}
+                style={[styles.modalKnopf, { borderColor: colors.muted, borderWidth: 1, borderRadius: radius.sm }]}>
+                <Text style={{ color: colors.muted, fontWeight: '600' }}>{t('allgemein.abbrechen')}</Text>
+              </Pressable>
+              <Pressable onPress={kiErstellen} disabled={kiLaeuft || !kiWunsch.trim()}
+                style={[styles.modalKnopf, { backgroundColor: gradient[0], borderRadius: radius.sm, opacity: kiWunsch.trim() ? 1 : 0.5 }]}>
+                {kiLaeuft ? <ActivityIndicator color="#fff" size="small" /> : <Text style={{ color: '#fff', fontWeight: '700' }}>{t('einkauf.kiErstellen')}</Text>}
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <View style={[styles.fuss, { backgroundColor: colors.card, borderTopColor: colors.cardBorder }]}>
         <Text style={{ color: colors.text, fontSize: 13.5, flex: 1 }}>
           {anzahl > 0 ? t('einkauf.dazugekommen', { n: anzahl }) : t('einkauf.antippenHinweis')}
@@ -231,6 +293,10 @@ export default function ZutatenWaehlenScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
+  kiZeile: { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 12, marginBottom: 8, paddingHorizontal: 14, height: 44 },
+  modalUeber: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', padding: 24 },
+  modalKarte: { padding: 20 },
+  modalKnopf: { flex: 1, height: 46, alignItems: 'center', justifyContent: 'center' },
   kopf: { paddingHorizontal: 12, paddingTop: 12, paddingBottom: 8 },
   suchfeld: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 46 },
   sucheInput: { flex: 1, fontSize: 15, height: 46 },

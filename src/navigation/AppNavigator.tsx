@@ -99,7 +99,7 @@ export type MainStackParamList = {
   Onboarding: undefined;
   StarterPacks: undefined;
   ManageCategories: undefined;
-  ZutatenWaehlen: undefined;
+  ZutatenWaehlen: { liste?: string | null } | undefined;
   LanguageSettings: undefined;
   StorageSettings: undefined;
   AppSettings: undefined;

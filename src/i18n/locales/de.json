@@ -80,7 +80,21 @@
     "vergessenTitel": "Aus der Merkliste entfernen?",
     "vergessenText": "„{name}“ erscheint dann nicht mehr unter Häufig gekauft. Die Einkaufsliste bleibt unverändert.",
     "vergessen": "Entfernen",
-    "leerHinweis": "Die Einkaufsliste ist leer. Tippe oben auf „Zutaten hinzufügen“ oder füge Zutaten über ein Rezept hinzu."
+    "leerHinweis": "Die Einkaufsliste ist leer. Tippe oben auf „Zutaten hinzufügen“ oder füge Zutaten über ein Rezept hinzu.",
+    "neueListe": "Neue Liste",
+    "listenName": "Name, z. B. Grillabend",
+    "listeAnlegen": "Anlegen",
+    "neueListeHinweis": "Die neue Liste startet leer und bleibt, bis du sie löschst (lange auf den Namen drücken). Ab 10 Artikeln kostet sie einmalig 1 AI Coin.",
+    "listeLoeschenTitel": "Liste löschen?",
+    "listeLoeschenText": "„{name}“ und alle Artikel darauf werden gelöscht.",
+    "kiKnopf": "Liste von der KI vorschlagen lassen",
+    "kiPreis": "1 AI Coin",
+    "kiTitel": "Wofür willst du einkaufen?",
+    "kiPlatzhalter": "z. B. Grillabend für 6 Personen, Frühstück am Sonntag, Geburtstagstorte …",
+    "kiHinweis": "Die KI schlägt Artikel vor. Du kannst danach alles ändern. Kostet 1 AI Coin.",
+    "kiErstellen": "Vorschlagen",
+    "kiFertigTitel": "Fertig!",
+    "kiFertigText": "{n} Artikel sind auf der Liste."
   },
   "rezepte": {
     "suchen": "Rezept oder Zutat suchen…",

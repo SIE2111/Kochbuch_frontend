@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet, Alert } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
 import { api } from '../api/client';
+import { kochplanEntfernen } from '../utils/kochplan';
 import SingleRecipeCookView from '../components/SingleRecipeCookView';
 import CookingFinishedCelebration from '../components/CookingFinishedCelebration';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -62,6 +63,8 @@ export default function CookModeScreen({ route, navigation }: Props) {
       // Nicht kritisch fuers eigentliche Kochen - ein Fehler hier soll die
       // Feier/den Abschluss nicht blockieren.
     });
+    // Fertig gekocht -> "Bereit zum Kochen" auf dem Dashboard wieder ausblenden
+    kochplanEntfernen(recipeIds[0]).catch(() => {});
     setShowCelebration(true);
   };
 

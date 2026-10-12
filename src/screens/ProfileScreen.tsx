@@ -8,6 +8,7 @@ import { api, ApiError } from '../api/client';
 import RechtFenster from '../components/RechtFenster';
 import MarkenZeile from '../components/MarkenZeile';
 import AiCoinsKarte from '../components/AiCoinsKarte';
+import MarketingEinstellungen from '../components/MarketingEinstellungen';
 import AppSettingsScreen from './AppSettingsScreen';
 import * as Application from 'expo-application';
 import { useFocusEffect, type CompositeScreenProps } from '@react-navigation/native';
@@ -572,6 +573,10 @@ export default function ProfileScreen({ navigation }: Props) {
           />
         )}
       </View>
+
+      {/* Freunde einladen und Tipps per E-Mail - seit 12.10.2026 hier statt in "Einstellungen",
+          gleiche Stelle wie in Weinkeller, Bueroablage und Medienablage */}
+      <MarketingEinstellungen />
 
       {/* AI Coins: Monats-Coins, zusaetzliche Coins, Liste "wofuer" (kein KI-Schalter mehr) */}
       <AiCoinsKarte />

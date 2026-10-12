@@ -23,6 +23,11 @@ npm install
 # gelegentlich mit "ENOTEMPTY ... metro-cache" ab (04.10.2026)
 Write-Host "Leere Metro-Zwischenspeicher..." -ForegroundColor Cyan
 Remove-Item -Recurse -Force (Join-Path $env:TEMP "metro-cache") -ErrorAction SilentlyContinue
+# Frischer, leerer Temp-Ordner je Lauf: Windows haelt Dateien im alten metro-cache manchmal fest (Virenscanner), dann scheitert "--clear" (12.10.2026)
+$neuerTemp = Join-Path $env:LOCALAPPDATA ("Temp\metro-" + (Get-Date -Format "yyyyMMddHHmmss"))
+New-Item -ItemType Directory -Force -Path $neuerTemp | Out-Null
+$env:TEMP = $neuerTemp
+$env:TMP = $neuerTemp
 Write-Host "Veroeffentliche Update auf 'production': $Message" -ForegroundColor Cyan
 # --environment production: keine Rueckfrage "Select environment" (04.10.2026)
 npx eas update --branch production --environment production --platform all --message $Message

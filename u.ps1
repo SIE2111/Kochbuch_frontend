@@ -30,7 +30,21 @@ $env:TEMP = $neuerTemp
 $env:TMP = $neuerTemp
 Write-Host "Veroeffentliche Update auf 'production': $Message" -ForegroundColor Cyan
 # --environment production: keine Rueckfrage "Select environment" (04.10.2026)
-npx eas update --branch production --environment production --platform all --message $Message
+# Je Plattform einzeln und mit bis zu 3 Versuchen, jeder Versuch mit frischem Temp-Ordner: der parallele Export beider
+# Plattformen leert den Metro-Cache gleichzeitig und scheitert unter Windows an "ENOTEMPTY" (12.10.2026)
+foreach ($plattform in @("ios", "android")) {
+  $geschafft = $false
+  for ($versuch = 1; $versuch -le 3 -and -not $geschafft; $versuch++) {
+    $t = Join-Path $env:LOCALAPPDATA ("Temp\metro-" + $plattform + "-" + $versuch + "-" + (Get-Date -Format "HHmmss"))
+    New-Item -ItemType Directory -Force -Path $t | Out-Null
+    $env:TEMP = $t
+    $env:TMP = $t
+    Write-Host "Veroeffentliche $plattform (Versuch $versuch)..." -ForegroundColor Cyan
+    npx eas update --branch production --environment production --platform $plattform --message $Message
+    if ($LASTEXITCODE -eq 0) { $geschafft = $true }
+  }
+  if (-not $geschafft) { Write-Host "Update fuer $plattform fehlgeschlagen." -ForegroundColor Red; exit 1 }
+}
 # Android-Tablet/Emulator (APK mit Kanal 'preview'): bekommt denselben Stand (Okt 2026)
 Write-Host "Veroeffentliche Update fuer Android-Test (Kanal 'preview')..." -ForegroundColor Cyan
 npx eas update --branch preview --environment production --platform android --message $Message

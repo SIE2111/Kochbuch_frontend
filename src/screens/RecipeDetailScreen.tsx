@@ -1209,7 +1209,7 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
     )}
     {istTablet ? (
       // Tablet: zwei unabhaengig scrollende Spalten, links 40 % (Foto,
-      // Portionen, Zutaten), rechts 60 % (Titel, Zubereitung, Aktionen).
+      // Portionen, Zutaten), rechts 60 % (Titel, Aktionen, Zubereitung).
       // flexBasis:0 ist noetig, weil ScrollView sonst flexGrow:1 mitbringt
       // und die Spalten nicht im Verhaeltnis 4:6 aufteilt.
       <View style={[styles.tabletReihe, { backgroundColor: colors.bg }]}>
@@ -1226,9 +1226,9 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
           <View style={styles.tabletLesespalte}>
             {blockTitel}
             {blockUebersetzung}
+            {blockAktionen}
             {blockSchritte}
             {blockNotiz}
-            {blockAktionen}
             {blockBeilagen}
             {blockNaehrwerte}
           </View>

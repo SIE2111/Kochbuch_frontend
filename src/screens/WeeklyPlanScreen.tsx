@@ -214,7 +214,7 @@ export default function WeeklyPlanScreen({ navigation }: Props) {
         style: 'destructive',
         onPress: async () => {
           try {
-            await Promise.all(entries.map((e) => api.delete(`/weekly-plan/${e.id}`)));
+            await api.post('/weekly-plan/clear', { start_date: startKey, end_date: endKey });
             loadWeek();
           } catch (err) {
             Alert.alert(t('allgemein.fehler'), err instanceof ApiError ? err.detail : t('wochenplan.nichtEntfernt'));

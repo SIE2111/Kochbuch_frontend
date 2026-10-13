@@ -24,6 +24,11 @@
         "ITSAppUsesNonExemptEncryption": false,
         "LSApplicationQueriesSchemes": [
           "meinweinkeller"
+        ],
+        "CFBundleDevelopmentRegion": "de",
+        "CFBundleLocalizations": [
+          "de",
+          "en"
         ]
       }
     },

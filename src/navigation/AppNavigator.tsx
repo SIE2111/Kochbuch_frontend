@@ -4,7 +4,7 @@ import { Linking } from 'react-native';
 import { parseRuecksprung, weinFuerRezeptSpeichern, gemerktenTitelHolen, parseGericht, gleicherTitel, aehnlicherTitel, GerichtAusWeinkeller } from '../utils/weinPairing';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { ActivityIndicator, View, Text, Pressable } from 'react-native';
+import { ActivityIndicator, View, Text, Pressable, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useAuth } from '../context/AuthContext';
@@ -175,6 +175,10 @@ function MainTabs() {
 
 function MainNavigator({ startOnOnboarding }: { startOnOnboarding: boolean }) {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  // Android (Edge-to-Edge): Inhalt laeuft sonst unter die Systemleiste (Zurueck/Home) - Fussleisten wie
+  // "Fertig" waren verdeckt. Screens, die den unteren Rand selbst beachten, setzen 0.
+  const ohneRand = { contentStyle: { paddingBottom: 0 } };
   // Neu registrierte Nutzer starten im Onboarding (Ordner/Starter-Pack-Wahl),
   // ebenso ein Konto, das zum ersten Mal HIER in Kochbuch auftaucht, auch
   // wenn es laengst in Buerroablage/Medienablage eingerichtet ist (siehe
@@ -191,9 +195,10 @@ function MainNavigator({ startOnOnboarding }: { startOnOnboarding: boolean }) {
         // dem Pfeil - beim Sprung von den Tabs also woertlich "MainTabs".
         // Ein interner Bezeichner hat in der Oberflaeche nichts verloren.
         headerBackTitle: 'Zurück',
+        contentStyle: Platform.OS === 'android' ? { paddingBottom: insets.bottom } : undefined,
       }}
     >
-      <MainStack.Screen name="MainTabs" component={MainTabs} options={{ headerShown: false }} />
+      <MainStack.Screen name="MainTabs" component={MainTabs} options={{ headerShown: false, ...ohneRand }} />
       <MainStack.Screen
         name="RecipeDetail"
         component={RecipeDetailScreen}
@@ -233,7 +238,7 @@ function MainNavigator({ startOnOnboarding }: { startOnOnboarding: boolean }) {
       <MainStack.Screen
         name="CookMode"
         component={CookModeScreen}
-        options={{ title: 'Kochen', headerBackTitle: 'Abbrechen' }}
+        options={{ title: 'Kochen', headerBackTitle: 'Abbrechen', ...ohneRand }}
       />
       <MainStack.Screen name="CommunityPool" component={CommunityPoolScreen} options={{ title: 'Community-Pool' }} />
       <MainStack.Screen
@@ -247,7 +252,7 @@ function MainNavigator({ startOnOnboarding }: { startOnOnboarding: boolean }) {
       <MainStack.Screen name="Household" component={HouseholdScreen} options={{ title: 'Haushalt' }} />
       <MainStack.Screen name="Onboarding" component={OnboardingScreen} options={{ headerShown: false, gestureEnabled: false }} />
       <MainStack.Screen name="StarterPacks" component={StarterPacksScreen} options={{ headerShown: false }} />
-      <MainStack.Screen name="ManageCategories" component={ManageCategoriesScreen} options={{ headerShown: false }} />
+      <MainStack.Screen name="ManageCategories" component={ManageCategoriesScreen} options={{ headerShown: false, ...ohneRand }} />
       <MainStack.Screen name="ZutatenWaehlen" component={ZutatenWaehlenScreen} options={{ title: 'Zutaten wählen' }} />
       <MainStack.Screen name="LanguageSettings" component={LanguageSettingsScreen} options={{ headerShown: false }} />
       <MainStack.Screen name="AppSettings" component={AppSettingsScreen} options={{ title: 'Einstellungen' }} />

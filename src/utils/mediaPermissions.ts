@@ -1,4 +1,4 @@
-import { Alert, Linking } from 'react-native';
+import { Alert, Linking, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 /**
@@ -14,9 +14,15 @@ import * as ImagePicker from 'expo-image-picker';
  *    Dialog mehr erscheint. In diesem Fall bieten wir direkt einen Knopf
  *    zu den Einstellungen an, statt nur zu informieren.
  *
+ * Android: Die Bildauswahl laeuft ueber den System-Fotoauswahldialog (Photo Picker),
+ * der keine Berechtigung braucht. Google Play verlangt deshalb keine Foto-Berechtigung
+ * (READ_MEDIA_IMAGES ist aus der App entfernt) - hier gibt es nichts anzufragen.
+ *
  * Gibt true zurueck, wenn mit der Bildauswahl fortgefahren werden kann.
  */
 export async function ensureMediaLibraryAccess(): Promise<boolean> {
+  if (Platform.OS === 'android') return true;
+
   const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
   if (permission.granted || permission.accessPrivileges === 'limited' || permission.accessPrivileges === 'all') {

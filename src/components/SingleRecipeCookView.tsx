@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, ActivityIndicator, Modal, TextInput, Linking, Alert, ScrollView, Keyboard } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ActivityIndicator, Modal, TextInput, Linking, Alert, ScrollView, Keyboard, AppState } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as Speech from 'expo-speech';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -468,6 +468,10 @@ export default function SingleRecipeCookView({ recipeId, isActive, onTitleLoaded
   const [timerNotificationId, setTimerNotificationId] = useState<string | null>(null);
   const timerNotificationIdRef = useRef<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Zeitpunkt (ms), an dem der laufende Timer ablaeuft. Die Restzeit wird immer daraus berechnet und nicht
+  // aus gezaehlten Sekunden: sobald das Handy sperrt oder die App im Hintergrund ist, werden die
+  // 1-Sekunden-Ticks angehalten - mit gezaehlten Sekunden wuerde der Timer dann stehen bleiben.
+  const timerEndRef = useRef<number | null>(null);
 
   useEffect(() => {
     setupNotificationChannel();
@@ -846,11 +850,21 @@ export default function SingleRecipeCookView({ recipeId, isActive, onTitleLoaded
       Alert.alert(t('kochen.ungueltigeZeit'), t('kochen.zahlGroesserNull'));
       return;
     }
-    setRemainingSeconds(Math.round(minutes * 60));
+    const neueSekunden = Math.round(minutes * 60);
+    setRemainingSeconds(neueSekunden);
     setIsEditingTimer(false);
+    // Laeuft der Timer gerade, gilt die neue Zeit ab jetzt - Ablaufzeitpunkt und Push-Meldung mitziehen
+    if (isTimerRunning && activeTimerStepIndex === currentIndex && timerEndRef.current !== null) {
+      timerEndRef.current = Date.now() + neueSekunden * 1000;
+      cancelTimerNotification(timerNotificationIdRef.current);
+      if (recipe && currentStep) {
+        scheduleTimerNotification(recipe.title, currentStep.text, neueSekunden).then(setTimerNotificationId).catch(() => {});
+      }
+    }
   };
 
   const startTimerNow = async (seconds: number | null) => {
+    timerEndRef.current = seconds ? Date.now() + seconds * 1000 : null;
     setRemainingSeconds(seconds);
     setIsTimerRunning(true);
     setActiveTimerStepIndex(currentIndex);
@@ -887,6 +901,8 @@ export default function SingleRecipeCookView({ recipeId, isActive, onTitleLoaded
   };
 
   const handlePauseTimer = () => {
+    if (timerEndRef.current !== null) setRemainingSeconds(Math.max(0, Math.ceil((timerEndRef.current - Date.now()) / 1000)));
+    timerEndRef.current = null;
     setIsTimerRunning(false);
     cancelTimerNotification(timerNotificationId);
     setTimerNotificationId(null);
@@ -917,27 +933,45 @@ export default function SingleRecipeCookView({ recipeId, isActive, onTitleLoaded
   useEffect(() => {
     if (!isTimerRunning) return;
 
-    intervalRef.current = setInterval(() => {
-      setRemainingSeconds((prev) => {
-        if (prev === null) return null;
-        if (prev <= 1) {
-          if (intervalRef.current) clearInterval(intervalRef.current);
-          setIsTimerRunning(false);
-          // Zuverlaessiges Tonsignal ueber Sprachausgabe (funktioniert
-          // sicher im Vordergrund, unabhaengig davon, ob Benachrichtigungs-
-          // Berechtigung erteilt wurde - die geplante Push-Benachrichtigung
-          // allein reichte offenbar nicht als verlaessliches Signal).
-          Speech.speak(t('kochen.timerFertig'), { language: SPEECH_LANGUAGE, voice: vorleserVoice });
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    const tick = () => {
+      const end = timerEndRef.current;
+      if (end === null) return;
+      const rest = Math.ceil((end - Date.now()) / 1000);
+      if (rest <= 0) {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        timerEndRef.current = null;
+        setIsTimerRunning(false);
+        setRemainingSeconds(0);
+        // Tonsignal ueber Sprachausgabe (die geplante Push-Meldung allein war kein verlaessliches Signal) -
+        // aber nur, wenn der Timer gerade erst abgelaufen ist, nicht bei der Rueckkehr nach langer Zeit
+        if (Date.now() - end < 30000) Speech.speak(t('kochen.timerFertig'), { language: SPEECH_LANGUAGE, voice: vorleserVoice });
+        return;
+      }
+      setRemainingSeconds(rest);
+    };
+
+    tick();
+    intervalRef.current = setInterval(tick, 1000);
+    // Kommt die App aus dem Hintergrund oder vom Sperrbildschirm zurueck, sofort die echte Restzeit zeigen
+    const abo = AppState.addEventListener('change', (zustand) => { if (zustand === 'active') tick(); });
 
     return () => {
+      abo.remove();
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [isTimerRunning]);
+
+  // Beim Kochen soll der Bildschirm nicht von selbst dunkel werden und sperren (dann stuende die Anzeige still).
+  // Das Modul gibt es erst ab dem naechsten App-Build; in aelteren Builds passiert hier einfach nichts.
+  useEffect(() => {
+    if (!isActive) return;
+    let ka: any = null;
+    try { ka = require('expo-keep-awake'); } catch { ka = null; }
+    if (!ka) return;
+    const tag = `kochen-${recipeId}`;
+    ka.activateKeepAwakeAsync(tag).catch(() => {});
+    return () => { try { ka.deactivateKeepAwake(tag); } catch { /* egal */ } };
+  }, [isActive, recipeId]);
 
   useEffect(() => {
     return () => {

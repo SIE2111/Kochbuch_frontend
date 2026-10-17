@@ -291,23 +291,26 @@ export default function WebImportScreen({ navigation, route }: Props) {
             value={url}
             onChangeText={setUrl}
           />
-          <Pressable
-            onPress={() => navigation.navigate('RezeptSuche', { initialQuery: url && !/^https?:/i.test(url) ? url : undefined })}
-            style={[styles.searchButton, { backgroundColor: colors.card, borderRadius: radius.md }]}
-          >
-            <Text style={{ fontSize: 18 }}>🔍</Text>
-          </Pressable>
         </View>
-        <Text style={[styles.orHint, { color: colors.muted }]}>
-          Kein Link zur Hand? Über die Lupe direkt in der App danach suchen.
-        </Text>
-
         <Pressable
           onPress={handleImport}
           disabled={isImporting}
           style={[styles.importButton, { backgroundColor: gradient[0], borderRadius: radius.md, opacity: isImporting ? 0.7 : 1 }]}
         >
           {isImporting ? <ActivityIndicator color="#fff" /> : <Text style={styles.importButtonText}>{t('erfassen.webImportieren')}</Text>}
+        </Pressable>
+
+        <Text style={[styles.orHint, { color: colors.muted, marginTop: 18, marginBottom: 8 }]}>
+          {t('erfassen.webKeinLink')}
+        </Text>
+        <Pressable
+          onPress={() => navigation.navigate('RezeptSuche', { initialQuery: url && !/^https?:/i.test(url) ? url : undefined })}
+          accessibilityRole="button"
+          accessibilityLabel={t('erfassen.webSuchen')}
+          style={[styles.searchButton, { borderColor: gradient[0], borderRadius: radius.md }]}
+        >
+          <Text style={{ fontSize: 22 }}>🔍</Text>
+          <Text style={[styles.searchButtonText, { color: colors.text }]}>{t('erfassen.webSuchen')}</Text>
         </Pressable>
       </View>
     );
@@ -470,10 +473,11 @@ const styles = StyleSheet.create({
   introContainer: { flex: 1, padding: 22, justifyContent: 'center' },
   introTitle: { fontSize: 20, fontWeight: '700', marginBottom: 10 },
   introText: { fontSize: 13, lineHeight: 19, marginBottom: 22 },
-  urlRow: { flexDirection: 'row', gap: 8, marginBottom: 6 },
+  urlRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
   urlInput: { height: 46, paddingHorizontal: 14, fontSize: 13.5 },
-  searchButton: { width: 46, height: 46, alignItems: 'center', justifyContent: 'center' },
-  orHint: { fontSize: 10.5, marginBottom: 14, fontStyle: 'italic' },
+  searchButton: { height: 52, borderWidth: 2, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center' },
+  searchButtonText: { fontSize: 16.5, fontWeight: '700' },
+  orHint: { fontSize: 13, marginBottom: 14 },
   importButton: { height: 48, alignItems: 'center', justifyContent: 'center' },
   importButtonText: { color: '#fff', fontWeight: '600', fontSize: 14.5 },
   container: { padding: 18, paddingBottom: 60 },

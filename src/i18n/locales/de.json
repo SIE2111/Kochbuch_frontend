@@ -535,6 +535,8 @@
     "kiGenerieren": "Rezept generieren",
     "generierenFehlgeschlagen": "Generieren fehlgeschlagen",
     "webTitel": "Rezept aus dem Web",
+    "webKeinLink": "Kein Link zur Hand? Dann direkt in der App nach einem Rezept suchen.",
+    "webSuchen": "Rezept in der App suchen",
     "webImportieren": "Rezept importieren",
     "linkFehlt": "Link fehlt",
     "bitteLink": "Bitte einen Link zu einem Rezept einfügen.",

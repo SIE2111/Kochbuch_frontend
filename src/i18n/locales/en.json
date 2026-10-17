@@ -535,6 +535,8 @@
     "kiGenerieren": "Generate recipe",
     "generierenFehlgeschlagen": "Generating failed",
     "webTitel": "Recipe from the web",
+    "webKeinLink": "No link at hand? Search for a recipe right in the app.",
+    "webSuchen": "Search for a recipe in the app",
     "webImportieren": "Import recipe",
     "linkFehlt": "Link missing",
     "bitteLink": "Please paste a link to a recipe.",

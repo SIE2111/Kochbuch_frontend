@@ -56,7 +56,28 @@ function formatTime(totalSeconds: number): string {
 // leitet daraus einen Timer ab - aber erst AB 2 MINUTEN, wie gewuenscht,
 // damit nicht jede beilaeufige Erwaehnung ("kurz anbraten, 1 Minute") einen
 // Timer aufploppen laesst.
-function parseDurationSecondsFromText(text: string): number | null {
+// Steht "Nach 20 Minuten ..." am ANFANG des Schritts ("Nach 20 Minuten die Kartoffeln abgiessen"), ist das KEINE neue Wartezeit, sondern der Rueckbezug auf den
+// vorherigen Schritt (dort lief die Zeit schon). Solche Angaben werden nicht als Timer gewertet -
+// sonst laeuft die Zeit zweimal (Fehler vom 17.10.2026).
+const NACH_ZEIT = /^\s*nach\s+(?:etwa|ca\.?|circa|rund|gut|knapp|den|dem|ablauf\s+von|\s)*\s*(\d+)(?:\s*[-–]\s*(\d+))?\s*(Minuten|Min\.?|Stunden|Std\.?)/i;
+
+function ohneRueckbezug(text: string): string {
+  return text.replace(NACH_ZEIT, ' ');
+}
+
+function nachZeitSekunden(text: string): number[] {
+  const werte: number[] = [];
+  const m = text.match(NACH_ZEIT);
+  if (m) {
+    const f = /Stunden|Std/i.test(m[3]) ? 3600 : 60;
+    const v = m[2] ? (Number(m[1]) + Number(m[2])) / 2 : Number(m[1]);
+    werte.push(Math.round(v * f));
+  }
+  return werte;
+}
+
+function parseDurationSecondsFromText(rawText: string): number | null {
+  const text = ohneRueckbezug(rawText);
   const rangeMatch = text.match(/(\d+)\s*[-–]\s*(\d+)\s*(Minuten|Min\.?|Stunden|Std\.?)/i);
   const singleMatch = !rangeMatch ? text.match(/(\d+)\s*(Minuten|Min\.?|Stunden|Std\.?)/i) : null;
   const match = rangeMatch ?? singleMatch;
@@ -76,6 +97,8 @@ function parseDurationSecondsFromText(text: string): number | null {
 }
 
 export function getEffectiveTimerSeconds(step: { timer_seconds?: number | null; text: string }): number | null {
+  // Hinterlegter Timer, der nur die "Nach N Minuten"-Angabe des Textes wiederholt -> kein zweiter Timer
+  if (step.timer_seconds != null && nachZeitSekunden(step.text).includes(step.timer_seconds)) return null;
   return step.timer_seconds ?? parseDurationSecondsFromText(step.text);
 }
 

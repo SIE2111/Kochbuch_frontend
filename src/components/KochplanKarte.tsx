@@ -17,13 +17,13 @@ export default function KochplanKarte() {
   const { t } = useUebersetzung();
   const [eintraege, setEintraege] = useState<KochplanEintrag[]>([]);
 
-  useFocusEffect(useCallback(() => { kochplanLaden().then(setEintraege); }, []));
+  useFocusEffect(useCallback(() => { kochplanLaden().then((l) => setEintraege(l.filter((e) => !e.begonnen))); }, []));
 
   if (eintraege.length === 0) return null;
 
   async function entfernen(id: string) {
     await kochplanEntfernen(id);
-    setEintraege(await kochplanLaden());
+    setEintraege((await kochplanLaden()).filter((x) => !x.begonnen));
   }
 
   return (

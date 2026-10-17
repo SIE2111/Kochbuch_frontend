@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Alert } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
 import { api } from '../api/client';
-import { kochplanEntfernen } from '../utils/kochplan';
+import { kochplanEntfernen, kochplanBegonnen } from '../utils/kochplan';
 import SingleRecipeCookView from '../components/SingleRecipeCookView';
 import CookingFinishedCelebration from '../components/CookingFinishedCelebration';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -27,6 +27,24 @@ export default function CookModeScreen({ route, navigation }: Props) {
   const [completedIds, setCompletedIds] = useState<string[]>([]);
   const [titles, setTitles] = useState<Record<string, string>>({});
   const [showCelebration, setShowCelebration] = useState(false);
+  const beendet = useRef(false);
+
+  // Kochvorgang als "angefangen" merken, sobald der Titel des Hauptgerichts da ist: Er steht dann
+  // auf der Startseite unter "Zuletzt zubereitet" und bleibt dort auch nach "Zurück", bis fertig gekocht.
+  const hauptTitel = titles[recipeIds[0]];
+  const beilagenTitel = recipeIds.slice(1).map((id) => titles[id]).filter((x): x is string => !!x).join('|');
+  useEffect(() => {
+    if (!hauptTitel || beendet.current) return;
+    kochplanBegonnen({
+      id: recipeIds[0],
+      titel: hauptTitel,
+      recipeIds,
+      beilagen: beilagenTitel ? beilagenTitel.split('|') : [],
+      portionen: route.params.sessionServings,
+      verwerfenId: route.params.discardAfterId,
+    }).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hauptTitel, beilagenTitel]);
 
   // "Nur fuer diesen Kochvorgang" uebernommene Verbesserungsvorschlaege
   // (siehe RecipeDetailScreen) - werden NICHT im Rezept gespeichert, nur
@@ -64,6 +82,7 @@ export default function CookModeScreen({ route, navigation }: Props) {
       // Feier/den Abschluss nicht blockieren.
     });
     // Fertig gekocht -> "Bereit zum Kochen" auf dem Dashboard wieder ausblenden
+    beendet.current = true;
     kochplanEntfernen(recipeIds[0]).catch(() => {});
     setShowCelebration(true);
   };
@@ -74,7 +93,8 @@ export default function CookModeScreen({ route, navigation }: Props) {
       // verlassen, nicht tatsaechlich fertig gekocht - einfach verlassen,
       // OHNE als zubereitet zu markieren und OHNE die Guten-Appetit-Feier
       // (war zuvor ein Bug: beides loeste dieselbe Feier aus).
-      discardIfRequested();
+      // Das Rezept bleibt erhalten und steht als "angefangen" auf der Startseite
+      // (auch ein "nur kochen, nicht behalten"-Rezept: geloescht wird erst nach dem Fertigkochen).
       navigation.goBack();
       return;
     }

@@ -23,6 +23,8 @@ export interface KochplanEintrag {
   beilagen: string[];    // Titel der Beilagen, nur zur Anzeige
   portionen?: number;
   hinzugefuegtAm: string;
+  begonnen?: boolean;    // Koch-Modus gestartet, aber noch nicht fertig -> Startseite 'Zuletzt zubereitet' (weiterkochen)
+  verwerfenId?: string;  // 'Nur kochen, nicht behalten': Rezept wird erst nach dem Fertigkochen bzw. beim Entfernen gelöscht
 }
 
 function frisch(e: KochplanEintrag, jetzt = Date.now()): boolean {
@@ -50,4 +52,12 @@ export async function kochplanMerken(eintrag: Omit<KochplanEintrag, 'hinzugefueg
 export async function kochplanEntfernen(id: string): Promise<void> {
   const liste = (await kochplanLaden()).filter((e) => e.id !== id);
   await AsyncStorage.setItem(KEY, JSON.stringify(liste));
+}
+
+/** Koch-Modus wurde gestartet: Eintrag bleibt auf der Startseite, bis fertig gekocht
+ * (kochplanEntfernen) oder vom Nutzer entfernt - auch nach "Zurück". */
+export async function kochplanBegonnen(eintrag: Omit<KochplanEintrag, 'hinzugefuegtAm' | 'begonnen'>): Promise<void> {
+  const liste = (await kochplanLaden()).filter((e) => e.id !== eintrag.id);
+  const neu = [{ ...eintrag, recipeIds: eintrag.recipeIds.slice(0, 3), begonnen: true, hinzugefuegtAm: new Date().toISOString() }, ...liste];
+  await AsyncStorage.setItem(KEY, JSON.stringify(neu.slice(0, MAX_EINTRAEGE)));
 }

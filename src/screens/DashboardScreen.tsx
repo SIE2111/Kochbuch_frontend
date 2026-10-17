@@ -10,12 +10,14 @@ import BrutzelGreetingOverlay from '../components/BrutzelGreetingOverlay';
 import BrutzelFaqBubble from '../components/BrutzelFaqBubble';
 import { useAuth } from '../context/AuthContext';
 import { api, ApiError } from '../api/client';
+import { useFocusEffect } from '@react-navigation/native';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { MainTabParamList, MainStackParamList } from '../navigation/AppNavigator';
 import { useLayout } from '../utils/layout';
 import KochplanKarte from '../components/KochplanKarte';
+import { kochplanLaden, kochplanEntfernen, KochplanEintrag } from '../utils/kochplan';
 import { TippBlase } from '../components/TippBlase';
 import { TIPPS } from '../utils/tippListe';
 import BrutzelAvatar from '../components/BrutzelAvatar';
@@ -264,6 +266,15 @@ export default function DashboardScreen({ navigation }: Props) {
     }
   };
 
+  // Angefangene, noch nicht fertig gekochte Rezepte (Koch-Modus verlassen) - stehen oben in "Zuletzt zubereitet"
+  const [angefangen, setAngefangen] = useState<KochplanEintrag[]>([]);
+  useFocusEffect(useCallback(() => { kochplanLaden().then((l) => setAngefangen(l.filter((e) => e.begonnen))); }, []));
+  const angefangenEntfernen = async (e: KochplanEintrag) => {
+    await kochplanEntfernen(e.id);
+    if (e.verwerfenId) api.delete(`/recipes/${e.verwerfenId}`).catch(() => {});
+    setAngefangen((l) => l.filter((x) => x.id !== e.id));
+  };
+
   const recentlyCooked = useMemo(
     () =>
       recipes
@@ -420,12 +431,35 @@ export default function DashboardScreen({ navigation }: Props) {
   const blockZuletzt = (
     <>
       <Text style={[styles.sectionLabel, { color: colors.text }]}>{t('dashboard.zuletztZubereitet')}</Text>
-      {recentlyCooked.length === 0 ? (
+      {recentlyCooked.length === 0 && angefangen.length === 0 ? (
         <Text style={[styles.emptyText, { color: colors.muted }]}>
           Noch nichts zubereitet – starte die Zubereitung eines Rezepts, dann erscheint es hier.
         </Text>
       ) : (
         <View style={[styles.recentCard, { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: 1, borderColor: colors.cardBorder }]}>
+          {angefangen.map((e) => {
+            const r = recipes.find((x) => x.id === e.id);
+            return (
+              <Pressable
+                key={`angefangen-${e.id}`}
+                onPress={() => navigation.navigate('CookMode', { recipeIds: e.recipeIds, sessionServings: e.portionen, discardAfterId: e.verwerfenId })}
+                style={[styles.recentRow, styles.recentRowBorder, { borderColor: colors.bg }]}
+              >
+                {r?.cover_image_url ? (
+                  <Image source={{ uri: r.cover_image_url }} style={styles.recentThumb} />
+                ) : (
+                  <View style={[styles.recentThumb, styles.recentThumbPlaceholder, { backgroundColor: gradient[0] }]} />
+                )}
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.recentTitle, { color: colors.text }]} numberOfLines={1}>{e.titel}</Text>
+                  <Text style={[styles.recentMeta, { color: gradient[0], fontWeight: '700' }]}>{t('dashboard.angefangen')}</Text>
+                </View>
+                <Pressable onPress={() => angefangenEntfernen(e)} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('kochplan.entfernen')}>
+                  <MaterialCommunityIcons name="close" size={19} color={colors.muted} />
+                </Pressable>
+              </Pressable>
+            );
+          })}
           {recentlyCooked.map((r, i) => (
             <Pressable
               key={r.id}

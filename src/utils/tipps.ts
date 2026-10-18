@@ -46,7 +46,24 @@ export async function tippHeuteMerken(id: string): Promise<void> {
 
 /** Lokaler Schalter (Spiegel des "… hilft dir"-Schalters im Profil). */
 export async function tippsErlaubt(): Promise<boolean> {
-  return (await AsyncStorage.getItem(K('aus')).catch(() => null)) !== '1';
+  if ((await AsyncStorage.getItem(K('aus')).catch(() => null)) === '1') return false;
+  return !(await inSchonfrist());
+}
+
+/** Die ersten 14 Tage nach der Installation (18.10.2026): keine Tipps im Dashboard.
+ * Wer schon vorher Tipps gesehen hat (bestehende Installation), ist davon nicht betroffen. */
+const SCHONFRIST_TAGE = 14;
+async function inSchonfrist(): Promise<boolean> {
+  try {
+    let start = Number(await AsyncStorage.getItem(K('erststart')));
+    if (!start) {
+      start = (await gesehenLaden()).length > 0 ? 1 : Date.now();   // 1 = alte Installation, Frist vorbei
+      await AsyncStorage.setItem(K('erststart'), String(start));
+    }
+    return Date.now() - start < SCHONFRIST_TAGE * 24 * 3600 * 1000;
+  } catch {
+    return false;
+  }
 }
 
 export async function tippsErlaubtSetzen(an: boolean): Promise<void> {

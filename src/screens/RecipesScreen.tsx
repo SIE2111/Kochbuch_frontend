@@ -310,16 +310,8 @@ export default function RecipesScreen({ navigation, route }: Props) {
 
       {error && <Text style={[styles.errorText, { color: '#DC2626' }]}>{error}</Text>}
 
-      {filterTag && (
-        <Pressable
-          onPress={() => navigation.setParams({ filterTag: undefined })}
-          style={[styles.filterPill, { backgroundColor: gradient[0], borderRadius: radius.sm }]}
-        >
-          <Text style={styles.filterPillText}>{filterTag} ✕</Text>
-        </Pressable>
-      )}
-
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0, flexShrink: 0, marginBottom: 12 }} contentContainerStyle={{ flexDirection: 'row', gap: 8 }}>
+      {/* Filter-Knöpfe klein in einer Reihe, damit auch die Sortierung ohne Wischen sichtbar ist */}
+      <View style={{ flexDirection: 'row', gap: 6, marginBottom: 12 }}>
         <Pressable
           onPress={() => setFavoritesOnly((prev) => !prev)}
           style={[
@@ -328,7 +320,7 @@ export default function RecipesScreen({ navigation, route }: Props) {
           ]}
         >
           <MaterialCommunityIcons name={favoritesOnly ? 'heart' : 'heart-outline'} size={14} color={favoritesOnly ? '#fff' : colors.text} />
-          <Text style={{ color: favoritesOnly ? '#fff' : colors.text, fontSize: 12, fontWeight: '600', marginLeft: 5 }}>
+          <Text allowFontScaling={false} numberOfLines={1} style={{ color: favoritesOnly ? '#fff' : colors.text, fontSize: 12, fontWeight: '600', marginLeft: 4, flexShrink: 1 }}>
             {t('rezepte.nurFavoriten')}
           </Text>
         </Pressable>
@@ -341,7 +333,7 @@ export default function RecipesScreen({ navigation, route }: Props) {
           ]}
         >
           <MaterialCommunityIcons name={onlyMine ? 'account-check' : 'account-check-outline'} size={14} color={onlyMine ? '#fff' : colors.text} />
-          <Text style={{ color: onlyMine ? '#fff' : colors.text, fontSize: 12, fontWeight: '600', marginLeft: 5 }}>
+          <Text allowFontScaling={false} numberOfLines={1} style={{ color: onlyMine ? '#fff' : colors.text, fontSize: 12, fontWeight: '600', marginLeft: 4, flexShrink: 1 }}>
             {t('rezepte.nurMeineRezepte')}
           </Text>
         </Pressable>
@@ -357,11 +349,11 @@ export default function RecipesScreen({ navigation, route }: Props) {
             size={14}
             color={colors.text}
           />
-          <Text style={{ color: colors.text, fontSize: 12, fontWeight: '600', marginLeft: 5 }}>
+          <Text allowFontScaling={false} numberOfLines={1} style={{ color: colors.text, fontSize: 12, fontWeight: '600', marginLeft: 4, flexShrink: 1 }}>
             {sortOption === 'az' ? t('rezepte.az') : sortOption === 'newest' ? t('rezepte.neuesteZuerst') : t('rezepte.aeltesteZuerst')}
           </Text>
         </Pressable>
-      </ScrollView>
+      </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.folderBar} contentContainerStyle={{ gap: 8, alignItems: 'center' }}>
         <Pressable
@@ -652,7 +644,7 @@ const styles = StyleSheet.create({
   kategorienKopf: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 4, marginBottom: 6 },
   kategorienTitel: { fontSize: 15, fontWeight: '700' },
   categoryBar: { height: 60, marginBottom: 14, flexGrow: 0, flexShrink: 0 },
-  favoritesChip: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 7, marginBottom: 12 },
+  favoritesChip: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', flexShrink: 1, paddingHorizontal: 9, paddingVertical: 6, marginBottom: 12 },
   folderChip: { height: 38, paddingHorizontal: 13, justifyContent: 'center', alignItems: 'center' },
   folderChipText: { fontSize: 12, fontWeight: '600', lineHeight: 16 },
   newFolderChip: { borderWidth: 1.3, paddingHorizontal: 10 },

@@ -100,8 +100,8 @@
   },
   "rezepte": {
     "suchen": "Search recipes or ingredients…",
-    "nurFavoriten": "Favourites only",
-    "nurMeineRezepte": "Only my recipes",
+    "nurFavoriten": "Favourites",
+    "nurMeineRezepte": "My recipes",
     "neuesteZuerst": "Newest first",
     "aeltesteZuerst": "Oldest first",
     "alphabetisch": "A–Z",

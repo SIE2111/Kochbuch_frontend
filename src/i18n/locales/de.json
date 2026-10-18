@@ -100,8 +100,8 @@
   },
   "rezepte": {
     "suchen": "Rezept oder Zutat suchen…",
-    "nurFavoriten": "Nur Favoriten",
-    "nurMeineRezepte": "Nur meine Rezepte",
+    "nurFavoriten": "Favoriten",
+    "nurMeineRezepte": "Meine Rezepte",
     "neuesteZuerst": "Neueste zuerst",
     "aeltesteZuerst": "Älteste zuerst",
     "alphabetisch": "A–Z",

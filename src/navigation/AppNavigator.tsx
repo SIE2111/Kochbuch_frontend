@@ -62,7 +62,7 @@ export type MainTabParamList = {
   Home: undefined;
   Rezepte: { filterTag?: string; favoritesOnly?: boolean; suche?: string } | undefined;
   Pool: undefined;
-  Einkauf: undefined;
+  Wochenplan: undefined;
   Profil: undefined;
 };
 
@@ -80,7 +80,7 @@ export type MainStackParamList = {
   WebBrowse: { initialQuery?: string; initialUrl?: string } | undefined;
   RezeptSuche: { initialQuery?: string } | undefined;
   AIGenerate: { wunsch?: string } | undefined;
-  WeeklyPlan: undefined;
+  Einkauf: undefined;
   // discardAfterId: Rezept, das nach dem Kochvorgang wieder geloescht wird.
   // Fuer "nur kochen, nicht behalten" - der Koch-Modus braucht ein
   // gespeichertes Rezept (Timer, Tipps, Stufen, Notizen haengen an der ID),
@@ -126,7 +126,7 @@ const TAB_ICONS: Record<keyof MainTabParamList, keyof typeof MaterialCommunityIc
   Home: 'home-variant-outline',
   Rezepte: 'book-open-variant',
   Pool: 'account-group-outline',
-  Einkauf: 'cart-outline',
+  Wochenplan: 'calendar-week-outline',
   Profil: 'account-circle-outline',
 };
 
@@ -167,7 +167,19 @@ function MainTabs() {
       <Tab.Screen name="Home" component={DashboardScreen} options={{ title: 'Home' }} />
       <Tab.Screen name="Rezepte" component={RecipesScreen} />
       <Tab.Screen name="Pool" component={CommunityPoolScreen} options={{ title: 'Community Pool' }} />
-      <Tab.Screen name="Einkauf" component={ShoppingListScreen} />
+      <Tab.Screen
+        name="Wochenplan"
+        component={WeeklyPlanScreen}
+        options={{
+          title: 'Wochenplan',
+          headerShown: true,
+          headerStyle: { backgroundColor: colors.bg },
+          headerTintColor: colors.text,
+          headerShadowVisible: false,
+          // Der Tab-Header uebernimmt den Statusleisten-Abstand selbst.
+          sceneStyle: { paddingTop: 0 },
+        }}
+      />
       <Tab.Screen name="Profil" component={ProfileScreen} options={{ title: 'Profil' }} />
     </Tab.Navigator>
   );
@@ -231,9 +243,9 @@ function MainNavigator({ startOnOnboarding }: { startOnOnboarding: boolean }) {
         options={{ title: 'KI-Rezept' }}
       />
       <MainStack.Screen
-        name="WeeklyPlan"
-        component={WeeklyPlanScreen}
-        options={{ title: 'Wochenplan' }}
+        name="Einkauf"
+        component={ShoppingListScreen}
+        options={{ title: 'Einkaufsliste' }}
       />
       <MainStack.Screen
         name="CookMode"

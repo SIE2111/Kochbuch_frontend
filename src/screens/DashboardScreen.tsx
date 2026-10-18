@@ -337,25 +337,6 @@ export default function DashboardScreen({ navigation }: Props) {
     </Pressable>
   );
 
-  const blockActions = (
-    <View style={styles.actionsRow}>
-      <Pressable
-        onPress={() => navigation.navigate('Einkauf')}
-        style={[styles.actionButton, { backgroundColor: gradient[0], borderRadius: radius.md }]}
-      >
-        <MaterialCommunityIcons name="cart-outline" size={18} color="#fff" />
-        <Text style={styles.actionText}>{t('dashboard.einkaufszettel')}</Text>
-      </Pressable>
-      <Pressable
-        onPress={() => navigation.navigate('WeeklyPlan')}
-        style={[styles.actionButton, { backgroundColor: colors.card, borderRadius: radius.md }]}
-      >
-        <MaterialCommunityIcons name="calendar-week-outline" size={18} color={colors.text} />
-        <Text style={[styles.actionText, { color: colors.text }]}>{t('dashboard.wochenplaner')}</Text>
-      </Pressable>
-    </View>
-  );
-
   // Ersetzt die Kategorien-Chips: ein Knopf zur vollen Rezeptliste (dort
   // gibt es die Kategorien- und Favoriten-Filter weiterhin).
   const blockMeineRezepte = (
@@ -514,7 +495,8 @@ export default function DashboardScreen({ navigation }: Props) {
           unten - das ist eine andere, statische Kopfzeile). */}
       {/* Suche - erste Zeile, wie in der Buerroablage: Eingabe, dann Suchen auf
           der Tastatur -> Rezepte-Liste mit dem Begriff. */}
-      <View style={[styles.sucheZeile, { backgroundColor: colors.card, borderRadius: radius.md }]}>
+      <View style={styles.sucheKopf}>
+      <View style={[styles.sucheZeile, { backgroundColor: colors.card, borderRadius: radius.md, flex: 1, marginBottom: 0 }]}>
         <MaterialCommunityIcons name="magnify" size={18} color={colors.muted} />
         <TextInput
           style={[styles.sucheEingabe, { color: colors.text }]}
@@ -536,6 +518,16 @@ export default function DashboardScreen({ navigation }: Props) {
             <MaterialCommunityIcons name="close-circle" size={16} color={colors.muted} />
           </Pressable>
         )}
+      </View>
+      {/* Einkaufsliste: Knopf oben rechts (statt Knopf im Dashboard) */}
+      <Pressable
+        onPress={() => navigation.navigate('Einkauf')}
+        accessibilityRole="button"
+        accessibilityLabel={t('dashboard.einkaufszettel')}
+        style={[styles.einkaufKnopf, { backgroundColor: gradient[0], borderRadius: radius.md }]}
+      >
+        <MaterialCommunityIcons name="cart-outline" size={22} color="#fff" />
+      </Pressable>
       </View>
 
       <View style={styles.brandRow}>
@@ -579,8 +571,7 @@ export default function DashboardScreen({ navigation }: Props) {
           <View style={styles.spalteLinks}>
             {blockShares}
             {blockDaily}
-            {blockActions}
-            {blockMeineRezepte}
+              {blockMeineRezepte}
           </View>
           <View style={styles.spalteRechts}>
             {blockZuletzt}
@@ -590,7 +581,6 @@ export default function DashboardScreen({ navigation }: Props) {
         <>
           {blockShares}
           {blockDaily}
-          {blockActions}
           {blockMeineRezepte}
           {blockZuletzt}
         </>
@@ -611,6 +601,8 @@ export default function DashboardScreen({ navigation }: Props) {
 // Liste erneut aus dem Bild.
 const styles = StyleSheet.create({
   container: { padding: 18, paddingBottom: 40 },
+  sucheKopf: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
+  einkaufKnopf: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
   sucheZeile: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 42, marginBottom: 12 },
   sucheEingabe: { flex: 1, fontSize: 13.5 },
   brandRow:       { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },

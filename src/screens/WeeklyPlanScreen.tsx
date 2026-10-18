@@ -4,11 +4,16 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
 import { api, ApiError } from '../api/client';
+import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { MainStackParamList } from '../navigation/AppNavigator';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import type { MainTabParamList, MainStackParamList } from '../navigation/AppNavigator';
 import { useLayout } from '../utils/layout';
 
-type Props = NativeStackScreenProps<MainStackParamList, 'WeeklyPlan'>;
+type Props = CompositeScreenProps<
+  BottomTabScreenProps<MainTabParamList, 'Wochenplan'>,
+  NativeStackScreenProps<MainStackParamList>
+>;
 
 type MealSlot = 'fruehstueck' | 'mittag' | 'abend';
 // Schluessel statt Texte: Die Tabellen werden einmal beim Laden der

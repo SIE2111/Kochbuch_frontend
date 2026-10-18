@@ -15,10 +15,7 @@ import { useLayout } from '../utils/layout';
 import ZutatBild from '../components/ZutatBild';
 import { showBrutzelHinweis } from '../components/BrutzelHinweis';
 
-type Props = CompositeScreenProps<
-  BottomTabScreenProps<MainTabParamList, 'Einkauf'>,
-  NativeStackScreenProps<MainStackParamList>
->;
+type Props = NativeStackScreenProps<MainStackParamList, 'Einkauf'>;
 
 interface ShoppingItem {
   id: string;
@@ -375,19 +372,6 @@ export default function ShoppingListScreen({ navigation }: Props) {
     // der Bearbeiten-Bereich eingebettet. Sonst volle Breite wie bisher.
     <View style={{ flex: 1, flexDirection: quer ? 'row' : 'column' }}>
     <View style={[styles.container, { backgroundColor: colors.bg }, quer && { width: 400, flex: undefined, borderRightWidth: 1, borderRightColor: colors.cardBorder }]}>
-      {/* Der Einkauf-Tab ist wie jeder Tab eigentlich eine Wurzel ohne
-          "zurueck" (man wechselt ja einfach den Tab) - auf Wunsch trotzdem
-          ein Knopf, der ausdruecklich zu Home fuehrt. navigation.navigate
-          statt goBack(): goBack() waere hier ohnehin ohne Wirkung, ein
-          Tab-Root hat nichts, wohin es "zurueck" gehen koennte. */}
-      <Pressable
-        onPress={() => navigation.navigate('Home')}
-        hitSlop={10}
-        style={[styles.backRow, { backgroundColor: colors.card, borderRadius: radius.md }]}
-      >
-        <MaterialCommunityIcons name="chevron-left" size={20} color={colors.text} />
-        <Text style={[styles.backText, { color: colors.text }]}>{t('allgemein.zurueck')}</Text>
-      </Pressable>
 
       {error && <Text style={[styles.errorText, { color: '#DC2626' }]}>{error}</Text>}
 

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl, Image, Alert, Modal } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl, Image, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
@@ -58,7 +58,6 @@ export default function DashboardScreen({ navigation }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [rezepteFrageOffen, setRezepteFrageOffen] = useState(false);
   const [profileDisplayName, setProfileDisplayName] = useState<string | null>(null);
   const [brutzelTipps, setBrutzelTipps] = useState(false);   // erst nach dem Laden der Einstellungen
   const [showGreeting, setShowGreeting] = useState(false);
@@ -367,7 +366,7 @@ export default function DashboardScreen({ navigation }: Props) {
   // gibt es die Kategorien- und Favoriten-Filter weiterhin).
   const blockMeineRezepte = (
     <Pressable
-      onPress={() => setRezepteFrageOffen(true)}
+      onPress={() => navigation.navigate('Rezepte', {})}
       style={[styles.meineRezepte, { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: 1, borderColor: colors.cardBorder }]}
     >
       <MaterialCommunityIcons name="book-open-variant" size={18} color={gradient[0]} />
@@ -580,41 +579,6 @@ export default function DashboardScreen({ navigation }: Props) {
       )}
     </ScrollView>
 
-    <Modal visible={rezepteFrageOffen} transparent animationType="fade" onRequestClose={() => setRezepteFrageOffen(false)}>
-      <Pressable style={styles.frageHintergrund} onPress={() => setRezepteFrageOffen(false)}>
-        <Pressable style={[styles.frageBlatt, { backgroundColor: colors.bg, borderRadius: radius.lg }]} onPress={() => {}}>
-          <View style={styles.frageKopf}>
-            <BrutzelAvatar size={44} variant="head" />
-            <Text style={[styles.frageText, { color: colors.text }]}>
-              {recipes.length === 0
-                ? t('dashboard.frageKeineRezepte')
-                : t('dashboard.frageAlleRezepte', { anzahl: recipes.length })}
-            </Text>
-          </View>
-          {(recipes.length === 0
-            ? [
-                { icon: 'camera-outline', text: t('dashboard.frageFoto'), ziel: () => navigation.navigate('PhotoCapture') },
-                { icon: 'web', text: t('dashboard.frageInternet'), ziel: () => navigation.navigate('WebImport') },
-                { icon: 'pencil-outline', text: t('dashboard.frageTippen'), ziel: () => navigation.navigate('ManualRecipe') },
-              ]
-            : [
-                { icon: 'book-open-variant', text: t('dashboard.frageJaAlle'), ziel: () => navigation.navigate('Rezepte', {}), primaer: true },
-                { icon: 'heart-outline', text: t('dashboard.frageFavoriten'), ziel: () => navigation.navigate('Rezepte', { favoritesOnly: true }) },
-                { icon: 'shape-outline', text: t('dashboard.frageKategorie'), ziel: () => navigation.navigate('Rezepte', {}) },
-              ]
-          ).map((o: any, i: number) => (
-            <Pressable
-              key={i}
-              onPress={() => { setRezepteFrageOffen(false); o.ziel(); }}
-              style={[styles.frageKnopf, { backgroundColor: o.primaer ? gradient[0] : colors.card, borderRadius: radius.md }]}
-            >
-              <MaterialCommunityIcons name={o.icon} size={18} color={o.primaer ? '#fff' : colors.text} />
-              <Text style={[styles.actionText, { color: o.primaer ? '#fff' : colors.text }]}>{o.text}</Text>
-            </Pressable>
-          ))}
-        </Pressable>
-      </Pressable>
-    </Modal>
     <ScanFab />
     {showGreeting && <BrutzelGreetingOverlay name={displayName} mitVideo={greetingMitVideo} sprechen={greetingSprechen} mitMusik={greetingMitMusik} onDismiss={() => setShowGreeting(false)} />}
     </>
@@ -644,11 +608,6 @@ const styles = StyleSheet.create({
   spalteRechts: { flex: 5 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   errorText: { fontSize: 12, marginBottom: 12 },
-  frageHintergrund: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end' },
-  frageBlatt: { padding: 18, paddingBottom: 30, gap: 10, borderBottomLeftRadius: 0, borderBottomRightRadius: 0 },
-  frageKopf: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 6 },
-  frageText: { flex: 1, fontSize: 15, fontWeight: '600' },
-  frageKnopf: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 46 },
   statsLine: { fontSize: 11, textAlign: 'center', marginTop: 16 },
   meineRezepte: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 48, paddingHorizontal: 14, marginBottom: 16 },
   statsRow: { flexDirection: 'row', gap: 10, marginBottom: 12, marginTop: 4 },

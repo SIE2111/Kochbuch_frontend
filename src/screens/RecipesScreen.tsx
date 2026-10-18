@@ -126,6 +126,10 @@ export default function RecipesScreen({ navigation, route }: Props) {
   const [newFolderName, setNewFolderName] = useState('');
   const [isSavingFolder, setIsSavingFolder] = useState(false);
   const [searchText, setSearchText] = useState('');
+  // Kategorien-Auswahl des Nutzers (aktiv/inaktiv + Reihenfolge, siehe ManageCategoriesScreen) -
+  // gilt auch hier, nicht nur im Dashboard.
+  const [categoryOrder, setCategoryOrder] = useState<string[]>([]);
+  const [hiddenCategories, setHiddenCategories] = useState<string[]>([]);
 
   // Optionaler Tag-Filter, den das Dashboard beim Antippen einer Kategorie
   // mitgibt (siehe DashboardScreen) - rein clientseitig gefiltert, da das
@@ -152,6 +156,9 @@ export default function RecipesScreen({ navigation, route }: Props) {
       ]);
       setRecipes(recipeData);
       setFolders(folderData);
+      api.get<{ category_order: string[] | null; hidden_categories: string[] | null }>('/preferences/')
+        .then((p) => { setCategoryOrder(p.category_order ?? []); setHiddenCategories(p.hidden_categories ?? []); })
+        .catch(() => {});
       setError(null);
     } catch (err) {
       setError(err instanceof ApiError ? err.detail : t('rezepte.nichtGeladen'));
@@ -220,10 +227,16 @@ export default function RecipesScreen({ navigation, route }: Props) {
 
   // Fuer die Kategorie-Auswahl direkt hier auf dem Screen. Die gerade gewaehlte Kategorie bleibt
   // immer sichtbar (zum Abwaehlen), auch wenn sie in der Auswahl leer ist.
+  const versteckt = new Set(hiddenCategories);
   const availableCategories = Array.from(new Set([
-    ...scoped.flatMap((r) => r.tags ?? []),
+    ...scoped.flatMap((r) => r.tags ?? []).filter((tg) => !versteckt.has(tg)),
     ...(filterTag ? [filterTag] : []),
-  ])).sort((a, b) => a.localeCompare(b, 'de'));
+  ])).sort((a, b) => {
+    // Reihenfolge wie vom Nutzer festgelegt, Uebriges danach alphabetisch
+    const ia = categoryOrder.indexOf(a), ib = categoryOrder.indexOf(b);
+    if (ia !== -1 || ib !== -1) return (ia === -1 ? 1e6 : ia) - (ib === -1 ? 1e6 : ib);
+    return a.localeCompare(b, 'de');
+  });
   visibleRecipes = [...visibleRecipes].sort((a, b) => {
     if (sortOption === 'az') return a.title.localeCompare(b.title, 'de');
     // Starter-Rezepte stehen bei der Datumssortierung immer hinten. Ein

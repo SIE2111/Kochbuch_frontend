@@ -108,9 +108,19 @@ export default function RecipesScreen({ navigation, route }: Props) {
 
   useEffect(() => {
     AsyncStorage.getItem(ONLY_MINE_KEY)
-      .then((raw) => setOnlyMine(raw === '1'))
+      .then((raw) => { if (route.params?.nurMeine === undefined) setOnlyMine(raw === '1'); })
       .catch(() => {});
   }, []);
+
+  // Vom Dashboard-Knopf "Meine Rezepte": Filter "Nur meine Rezepte" gezielt
+  // setzen (true) bzw. ausschalten (false, "alle gespeicherten Rezepte").
+  useEffect(() => {
+    const v = route.params?.nurMeine;
+    if (v === undefined) return;
+    setOnlyMine(v);
+    AsyncStorage.setItem(ONLY_MINE_KEY, v ? '1' : '0').catch(() => {});
+    navigation.setParams({ nurMeine: undefined });
+  }, [route.params?.nurMeine]);
 
   const handleToggleOnlyMine = () => {
     setOnlyMine((prev) => {

@@ -39,6 +39,7 @@ foreach ($plattform in @("ios", "android")) {
     New-Item -ItemType Directory -Force -Path $t | Out-Null
     $env:TEMP = $t
     $env:TMP = $t
+    Remove-Item -Recurse -Force (Join-Path $PSScriptRoot "dist") -ErrorAction SilentlyContinue
     Write-Host "Veroeffentliche $plattform (Versuch $versuch)..." -ForegroundColor Cyan
     npx eas update --branch production --environment production --platform $plattform --message $Message
     if ($LASTEXITCODE -eq 0) { $geschafft = $true }
@@ -46,5 +47,19 @@ foreach ($plattform in @("ios", "android")) {
   if (-not $geschafft) { Write-Host "Update fuer $plattform fehlgeschlagen." -ForegroundColor Red; exit 1 }
 }
 # Android-Tablet/Emulator (APK mit Kanal 'preview'): bekommt denselben Stand (Okt 2026)
-Write-Host "Veroeffentliche Update fuer Android-Test (Kanal 'preview')..." -ForegroundColor Cyan
-npx eas update --branch preview --environment production --platform android --message $Message
+# Wie oben mit bis zu 3 Versuchen und frischem Temp-Ordner. Zusaetzlich wird der Export-Ordner 'dist' vorher geloescht:
+# Windows haelt ihn nach dem vorigen Export manchmal kurz fest ("EPERM: rmdir ...\dist\_expo\static", 18.10.2026)
+$previewGeschafft = $false
+for ($versuch = 1; $versuch -le 3 -and -not $previewGeschafft; $versuch++) {
+  Start-Sleep -Seconds (3 * $versuch)
+  Remove-Item -Recurse -Force (Join-Path $PSScriptRoot "dist") -ErrorAction SilentlyContinue
+  $t = Join-Path $env:LOCALAPPDATA ("Temp\metro-preview-" + $versuch + "-" + (Get-Date -Format "HHmmss"))
+  New-Item -ItemType Directory -Force -Path $t | Out-Null
+  $env:TEMP = $t
+  $env:TMP = $t
+  Write-Host "Veroeffentliche Update fuer Android-Test (Kanal 'preview'), Versuch $versuch..." -ForegroundColor Cyan
+  npx eas update --branch preview --environment production --platform android --message $Message
+  if ($LASTEXITCODE -eq 0) { $previewGeschafft = $true }
+}
+if (-not $previewGeschafft) { Write-Host "Update fuer Android-Test (preview) fehlgeschlagen. production ist aber veroeffentlicht." -ForegroundColor Red; exit 1 }
+Write-Host "Fertig: iOS, Android und Android-Test veroeffentlicht." -ForegroundColor Green

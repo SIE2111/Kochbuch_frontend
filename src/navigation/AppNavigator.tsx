@@ -60,7 +60,7 @@ export type AuthStackParamList = {
 // allen Hauptscreens sitzt.
 export type MainTabParamList = {
   Home: undefined;
-  Rezepte: { filterTag?: string; favoritesOnly?: boolean } | undefined;
+  Rezepte: { filterTag?: string; favoritesOnly?: boolean; suche?: string } | undefined;
   Pool: undefined;
   Einkauf: undefined;
   Profil: undefined;

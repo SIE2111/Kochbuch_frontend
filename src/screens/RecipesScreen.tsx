@@ -145,6 +145,16 @@ export default function RecipesScreen({ navigation, route }: Props) {
     }
   }, [route.params?.favoritesOnly]);
 
+  // Suchbegriff aus der Suchzeile des Dashboards: uebernehmen und den
+  // Parameter wieder leeren, damit er spaeter nicht erneut greift.
+  useEffect(() => {
+    const q = route.params?.suche;
+    if (q) {
+      setSearchText(q);
+      navigation.setParams({ suche: undefined });
+    }
+  }, [route.params?.suche]);
+
   const loadAll = useCallback(async () => {
     try {
       const recipesUrl = searchText.trim()

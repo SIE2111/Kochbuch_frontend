@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl, Image, Alert } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl, Image, Alert, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
@@ -58,6 +58,7 @@ export default function DashboardScreen({ navigation }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [suche, setSuche] = useState('');
   const [profileDisplayName, setProfileDisplayName] = useState<string | null>(null);
   const [brutzelTipps, setBrutzelTipps] = useState(false);   // erst nach dem Laden der Einstellungen
   const [showGreeting, setShowGreeting] = useState(false);
@@ -511,6 +512,32 @@ export default function DashboardScreen({ navigation }: Props) {
           fehlte hier bisher komplett (nicht zu verwechseln mit der bewusst
           entfernten Begruessung "Hallo...Was kochen wir heute" weiter
           unten - das ist eine andere, statische Kopfzeile). */}
+      {/* Suche - erste Zeile, wie in der Buerroablage: Eingabe, dann Suchen auf
+          der Tastatur -> Rezepte-Liste mit dem Begriff. */}
+      <View style={[styles.sucheZeile, { backgroundColor: colors.card, borderRadius: radius.md }]}>
+        <MaterialCommunityIcons name="magnify" size={18} color={colors.muted} />
+        <TextInput
+          style={[styles.sucheEingabe, { color: colors.text }]}
+          value={suche}
+          onChangeText={setSuche}
+          placeholder={t('rezepte.suchen')}
+          placeholderTextColor={colors.muted}
+          returnKeyType="search"
+          autoCapitalize="none"
+          onSubmitEditing={() => {
+            const q = suche.trim();
+            if (!q) return;
+            setSuche('');
+            navigation.navigate('Rezepte', { suche: q });
+          }}
+        />
+        {suche.length > 0 && (
+          <Pressable onPress={() => setSuche('')} hitSlop={8}>
+            <MaterialCommunityIcons name="close-circle" size={16} color={colors.muted} />
+          </Pressable>
+        )}
+      </View>
+
       <View style={styles.brandRow}>
         <Text style={[styles.brandText, { color: colors.muted }]}>Powered by</Text>
         <Text style={[styles.brandName, { color: colors.text }]}>HomeArchive</Text>
@@ -584,6 +611,8 @@ export default function DashboardScreen({ navigation }: Props) {
 // Liste erneut aus dem Bild.
 const styles = StyleSheet.create({
   container: { padding: 18, paddingBottom: 40 },
+  sucheZeile: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 42, marginBottom: 12 },
+  sucheEingabe: { flex: 1, fontSize: 13.5 },
   brandRow:       { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
   brandText:      { fontSize: 11 },
   brandName:      { fontSize: 11, fontWeight: '500' },

@@ -356,6 +356,7 @@ export default function ProfileScreen({ navigation }: Props) {
       keyboardDismissMode="on-drag"
       style={[{ backgroundColor: colors.bg }, quer && { width: 400, borderRightWidth: 1, borderRightColor: colors.cardBorder }]}
       contentContainerStyle={[styles.container, inhaltsBreite]}>
+      <Text style={[styles.seitenTitel, { color: colors.text }]}>{t('tabs.profil')}</Text>
       {/* Die drei Zahlen (frueher auf dem Dashboard) - ganz oben im Profil */}
       <View style={styles.zahlenReihe}>
         {[
@@ -773,6 +774,7 @@ export default function ProfileScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
+  seitenTitel: { fontSize: 22, fontWeight: '700', marginBottom: 12 },
   zahlenReihe: { flexDirection: 'row', gap: 10, marginBottom: 16, marginTop: 4 },
   zahlKarte: { flex: 1, paddingVertical: 11, paddingHorizontal: 10, alignItems: 'center' },
   zahlWert: { fontSize: 20, fontWeight: '700' },

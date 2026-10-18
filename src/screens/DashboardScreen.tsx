@@ -691,7 +691,7 @@ const styles = StyleSheet.create({
   // proportional mit (Breitenverhaeltnis ca. 1,6x).
   dailyImageTablet: { height: 320 },
   // Text im Bild, unten auf weißem Band - immer gut lesbar (feste dunkle Schrift, auch im Dunkelmodus)
-  dailyInfo: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 14, paddingVertical: 10, backgroundColor: 'rgba(255,255,255,0.9)' },
+  dailyInfo: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 14, paddingVertical: 10, backgroundColor: 'rgba(255,255,255,0.7)' },
   dailyTitle: { fontSize: 17, fontWeight: '700', color: '#1f1a14' },
   dailyMeta: { fontSize: 12.5, marginTop: 3, color: '#5c5348' },
   actionsRow: { flexDirection: 'row', gap: 10, marginBottom: 14 },

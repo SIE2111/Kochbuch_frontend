@@ -123,7 +123,8 @@
     "nochKeine": "No recipes yet – add your first one with the button below.",
     "keineEigenen": "No recipes of your own yet – imported, unchanged starter recipes are hidden here.",
     "vonMitglied": "From {name}",
-    "keineAuswahl": "Select a recipe from the list"
+    "keineAuswahl": "Select a recipe from the list",
+    "alleRezepte": "All"
   },
   "starter": {
     "titel": "Starter recipes",

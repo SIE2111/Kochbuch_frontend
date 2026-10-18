@@ -104,7 +104,7 @@ export default function RecipesScreen({ navigation, route }: Props) {
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [onlyMine, setOnlyMine] = useState(false);
-  const [sortOption, setSortOption] = useState<'newest' | 'oldest' | 'az'>('newest');
+  const [sortOption, setSortOption] = useState<'newest' | 'oldest' | 'az'>('az');
 
   useEffect(() => {
     AsyncStorage.getItem(ONLY_MINE_KEY)
@@ -231,6 +231,11 @@ export default function RecipesScreen({ navigation, route }: Props) {
   // zeigen nur Kategorien, die in dieser Auswahl auch Rezepte haben. Vorher standen auch Kategorien
   // da, die unter dem (gemerkten) Filter "Meine" leer waren - z.B. "Vegetarisch", dessen Rezepte
   // meist aus den Starter-Paketen stammen: Antippen = leere Liste.
+  const passtZuFilter = (r: (typeof recipes)[number]) =>
+    (!favoritesOnly || r.is_favorite) &&
+    (!onlyMine || (!r.owner_display_name && !(r.source_type === 'starter_pack' && !r.is_modified)));
+  const ordnerZahl = (folderId: string | null) =>
+    recipes.filter((r) => passtZuFilter(r) && (folderId === null || r.folder_id === folderId)).length;
   let scoped = selectedFolderId ? recipes.filter((r) => r.folder_id === selectedFolderId) : recipes;
   if (favoritesOnly) {
     scoped = scoped.filter((r) => r.is_favorite);
@@ -313,6 +318,20 @@ export default function RecipesScreen({ navigation, route }: Props) {
       {/* Filter-Knöpfe klein in einer Reihe, damit auch die Sortierung ohne Wischen sichtbar ist */}
       <View style={{ flexDirection: 'row', gap: 6, marginBottom: 12 }}>
         <Pressable
+          onPress={() => {
+            setFavoritesOnly(false); setOnlyMine(false);
+            AsyncStorage.setItem(ONLY_MINE_KEY, '0').catch(() => {});
+          }}
+          style={[
+            styles.favoritesChip,
+            { backgroundColor: !favoritesOnly && !onlyMine ? gradient[0] : colors.card, borderRadius: radius.sm, marginBottom: 0 },
+          ]}
+        >
+          <Text allowFontScaling={false} numberOfLines={1} style={{ color: !favoritesOnly && !onlyMine ? '#fff' : colors.text, fontSize: 12, fontWeight: '600', flexShrink: 1 }}>
+            {t('rezepte.alleRezepte')}
+          </Text>
+        </Pressable>
+        <Pressable
           onPress={() => setFavoritesOnly((prev) => !prev)}
           style={[
             styles.favoritesChip,
@@ -340,7 +359,7 @@ export default function RecipesScreen({ navigation, route }: Props) {
 
         <Pressable
           onPress={() =>
-            setSortOption((prev) => (prev === 'newest' ? 'oldest' : prev === 'oldest' ? 'az' : 'newest'))
+            setSortOption((prev) => (prev === 'az' ? 'newest' : prev === 'newest' ? 'oldest' : 'az'))
           }
           style={[styles.favoritesChip, { backgroundColor: colors.card, borderRadius: radius.sm, marginBottom: 0 }]}
         >
@@ -364,7 +383,7 @@ export default function RecipesScreen({ navigation, route }: Props) {
           ]}
         >
           <Text allowFontScaling={false} style={[styles.folderChipText, { color: selectedFolderId === null ? '#fff' : colors.text }]}>
-            Alle ({recipes.length})
+            Alle ({ordnerZahl(null)})
           </Text>
         </Pressable>
         {folders.map((folder) => {
@@ -398,7 +417,7 @@ export default function RecipesScreen({ navigation, route }: Props) {
               style={[styles.folderChip, { backgroundColor: isSelected ? gradient[0] : colors.card, borderRadius: radius.sm }]}
             >
               <Text allowFontScaling={false} style={[styles.folderChipText, { color: isSelected ? '#fff' : colors.text }]}>
-                {folder.name} ({folder.recipe_count})
+                {folder.name} ({ordnerZahl(folder.id)})
               </Text>
             </Pressable>
           );

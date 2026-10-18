@@ -123,7 +123,8 @@
     "nochKeine": "Noch keine Rezepte – leg dein erstes über den Button unten an.",
     "keineEigenen": "Noch keine eigenen Rezepte – importierte, unveränderte Starter-Rezepte werden hier ausgeblendet.",
     "vonMitglied": "Von {name}",
-    "keineAuswahl": "Rezept aus der Liste wählen"
+    "keineAuswahl": "Rezept aus der Liste wählen",
+    "alleRezepte": "Alle"
   },
   "starter": {
     "titel": "Starter-Rezepte",

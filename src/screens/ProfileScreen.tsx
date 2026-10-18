@@ -129,6 +129,7 @@ export default function ProfileScreen({ navigation }: Props) {
     api.get<{ moderator: boolean }>('/pool/moderation/me').then((r) => setIstModerator(!!r.moderator)).catch(() => setIstModerator(false));
   }, []);
   const [prefs, setPrefs] = useState<Preferences | null>(null);
+  const [zahlen, setZahlen] = useState<{ total_recipes: number; cooked_this_week: number; cooked_total: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savingKey, setSavingKey] = useState<PreferenceKey | 'default_hauben_level' | 'default_servings' | 'display_name' | null>(null);
   const [otherApps, setOtherApps] = useState<string[]>([]);
@@ -161,6 +162,7 @@ export default function ProfileScreen({ navigation }: Props) {
   useFocusEffect(
     React.useCallback(() => {
       loadPrefs();
+      api.get<{ total_recipes: number; cooked_this_week: number; cooked_total: number }>('/recipes/stats').then(setZahlen).catch(() => {});
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
   );
@@ -354,6 +356,19 @@ export default function ProfileScreen({ navigation }: Props) {
       keyboardDismissMode="on-drag"
       style={[{ backgroundColor: colors.bg }, quer && { width: 400, borderRightWidth: 1, borderRightColor: colors.cardBorder }]}
       contentContainerStyle={[styles.container, inhaltsBreite]}>
+      {/* Die drei Zahlen (frueher auf dem Dashboard) - ganz oben im Profil */}
+      <View style={styles.zahlenReihe}>
+        {[
+          { wert: zahlen?.total_recipes, label: t('dashboard.rezepte') },
+          { wert: zahlen?.cooked_this_week, label: t('dashboard.dieseWocheGekocht') },
+          { wert: zahlen?.cooked_total, label: t('dashboard.insgesamtGekocht') },
+        ].map((z, i) => (
+          <View key={i} style={[styles.zahlKarte, { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: 1, borderColor: colors.cardBorder }]}>
+            <Text style={[styles.zahlWert, { color: colors.text }]}>{z.wert ?? '–'}</Text>
+            <Text style={[styles.zahlLabel, { color: colors.muted }]}>{z.label}</Text>
+          </View>
+        ))}
+      </View>
       <Text style={[styles.sectionLabel, { color: colors.muted, marginTop: 4 }]}>{t('profil.name')}</Text>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 }}>
         <TextInput
@@ -758,6 +773,10 @@ export default function ProfileScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
+  zahlenReihe: { flexDirection: 'row', gap: 10, marginBottom: 16, marginTop: 4 },
+  zahlKarte: { flex: 1, paddingVertical: 11, paddingHorizontal: 10, alignItems: 'center' },
+  zahlWert: { fontSize: 20, fontWeight: '700' },
+  zahlLabel: { fontSize: 10.5, marginTop: 2, textAlign: 'center' },
   container: { padding: 18, paddingBottom: 40 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   sectionLabel: { fontSize: 10.5, fontWeight: '700', letterSpacing: 0.5, marginBottom: 10 },

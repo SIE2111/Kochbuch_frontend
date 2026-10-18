@@ -309,13 +309,6 @@ export default function DashboardScreen({ navigation }: Props) {
   // Reihenfolge untereinander (wie bisher, unveraendert), am Tablet auf
   // zwei Spalten verteilt (siehe Rueckgabe unten). Jeder Block bleibt
   // dieselbe JSX wie vorher, nur eben benannt statt inline.
-  // Zahlen nur noch als kleine graue Zeile ganz unten (Vereinfachung 18.10.)
-  const blockStats = (
-    <Text style={[styles.statsLine, { color: colors.muted }]}>
-      {recipes.length} {t('dashboard.rezepte')} · {stats?.cooked_this_week ?? '–'} {t('dashboard.dieseWocheKurz')} · {stats?.cooked_total ?? '–'} {t('dashboard.insgesamtKurz')}
-    </Text>
-  );
-
   const blockDaily = recipeOfTheDay && (
     <Pressable
       onPress={() =>
@@ -564,8 +557,7 @@ export default function DashboardScreen({ navigation }: Props) {
           </View>
           <View style={styles.spalteRechts}>
             {blockZuletzt}
-            {blockStats}
-          </View>
+            </View>
         </View>
       ) : (
         <>
@@ -574,7 +566,6 @@ export default function DashboardScreen({ navigation }: Props) {
           {blockActions}
           {blockMeineRezepte}
           {blockZuletzt}
-          {blockStats}
         </>
       )}
     </ScrollView>
@@ -608,7 +599,6 @@ const styles = StyleSheet.create({
   spalteRechts: { flex: 5 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   errorText: { fontSize: 12, marginBottom: 12 },
-  statsLine: { fontSize: 11, textAlign: 'center', marginTop: 16 },
   meineRezepte: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 48, paddingHorizontal: 14, marginBottom: 16 },
   statsRow: { flexDirection: 'row', gap: 10, marginBottom: 12, marginTop: 4 },
   statCard: { flex: 1, paddingVertical: 11, paddingHorizontal: 10, alignItems: 'center' },

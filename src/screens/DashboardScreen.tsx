@@ -280,7 +280,7 @@ export default function DashboardScreen({ navigation }: Props) {
       recipes
         .filter((r) => r.last_cooked_at)
         .sort((a, b) => +new Date(b.last_cooked_at!) - +new Date(a.last_cooked_at!))
-        .slice(0, 3),
+        .slice(0, 10),
     [recipes],
   );
 
@@ -309,11 +309,21 @@ export default function DashboardScreen({ navigation }: Props) {
   // Reihenfolge untereinander (wie bisher, unveraendert), am Tablet auf
   // zwei Spalten verteilt (siehe Rueckgabe unten). Jeder Block bleibt
   // dieselbe JSX wie vorher, nur eben benannt statt inline.
-  // Zahlen nur noch als kleine graue Zeile ganz unten (Vereinfachung 18.10.)
   const blockStats = (
-    <Text style={[styles.statsLine, { color: colors.muted }]}>
-      {recipes.length} {t('dashboard.rezepte')} · {stats?.cooked_this_week ?? '–'} {t('dashboard.dieseWocheKurz')} · {stats?.cooked_total ?? '–'} {t('dashboard.insgesamtKurz')}
-    </Text>
+    <View style={styles.statsRow}>
+      <View style={[styles.statCard, { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: 1, borderColor: colors.cardBorder }]}>
+        <Text style={[styles.statValue, { color: colors.text }]}>{recipes.length}</Text>
+        <Text style={[styles.statLabel, { color: colors.muted }]}>{t('dashboard.rezepte')}</Text>
+      </View>
+      <View style={[styles.statCard, { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: 1, borderColor: colors.cardBorder }]}>
+        <Text style={[styles.statValue, { color: colors.text }]}>{stats?.cooked_this_week ?? '–'}</Text>
+        <Text style={[styles.statLabel, { color: colors.muted }]}>{t('dashboard.dieseWocheGekocht')}</Text>
+      </View>
+      <View style={[styles.statCard, { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: 1, borderColor: colors.cardBorder }]}>
+        <Text style={[styles.statValue, { color: colors.text }]}>{stats?.cooked_total ?? '–'}</Text>
+        <Text style={[styles.statLabel, { color: colors.muted }]}>{t('dashboard.insgesamtGekocht')}</Text>
+      </View>
+    </View>
   );
 
   const blockDaily = recipeOfTheDay && (
@@ -360,19 +370,6 @@ export default function DashboardScreen({ navigation }: Props) {
         <Text style={[styles.actionText, { color: colors.text }]}>{t('dashboard.wochenplaner')}</Text>
       </Pressable>
     </View>
-  );
-
-  // Ersetzt die Kategorien-Chips: ein Knopf zur vollen Rezeptliste (dort
-  // gibt es die Kategorien- und Favoriten-Filter weiterhin).
-  const blockMeineRezepte = (
-    <Pressable
-      onPress={() => navigation.navigate('Rezepte', {})}
-      style={[styles.meineRezepte, { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: 1, borderColor: colors.cardBorder }]}
-    >
-      <MaterialCommunityIcons name="book-open-variant" size={18} color={gradient[0]} />
-      <Text style={[styles.actionText, { color: colors.text, flex: 1, textAlign: 'left' }]}>{t('dashboard.meineRezepte')}</Text>
-      <MaterialCommunityIcons name="chevron-right" size={20} color={colors.muted} />
-    </Pressable>
   );
 
   // Ganz oben, weil eine Sendung von einer echten Person kommt und
@@ -433,12 +430,7 @@ export default function DashboardScreen({ navigation }: Props) {
   // siehe CookModeScreen.tsx, ruft mark-cooked nur fuer recipeIds[0] auf)
   const blockZuletzt = (
     <>
-      <View style={styles.categoriesHeaderRow}>
-        <Text style={[styles.sectionLabel, { color: colors.text }]}>{t('dashboard.zuletztZubereitet')}</Text>
-        <Pressable onPress={() => navigation.navigate('Rezepte', {})} hitSlop={8}>
-          <Text style={[styles.categoriesToggleText, { color: gradient[0] }]}>{t('dashboard.alle')}</Text>
-        </Pressable>
-      </View>
+      <Text style={[styles.sectionLabel, { color: colors.text }]}>{t('dashboard.zuletztZubereitet')}</Text>
       {recentlyCooked.length === 0 && angefangen.length === 0 ? (
         <Text style={[styles.emptyText, { color: colors.muted }]}>
           Noch nichts zubereitet – starte die Zubereitung eines Rezepts, dann erscheint es hier.
@@ -557,24 +549,24 @@ export default function DashboardScreen({ navigation }: Props) {
         // Reihenfolge unveraendert - siehe else-Zweig.
         <View style={styles.zweiSpalten}>
           <View style={styles.spalteLinks}>
-            {blockShares}
+            {blockStats}
             {blockDaily}
             {blockActions}
-            {blockMeineRezepte}
+            {blockShares}
           </View>
           <View style={styles.spalteRechts}>
+            {blockKategorien}
             {blockZuletzt}
-            {blockStats}
           </View>
         </View>
       ) : (
         <>
-          {blockShares}
+          {blockStats}
           {blockDaily}
           {blockActions}
-          {blockMeineRezepte}
+          {blockShares}
+          {blockKategorien}
           {blockZuletzt}
-          {blockStats}
         </>
       )}
     </ScrollView>
@@ -607,8 +599,6 @@ const styles = StyleSheet.create({
   spalteRechts: { flex: 5 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   errorText: { fontSize: 12, marginBottom: 12 },
-  statsLine: { fontSize: 11, textAlign: 'center', marginTop: 16 },
-  meineRezepte: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 48, paddingHorizontal: 14, marginBottom: 16 },
   statsRow: { flexDirection: 'row', gap: 10, marginBottom: 12, marginTop: 4 },
   statCard: { flex: 1, paddingVertical: 11, paddingHorizontal: 10, alignItems: 'center' },
   statValue: { fontSize: 20, fontWeight: '700' },

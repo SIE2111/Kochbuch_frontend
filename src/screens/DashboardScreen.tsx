@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl, Image, Alert, TextInput, Modal, Keyboard } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl, Image, Alert, TextInput, Modal, Keyboard, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
@@ -51,6 +52,9 @@ interface RecipeSummary {
 let hasShownGreetingThisSession = false;
 
 export default function DashboardScreen({ navigation }: Props) {
+  // Android: die Steuerleiste (Zurück/Home) überdeckt sonst den unteren Rand von Fenstern am Bildschirmrand
+  const insets = useSafeAreaInsets();
+  const untenFrei = Platform.OS === 'android' ? Math.max(insets.bottom, 48) : insets.bottom;
   const { colors, gradient, radius } = useTheme();
   const { istTablet, inhaltsBreite, inhaltsBreiteZweispaltig } = useLayout();
   const { t } = useUebersetzung();
@@ -610,7 +614,7 @@ export default function DashboardScreen({ navigation }: Props) {
 
     <Modal visible={keineEigeneOffen} transparent animationType="fade" onRequestClose={() => setKeineEigeneOffen(false)}>
       <Pressable style={styles.frageHintergrund} onPress={() => setKeineEigeneOffen(false)}>
-        <Pressable style={[styles.frageBlatt, { backgroundColor: colors.bg, borderRadius: radius.lg }]} onPress={() => {}}>
+        <Pressable style={[styles.frageBlatt, { backgroundColor: colors.bg, borderRadius: radius.lg, paddingBottom: 30 + untenFrei }]} onPress={() => {}}>
           <View style={styles.frageKopf}>
             <BrutzelAvatar size={44} variant="head" />
             <Text style={[styles.frageText, { color: colors.text }]}>{t('dashboard.frageKeineEigenen')}</Text>

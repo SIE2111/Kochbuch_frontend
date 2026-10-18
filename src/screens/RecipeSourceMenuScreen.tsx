@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
@@ -26,11 +27,13 @@ const OPTIONS: SourceOption[] = [
 export default function RecipeSourceMenuScreen({ navigation }: Props) {
   const { colors, radius } = useTheme();
   const { t } = useUebersetzung();
+  const insets = useSafeAreaInsets();
+  const untenFrei = Platform.OS === 'android' ? Math.max(insets.bottom, 48) : insets.bottom;   // Android-Steuerleiste
 
   return (
     <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.4)' }]}>
       <Pressable style={StyleSheet.absoluteFill} onPress={() => navigation.goBack()} />
-      <View style={[styles.sheet, { backgroundColor: colors.bg, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg }]}>
+      <View style={[styles.sheet, { paddingBottom: 32 + untenFrei, backgroundColor: colors.bg, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg }]}>
         <View style={styles.handle} />
         {/* Sichtbares Schliessen. Das Wegtippen auf den abgedunkelten
             Bereich funktionierte zwar schon, war aber nirgends erkennbar -

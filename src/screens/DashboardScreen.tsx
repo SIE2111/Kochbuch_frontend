@@ -337,6 +337,34 @@ export default function DashboardScreen({ navigation }: Props) {
     </Pressable>
   );
 
+  // Suche: unterhalb vom Rezept des Tages (Wunsch 18.10.). Eingabe, dann
+  // Suchen auf der Tastatur -> Rezepte-Liste mit dem Begriff.
+  const blockSuche = (
+    <View style={[styles.sucheZeile, { backgroundColor: colors.card, borderRadius: radius.md }]}>
+      <MaterialCommunityIcons name="magnify" size={18} color={colors.muted} />
+      <TextInput
+        style={[styles.sucheEingabe, { color: colors.text }]}
+        value={suche}
+        onChangeText={setSuche}
+        placeholder={t('rezepte.suchen')}
+        placeholderTextColor={colors.muted}
+        returnKeyType="search"
+        autoCapitalize="none"
+        onSubmitEditing={() => {
+          const q = suche.trim();
+          if (!q) return;
+          setSuche('');
+          navigation.navigate('Rezepte', { suche: q });
+        }}
+      />
+      {suche.length > 0 && (
+        <Pressable onPress={() => setSuche('')} hitSlop={8}>
+          <MaterialCommunityIcons name="close-circle" size={16} color={colors.muted} />
+        </Pressable>
+      )}
+    </View>
+  );
+
   // Ersetzt die Kategorien-Chips: ein Knopf zur vollen Rezeptliste (dort
   // gibt es die Kategorien- und Favoriten-Filter weiterhin).
   const blockMeineRezepte = (
@@ -493,43 +521,6 @@ export default function DashboardScreen({ navigation }: Props) {
           fehlte hier bisher komplett (nicht zu verwechseln mit der bewusst
           entfernten Begruessung "Hallo...Was kochen wir heute" weiter
           unten - das ist eine andere, statische Kopfzeile). */}
-      {/* Suche - erste Zeile, wie in der Buerroablage: Eingabe, dann Suchen auf
-          der Tastatur -> Rezepte-Liste mit dem Begriff. */}
-      <View style={styles.sucheKopf}>
-      <View style={[styles.sucheZeile, { backgroundColor: colors.card, borderRadius: radius.md, flex: 1, marginBottom: 0 }]}>
-        <MaterialCommunityIcons name="magnify" size={18} color={colors.muted} />
-        <TextInput
-          style={[styles.sucheEingabe, { color: colors.text }]}
-          value={suche}
-          onChangeText={setSuche}
-          placeholder={t('rezepte.suchen')}
-          placeholderTextColor={colors.muted}
-          returnKeyType="search"
-          autoCapitalize="none"
-          onSubmitEditing={() => {
-            const q = suche.trim();
-            if (!q) return;
-            setSuche('');
-            navigation.navigate('Rezepte', { suche: q });
-          }}
-        />
-        {suche.length > 0 && (
-          <Pressable onPress={() => setSuche('')} hitSlop={8}>
-            <MaterialCommunityIcons name="close-circle" size={16} color={colors.muted} />
-          </Pressable>
-        )}
-      </View>
-      {/* Einkaufsliste: Knopf oben rechts (statt Knopf im Dashboard) */}
-      <Pressable
-        onPress={() => navigation.navigate('Einkauf')}
-        accessibilityRole="button"
-        accessibilityLabel={t('dashboard.einkaufszettel')}
-        style={[styles.einkaufKnopf, { backgroundColor: gradient[0], borderRadius: radius.md }]}
-      >
-        <MaterialCommunityIcons name="cart-outline" size={22} color="#fff" />
-      </Pressable>
-      </View>
-
       <View style={styles.brandRow}>
         <Text style={[styles.brandText, { color: colors.muted }]}>Powered by</Text>
         <Text style={[styles.brandName, { color: colors.text }]}>HomeArchive</Text>
@@ -540,7 +531,17 @@ export default function DashboardScreen({ navigation }: Props) {
         {/* Brutzel jederzeit antippbar - oeffnet vorgefertigte Fragen +
             Antworten, siehe BrutzelFaqBubble.tsx (Wunsch 29.09.2026,
             gleiches Muster wie Klammi/Blitzi in Buerroablage/Medienablage). */}
-        <BrutzelFaqBubble />
+        <View style={styles.kopfRechts}>
+          <Pressable
+            onPress={() => navigation.navigate('Einkauf')}
+            accessibilityRole="button"
+            accessibilityLabel={t('dashboard.einkaufszettel')}
+            style={[styles.einkaufKnopf, { backgroundColor: gradient[0], borderRadius: radius.md }]}
+          >
+            <MaterialCommunityIcons name="cart-outline" size={22} color="#fff" />
+          </Pressable>
+          <BrutzelFaqBubble />
+        </View>
       </View>
 
       {/* Ein Tipp je Start, der Reihe nach, jeder nur einmal - abschaltbar über
@@ -571,6 +572,7 @@ export default function DashboardScreen({ navigation }: Props) {
           <View style={styles.spalteLinks}>
             {blockShares}
             {blockDaily}
+              {blockSuche}
               {blockMeineRezepte}
           </View>
           <View style={styles.spalteRechts}>
@@ -581,6 +583,7 @@ export default function DashboardScreen({ navigation }: Props) {
         <>
           {blockShares}
           {blockDaily}
+          {blockSuche}
           {blockMeineRezepte}
           {blockZuletzt}
         </>
@@ -601,7 +604,7 @@ export default function DashboardScreen({ navigation }: Props) {
 // Liste erneut aus dem Bild.
 const styles = StyleSheet.create({
   container: { padding: 18, paddingBottom: 40 },
-  sucheKopf: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
+  kopfRechts: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   einkaufKnopf: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
   sucheZeile: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 42, marginBottom: 12 },
   sucheEingabe: { flex: 1, fontSize: 13.5 },

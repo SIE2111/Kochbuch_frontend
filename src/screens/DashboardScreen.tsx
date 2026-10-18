@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl, Image, Alert, TextInput, Modal } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl, Image, Alert, TextInput, Modal, Keyboard } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
@@ -343,29 +343,37 @@ export default function DashboardScreen({ navigation }: Props) {
 
   // Suche: unterhalb vom Rezept des Tages (Wunsch 18.10.). Eingabe, dann
   // Suchen auf der Tastatur -> Rezepte-Liste mit dem Begriff.
+  const sucheStarten = () => {
+    Keyboard.dismiss();
+    const q = suche.trim();
+    setSuche('');
+    // Ohne Begriff gleich in die Rezeptsuche, mit Begriff mit dem Begriff
+    navigation.navigate('Rezepte', q ? { suche: q } : undefined);
+  };
   const blockSuche = (
-    <View style={[styles.sucheZeile, { backgroundColor: colors.card, borderRadius: radius.md }]}>
-      <MaterialCommunityIcons name="magnify" size={18} color={colors.muted} />
-      <TextInput
-        style={[styles.sucheEingabe, { color: colors.text }]}
-        value={suche}
-        onChangeText={setSuche}
-        placeholder={t('rezepte.suchen')}
-        placeholderTextColor={colors.muted}
-        returnKeyType="search"
-        autoCapitalize="none"
-        onSubmitEditing={() => {
-          const q = suche.trim();
-          if (!q) return;
-          setSuche('');
-          navigation.navigate('Rezepte', { suche: q });
-        }}
-      />
-      {suche.length > 0 && (
-        <Pressable onPress={() => setSuche('')} hitSlop={8}>
-          <MaterialCommunityIcons name="close-circle" size={16} color={colors.muted} />
-        </Pressable>
-      )}
+    <View style={styles.sucheBlock}>
+      <View style={[styles.sucheZeile, { backgroundColor: colors.card, borderRadius: radius.md }]}>
+        <MaterialCommunityIcons name="magnify" size={18} color={colors.muted} />
+        <TextInput
+          style={[styles.sucheEingabe, { color: colors.text }]}
+          value={suche}
+          onChangeText={setSuche}
+          placeholder={t('rezepte.suchen')}
+          placeholderTextColor={colors.muted}
+          returnKeyType="search"
+          autoCapitalize="none"
+          onSubmitEditing={sucheStarten}
+        />
+        {suche.length > 0 && (
+          <Pressable onPress={() => setSuche('')} hitSlop={8}>
+            <MaterialCommunityIcons name="close-circle" size={16} color={colors.muted} />
+          </Pressable>
+        )}
+      </View>
+      <Pressable onPress={sucheStarten} accessibilityRole="button" accessibilityLabel={t('rezepte.suchen')}
+        style={({ pressed }) => [styles.sucheKnopf, { backgroundColor: gradient[0], borderRadius: radius.md, opacity: pressed ? 0.8 : 1 }]}>
+        <MaterialCommunityIcons name="magnify" size={24} color="#fff" />
+      </Pressable>
     </View>
   );
 
@@ -640,7 +648,9 @@ const styles = StyleSheet.create({
   container: { padding: 18, paddingBottom: 40 },
   kopfRechts: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   einkaufKnopf: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
-  sucheZeile: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 42, marginBottom: 12 },
+  sucheBlock: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
+  sucheZeile: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 42 },
+  sucheKnopf: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
   sucheEingabe: { flex: 1, fontSize: 13.5 },
   brandRow:       { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
   brandText:      { fontSize: 11 },

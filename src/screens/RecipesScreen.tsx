@@ -420,6 +420,15 @@ export default function RecipesScreen({ navigation, route }: Props) {
       </ScrollView>
 
       {availableCategories.length > 0 && (
+        // Überschrift + Verwalten-Knopf wie früher im Dashboard (Wunsch 18.10.)
+        <View style={styles.kategorienKopf}>
+          <Text style={[styles.kategorienTitel, { color: colors.text }]}>{t('dashboard.kategorien')}</Text>
+          <Pressable onPress={() => navigation.navigate('ManageCategories')} hitSlop={10} accessibilityLabel={t('dashboard.kategorienVerwalten')}>
+            <MaterialCommunityIcons name="tune-variant" size={20} color={colors.muted} />
+          </Pressable>
+        </View>
+      )}
+      {availableCategories.length > 0 && (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -640,6 +649,8 @@ const styles = StyleSheet.create({
   // war die auseinandergezogene Filterleiste bei wenig Ergebnissen.
   // Jetzt bleiben die Leisten fest und die FlatList nimmt den Rest.
   folderBar: { height: 60, marginBottom: 14, flexGrow: 0, flexShrink: 0 },
+  kategorienKopf: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 4, marginBottom: 6 },
+  kategorienTitel: { fontSize: 15, fontWeight: '700' },
   categoryBar: { height: 60, marginBottom: 14, flexGrow: 0, flexShrink: 0 },
   favoritesChip: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 7, marginBottom: 12 },
   folderChip: { height: 38, paddingHorizontal: 13, justifyContent: 'center', alignItems: 'center' },

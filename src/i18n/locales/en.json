@@ -825,6 +825,7 @@
     "whatsappNichtVerfuegbar": "WhatsApp could not be opened.",
     "poolVerlassen": "Leave pool",
     "poolVerlassenFrage": "Leave pool?",
+    "poolVerlassenEigentuemerText": "You own \"{name}\" and are leaving while other members remain. Ownership passes to the longest-standing member, and you will no longer see the pool.",
     "poolVerlassenText": "You are leaving \"{name}\". If no members remain, an owner leaving dissolves the pool.",
     "verlassen": "Leave",
     "communyPoolsAbschnitt": "Community & Pools",

@@ -212,7 +212,9 @@ export default function MyPoolsScreen() {
     if (!verwaltePool) return;
     Alert.alert(
       t('sonstiges.poolVerlassenFrage'),
-      t('sonstiges.poolVerlassenText', { name: verwaltePool.name }),
+      verwaltePool.is_owner && (mitglieder?.length ?? 0) > 1
+        ? t('sonstiges.poolVerlassenEigentuemerText', { name: verwaltePool.name })
+        : t('sonstiges.poolVerlassenText', { name: verwaltePool.name }),
       [
         { text: t('allgemein.abbrechen'), style: 'cancel' },
         {

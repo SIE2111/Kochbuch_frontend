@@ -497,6 +497,11 @@ export default function SingleRecipeCookView({ recipeId, isActive, onTitleLoaded
           : data;
         setRecipe(merged);
         onTitleLoaded?.(merged.title);
+        // Ohne Schritte gibt es nichts zu kochen - sonst dreht sich der Ladekreis endlos
+        if (!merged.steps || merged.steps.length === 0) {
+          Alert.alert(t('detail.keineSchritteTitel'), t('detail.keineSchritteText'));
+          onFinished(false);
+        }
       })
       .catch((err) => setError(err instanceof ApiError ? err.detail : t('kochen.nichtGeladen')));
     // onTitleLoaded/sessionOverrides bewusst nicht in den Dependencies -

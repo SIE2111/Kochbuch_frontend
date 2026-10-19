@@ -398,7 +398,9 @@
     "weinDazu": "With it:",
     "weinEntfernen": "Remove",
     "weinNichtInstalliert": "Mein Weinkeller not found",
-    "weinNichtInstalliertText": "To get wine suggestions from your own cellar, install the app “Mein Weinkeller” on this device."
+    "weinNichtInstalliertText": "To get wine suggestions from your own cellar, install the app “Mein Weinkeller” on this device.",
+    "keineSchritteTitel": "No steps yet",
+    "keineSchritteText": "This recipe has no cooking steps yet. Add steps first, then you can start cook mode."
   },
   "kochen": {
     "tipp": {

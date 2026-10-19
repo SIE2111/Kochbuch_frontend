@@ -883,6 +883,10 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
           // wird das, was wirklich zusammengehoert. Beim naechsten Mal
           // stehen diese Beilagen ganz oben, noch vor den KI-Vorschlaegen.
           // Fehler hier duerfen das Kochen nicht aufhalten.
+          if (currentSteps.length === 0) {
+            Alert.alert(t('detail.keineSchritteTitel'), t('detail.keineSchritteText'));
+            return;
+          }
           if (selectedSideIds.length > 0) {
             api.post(`/ai/remember-sides/${recipeId}`, { side_recipe_ids: selectedSideIds }).catch(() => {});
           }

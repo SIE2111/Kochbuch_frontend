@@ -398,7 +398,9 @@
     "weinDazu": "Dazu:",
     "weinEntfernen": "Entfernen",
     "weinNichtInstalliert": "Mein Weinkeller nicht gefunden",
-    "weinNichtInstalliertText": "Für Weinvorschläge aus deinem eigenen Keller brauchst du die App „Mein Weinkeller“ auf diesem Gerät."
+    "weinNichtInstalliertText": "Für Weinvorschläge aus deinem eigenen Keller brauchst du die App „Mein Weinkeller“ auf diesem Gerät.",
+    "keineSchritteTitel": "Noch keine Schritte",
+    "keineSchritteText": "Dieses Rezept hat noch keine Kochschritte. Füge zuerst Schritte hinzu, dann kannst du den Koch-Modus starten."
   },
   "kochen": {
     "tipp": {

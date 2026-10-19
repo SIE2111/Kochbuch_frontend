@@ -10,7 +10,7 @@ import type { MainStackParamList } from '../navigation/AppNavigator';
 // aufgerufen, deren navigation-Objekte jeweils an ihre eigene Route
 // gebunden sind und daher nicht denselben Typ haben. Sie koennen aber
 // alle navigate und replace - und mehr braucht es nicht.
-type Nav = Pick<NativeStackNavigationProp<MainStackParamList>, 'navigate' | 'replace'>;
+type Nav = Pick<NativeStackNavigationProp<MainStackParamList>, 'navigate' | 'replace' | 'reset'>;
 
 // Was die KI aus Foto/Text erkannt hat - fuer die Anzeige beim allerersten Eintrag.
 export type Erkannt = { zutaten: number; schritte: number; timer: number };
@@ -84,7 +84,8 @@ export function askWhatNext(
         {
           text: t('nachSpeichern.ansehen'),
           onPress: () =>
-            navigation.replace('RecipeDetail', { recipeId: recipe.id, title: recipe.title }),
+            // reset statt replace: "Zurück" führt dann aufs Dashboard, nicht in die Import-/Suchauswahl
+            navigation.reset({ index: 1, routes: [{ name: 'MainTabs' }, { name: 'RecipeDetail', params: { recipeId: recipe.id, title: recipe.title } }] }),
         },
         {
           text: t('nachSpeichern.kochen'),
@@ -92,7 +93,7 @@ export function askWhatNext(
             // replace statt navigate: Der Erfassen-Screen soll nicht hinter
             // dem Koch-Modus liegen bleiben - ein "Zurueck" aus dem Kochen
             // fuehrt sonst in ein Formular, das es so nicht mehr gibt.
-            navigation.replace('CookMode', { recipeIds: [recipe.id] }),
+            navigation.reset({ index: 1, routes: [{ name: 'MainTabs' }, { name: 'CookMode', params: { recipeIds: [recipe.id] } }] }),
         },
       ],
     );

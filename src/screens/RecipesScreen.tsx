@@ -296,7 +296,7 @@ export default function RecipesScreen({ navigation, route }: Props) {
         quer && { flex: undefined, width: 400, borderRightWidth: 1, borderRightColor: colors.cardBorder },
       ]}
     >
-      <View style={[styles.searchBar, { backgroundColor: colors.card, borderRadius: radius.md }]}>
+      <View style={[styles.searchBar, { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: 3, borderColor: gradient[0] }]}>
         <MaterialCommunityIcons name="magnify" size={17} color={colors.muted} />
         <TextInput
           style={[styles.searchInput, { color: colors.text }]}

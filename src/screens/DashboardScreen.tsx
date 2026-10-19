@@ -356,7 +356,7 @@ export default function DashboardScreen({ navigation }: Props) {
   };
   const blockSuche = (
     <View style={styles.sucheBlock}>
-      <View style={[styles.sucheZeile, { backgroundColor: colors.card, borderRadius: radius.md }]}>
+      <View style={[styles.sucheZeile, { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: 2, borderColor: gradient[0] }]}>
         <MaterialCommunityIcons name="magnify" size={18} color={colors.muted} />
         <TextInput
           style={[styles.sucheEingabe, { color: colors.text }]}

@@ -17,6 +17,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../navigation/AppNavigator';
 import { useLayout, MAX_INHALTSBREITE } from '../utils/layout';
 
+import { mengeAlsZahl } from '../utils/zutaten';
 type Props = NativeStackScreenProps<MainStackParamList, 'RecipeDetail'> & {
   // Nur gesetzt, wenn der Bildschirm NICHT als eigener Stack-Screen laeuft,
   // sondern rechts neben einer Liste eingebettet ist (iPad quer). Ersetzt
@@ -485,7 +486,7 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
       i === editingIngredientIndex
         ? {
             name: ingredientDraft.name.trim(),
-            amount: ingredientDraft.amount.trim() ? Number(ingredientDraft.amount.trim()) : null,
+            amount: mengeAlsZahl(ingredientDraft.amount),
             unit: ingredientDraft.unit.trim() || null,
           }
         : ing,

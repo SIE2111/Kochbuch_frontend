@@ -113,3 +113,20 @@ export function zutatZerlegen(zeile: string): ZerlegteZutat {
   if (!rest) return { name: text, amount: null, unit: null };
   return { name: rest, amount: zahl.wert, unit: null };
 }
+
+/** Menge aus einem Eingabefeld in eine Zahl umwandeln (20.10.2026): Komma UND Punkt als
+ * Dezimaltrenner ("62,5" = "62.5"), auch "1/2". Leer oder unlesbar → null. Vorher wurde
+ * "62,5" zu NaN und die Menge beim Speichern komplett gelöscht. */
+export function mengeAlsZahl(eingabe: string | number | null | undefined): number | null {
+  if (eingabe === null || eingabe === undefined) return null;
+  if (typeof eingabe === 'number') return Number.isFinite(eingabe) ? eingabe : null;
+  const s = eingabe.trim().replace(/\s+/g, '').replace(',', '.');
+  if (!s) return null;
+  const bruch = s.match(/^(\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+  if (bruch) {
+    const n = Number(bruch[1]) / Number(bruch[2]);
+    return Number.isFinite(n) ? n : null;
+  }
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}

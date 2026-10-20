@@ -15,6 +15,7 @@ import { schritteInhaltGeaendert, pickStepsForLevel, feldFuerStufe, FORTGESCHRIT
 import { scheduleTimerNotification, cancelTimerNotification, setupNotificationChannel } from '../utils/notifications';
 import BrutzelAvatar from './BrutzelAvatar';
 
+import { mengeAlsZahl } from '../utils/zutaten';
 interface Ingredient {
   name: string;
   amount: number | null;
@@ -782,7 +783,7 @@ export default function SingleRecipeCookView({ recipeId, isActive, onTitleLoaded
       i === editingIngredientIndex
         ? {
             name: ingredientDraft.name.trim(),
-            amount: ingredientDraft.amount.trim() ? Number(ingredientDraft.amount.trim()) : null,
+            amount: mengeAlsZahl(ingredientDraft.amount),
             unit: ingredientDraft.unit.trim() || null,
           }
         : ing,

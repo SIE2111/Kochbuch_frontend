@@ -12,6 +12,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../navigation/AppNavigator';
 import { useLayout } from '../utils/layout';
 
+import { mengeAlsZahl } from '../utils/zutaten';
 type Props = NativeStackScreenProps<MainStackParamList, 'WebImport'>;
 
 interface IngredientDraft {
@@ -206,7 +207,7 @@ export default function WebImportScreen({ navigation, route }: Props) {
       .filter((ing) => ing.name.trim())
       .map((ing) => ({
         name: ing.name.trim(),
-        amount: ing.amount ? Number(ing.amount) : null,
+        amount: mengeAlsZahl(ing.amount),
         unit: ing.unit.trim() || null,
       }));
     const cleanSteps = steps

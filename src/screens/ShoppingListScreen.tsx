@@ -15,6 +15,7 @@ import { useLayout } from '../utils/layout';
 import ZutatBild from '../components/ZutatBild';
 import { showBrutzelHinweis } from '../components/BrutzelHinweis';
 
+import { mengeAlsZahl } from '../utils/zutaten';
 type Props = NativeStackScreenProps<MainStackParamList, 'Einkauf'>;
 
 interface ShoppingItem {
@@ -115,7 +116,7 @@ export default function ShoppingListScreen({ navigation }: Props) {
     try {
       const aktualisiert = await api.patch<ShoppingItem>(`/shopping-list/${bearbeiteItem.id}`, {
         ingredient_name: name,
-        amount: menge ? Number(menge) : null,
+        amount: mengeAlsZahl(menge),
         amount_gesetzt: true,
         unit: einheit || null,
         unit_gesetzt: true,

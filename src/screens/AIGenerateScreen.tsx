@@ -12,6 +12,7 @@ import type { MainStackParamList } from '../navigation/AppNavigator';
 import { useLayout } from '../utils/layout';
 import { DIAET_KATEGORIEN } from '../utils/kategorien';
 
+import { mengeAlsZahl } from '../utils/zutaten';
 type Props = NativeStackScreenProps<MainStackParamList, 'AIGenerate'>;
 
 interface IngredientDraft {
@@ -218,7 +219,7 @@ export default function AIGenerateScreen({ navigation, route }: Props) {
       .filter((ing) => ing.name.trim())
       .map((ing) => ({
         name: ing.name.trim(),
-        amount: ing.amount ? Number(ing.amount) : null,
+        amount: mengeAlsZahl(ing.amount),
         unit: ing.unit.trim() || null,
       }));
     const cleanSteps = steps

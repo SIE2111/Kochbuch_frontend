@@ -52,6 +52,7 @@ interface RecipeDetail {
   cover_image_url: string | null;
   source_type: string;
   is_favorite: boolean;
+  is_modified?: boolean;
   equipment: string[] | null;
   locale: string | null;
   available_translations: string[];
@@ -725,6 +726,29 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
   };
   const zeigeHaushaltSymbol = !!recipe?.household_active && recipe?.source_type !== 'starter_pack';
 
+  const handleZurueckZuStarter = () => {
+    if (!recipe) return;
+    Alert.alert(
+      t('detail.zurueckZuStarterFrage'),
+      t('detail.zurueckZuStarterText'),
+      [
+        { text: t('allgemein.abbrechen'), style: 'cancel' },
+        {
+          text: t('detail.zurueckZuStarterOk'),
+          onPress: async () => {
+            try {
+              const aktualisiert = await api.post<RecipeDetail>(`/recipes/${recipeId}/zurueck-zu-starter`, {});
+              setRecipe((prev) => (prev ? { ...prev, is_modified: false, is_favorite: false, personal_note: null } : prev));
+              void aktualisiert;
+            } catch (err) {
+              Alert.alert(t('allgemein.fehler'), err instanceof ApiError ? err.detail : t('profil.unbekannterFehler'));
+            }
+          },
+        },
+      ],
+    );
+  };
+
   const handleDelete = () => {
     if (!recipe) return;
     Alert.alert(
@@ -830,6 +854,12 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
         {SOURCE_LABELS[recipe.source_type] ?? recipe.source_type}
         {recipe.owner_display_name ? ` · ${t('rezepte.vonMitglied', { name: recipe.owner_display_name })}` : ''}
       </Text>
+      {recipe.source_type === 'starter_pack' && !recipe.owner_display_name
+        && (recipe.is_modified || recipe.is_favorite || !!recipe.personal_note?.trim()) && (
+        <Pressable onPress={handleZurueckZuStarter} hitSlop={6} style={{ marginTop: 6 }}>
+          <Text style={{ color: gradient[0], fontSize: 13, fontWeight: '700' }}>{t('detail.zurueckZuStarter')}</Text>
+        </Pressable>
+      )}
     </>
   );
   const blockPortionen = (

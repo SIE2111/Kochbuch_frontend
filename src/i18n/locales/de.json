@@ -829,6 +829,7 @@
     "poolVerlassenText": "Du verlässt „{name}\". Ein Owner ohne verbleibende Mitglieder löst den Pool auf.",
     "verlassen": "Verlassen",
     "communyPoolsAbschnitt": "Community & Pools",
+    "poolsVerwalten": "Pools verwalten",
     "meinePools": "Meine Pools",
     "meinePoolsSub": "Eigene Pools anlegen, einladen, Community-Pool ein-/ausschalten",
     "vonName": "von {name}",

@@ -829,6 +829,7 @@
     "poolVerlassenText": "You are leaving \"{name}\". If no members remain, an owner leaving dissolves the pool.",
     "verlassen": "Leave",
     "communyPoolsAbschnitt": "Community & Pools",
+    "poolsVerwalten": "Manage pools",
     "meinePools": "My Pools",
     "meinePoolsSub": "Create your own pools, invite people, toggle the Community Pool",
     "vonName": "from {name}",

@@ -173,7 +173,18 @@ export default function CommunityPoolScreen() {
         refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
         ListHeaderComponent={
           <>
-            <Text style={[styles.header, { color: colors.text }]}>{t('sonstiges.gemeinschaftskochbuch')}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+              <Text style={[styles.header, { color: colors.text, flex: 1 }]}>{t('sonstiges.gemeinschaftskochbuch')}</Text>
+              <Pressable
+                onPress={() => navigation.navigate('MyPools')}
+                accessibilityRole="button"
+                accessibilityLabel={t('sonstiges.poolsVerwalten')}
+                style={[styles.poolChip, { backgroundColor: gradient[0], borderRadius: radius.sm }]}
+              >
+                <MaterialCommunityIcons name="account-multiple-plus" size={15} color="#fff" style={{ marginRight: 5 }} />
+                <Text style={{ color: '#fff', fontSize: 12.5, fontWeight: '700' }}>{t('sonstiges.poolsVerwalten')}</Text>
+              </Pressable>
+            </View>
             <Text style={[styles.headerSub, { color: colors.muted }]}>
               Rezepte, die andere geteilt haben. Übernommene Rezepte landen als eigene Kopie in deiner
               Sammlung – Änderungen daran bleiben bei dir.

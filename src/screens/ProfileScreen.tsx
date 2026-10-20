@@ -538,21 +538,7 @@ export default function ProfileScreen({ navigation }: Props) {
         <Text style={{ color: colors.muted, fontSize: 16 }}>›</Text>
       </Pressable>
 
-      {/* Eigener Block, bewusst NICHT im "Einstellungen"-Unterschirm - das
-          hier ist kein Ein/Aus-Schalter, sondern ein eigener Bereich mit
-          eigenem Inhalt (Pools anlegen, einladen, Mitglieder). */}
-      <Text style={[styles.sectionLabel, { color: colors.muted, marginTop: 26 }]}>{t('sonstiges.communyPoolsAbschnitt')}</Text>
-      <Pressable
-        onPress={() => navigation.getParent()?.navigate('MyPools')}
-        style={[styles.row, { backgroundColor: colors.card, borderRadius: radius.md }]}
-      >
-        <MaterialCommunityIcons name="account-group-outline" size={20} color={colors.muted} style={styles.rowIcon} />
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.rowTitle, { color: colors.text }]}>{t('sonstiges.meinePools')}</Text>
-          <Text style={[styles.rowSubtitle, { color: colors.muted }]}>{t('sonstiges.meinePoolsSub')}</Text>
-        </View>
-        <Text style={{ color: colors.muted, fontSize: 16 }}>›</Text>
-      </Pressable>
+      {/* Pool-Verwaltung (Anlegen, Einladen, Mitglieder) sitzt seit 20.10.2026 direkt im Community-Reiter. */}
       {istModerator && (
         <Pressable
           onPress={() => navigation.getParent()?.navigate('Moderation')}

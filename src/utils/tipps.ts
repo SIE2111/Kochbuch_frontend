@@ -50,9 +50,9 @@ export async function tippsErlaubt(): Promise<boolean> {
   return !(await inSchonfrist());
 }
 
-/** Die ersten 14 Tage nach der Installation (18.10.2026): keine Tipps im Dashboard.
+/** Der erste Tag nach der Installation (18.10.2026, am 20.10.2026 von 14 Tagen auf 1 Tag verkürzt): keine Tipps im Dashboard.
  * Wer schon vorher Tipps gesehen hat (bestehende Installation), ist davon nicht betroffen. */
-const SCHONFRIST_TAGE = 14;
+const SCHONFRIST_TAGE = 1;
 async function inSchonfrist(): Promise<boolean> {
   try {
     let start = Number(await AsyncStorage.getItem(K('erststart')));

@@ -84,8 +84,10 @@ export default function PoolRecipeDetailScreen({ route, navigation, onClose, onO
   const [justForkedFolder, setJustForkedFolder] = useState<string | null>(null);
   // Nachricht an den Einsteller (23.09.2026) - eigenes kleines Modal statt
   // eines vollen Postfachs: Text eingeben, Server verschickt per E-Mail
-  // (siehe /pool/{id}/contact-owner), reply_to zeigt auf den Absender.
+  // (siehe /pool/{id}/contact-owner). Der Absender bleibt anonym; nur wenn er
+  // seine E-Mail-Adresse ausdruecklich freigibt (teileEmail), kann geantwortet werden.
   const [nachrichtOffen, setNachrichtOffen] = useState(false);
+  const [teileEmail, setTeileEmail] = useState(false);
   const [nachrichtText, setNachrichtText] = useState('');
   const [nachrichtSendet, setNachrichtSendet] = useState(false);
 
@@ -94,9 +96,10 @@ export default function PoolRecipeDetailScreen({ route, navigation, onClose, onO
     if (!text) return;
     setNachrichtSendet(true);
     try {
-      await api.post(`/pool/${publicRecipeId}/contact-owner`, { message: text });
+      await api.post(`/pool/${publicRecipeId}/contact-owner`, { message: text, share_email: teileEmail });
       setNachrichtOffen(false);
       setNachrichtText('');
+      setTeileEmail(false);
       Alert.alert(t('sonstiges.nachrichtGesendetTitel'), t('sonstiges.nachrichtGesendetText'));
     } catch (err) {
       Alert.alert(t('allgemein.fehler'), err instanceof ApiError ? err.detail : t('sonstiges.nachrichtFehlgeschlagen'));
@@ -411,6 +414,17 @@ export default function PoolRecipeDetailScreen({ route, navigation, onClose, onO
             numberOfLines={5}
             style={[styles.nachrichtInput, { backgroundColor: colors.bg, color: colors.text, borderRadius: radius.sm }]}
           />
+          <Pressable onPress={() => setTeileEmail((prev) => !prev)} style={styles.checkboxRow}>
+            <View
+              style={[
+                styles.checkbox,
+                { borderRadius: radius.sm, backgroundColor: teileEmail ? gradient[0] : 'transparent', borderColor: gradient[0] },
+              ]}
+            >
+              {teileEmail && <Text style={styles.checkboxMark}>✓</Text>}
+            </View>
+            <Text style={[styles.checkboxLabel, { color: colors.muted }]}>{t('sonstiges.nachrichtEmailFreigeben')}</Text>
+          </Pressable>
           <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
             <Pressable
               onPress={() => setNachrichtOffen(false)}
@@ -441,6 +455,10 @@ export default function PoolRecipeDetailScreen({ route, navigation, onClose, onO
 }
 
 const styles = StyleSheet.create({
+  checkboxRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 12 },
+  checkbox: { width: 22, height: 22, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  checkboxMark: { color: '#fff', fontSize: 14, fontWeight: '900' },
+  checkboxLabel: { flex: 1, fontSize: 13, lineHeight: 18 },
   eingebetterHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, paddingVertical: 12, borderBottomWidth: 1 },
   eingebetterTitel: { fontSize: 15.5, fontWeight: '700', flex: 1, marginRight: 12 },
   eingebetterSchliessen: { flexDirection: 'row', alignItems: 'center', gap: 4 },

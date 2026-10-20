@@ -1154,7 +1154,7 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
           style={styles.ingredientRow}
         >
           <Text style={[styles.ingredient, { color: colors.text, fontSize: largeText ? 16.5 : 13.5, flex: 1 }]}>
-            {ing.amount ? `${ing.amount} ${ing.unit ?? ''} ` : ''}
+            {ing.amount ? `${ing.amount} ${ing.unit ?? ''} ` : ing.unit ? `${ing.unit} ` : ''}
             {ing.name}
           </Text>
           {/* Bearbeiten gilt immer dem ORIGINAL. Waehrend die Uebersetzung

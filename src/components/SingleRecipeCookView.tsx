@@ -1145,7 +1145,7 @@ export default function SingleRecipeCookView({ recipeId, isActive, onTitleLoaded
               style={styles.ingredientRow}
             >
               <Text style={[styles.ingredientLine, { color: colors.text, fontSize: largeText ? 16 : 13.5, flex: 1 }]}>
-                {ing.amount ? `${mengeUmgerechnet(ing.amount)} ${ing.unit ?? ''} ` : ''}
+                {ing.amount ? `${mengeUmgerechnet(ing.amount)} ${ing.unit ?? ''} ` : ing.unit ? `${ing.unit} ` : ''}
                 {ing.name}
               </Text>
               {level === 'anfaenger' && <MaterialCommunityIcons name="pencil-outline" size={14} color={colors.muted} />}
@@ -1228,7 +1228,7 @@ export default function SingleRecipeCookView({ recipeId, isActive, onTitleLoaded
             const ing = recipe.ingredients[index];
             return (
               <Text key={index} style={[styles.ingredientLine, { color: colors.text, fontSize: largeText ? 16 : 14 }]}>
-                {ing.amount ? `${mengeUmgerechnet(ing.amount)} ${ing.unit ?? ''} ` : ''}
+                {ing.amount ? `${mengeUmgerechnet(ing.amount)} ${ing.unit ?? ''} ` : ing.unit ? `${ing.unit} ` : ''}
                 {name}
               </Text>
             );

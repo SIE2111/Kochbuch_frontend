@@ -87,7 +87,13 @@ export function zutatZerlegen(zeile: string): ZerlegteZutat {
 
   const zahl = zahlLesen(text);
   if (!zahl) {
-    // Kein fuehrender Zahlenwert: "Salz", "Pfeffer", "etwas Öl".
+    // Kein fuehrender Zahlenwert: "Salz", "Pfeffer". "etwas Milch" / "ein Schuss Rum"
+    // (20.10.2026): Menge leer, das Wort steht als Einheit, der Rest ist der Name.
+    const ohneZahl = text.match(/^(?:ein(?:en|e)?\s+)?(etwas|schuss|schuß|spritzer)\s+(.+)$/i);
+    if (ohneZahl) {
+      const wort = ohneZahl[1].toLowerCase();
+      return { name: ohneZahl[2].trim(), amount: null, unit: wort === 'etwas' ? 'etwas' : wort === 'spritzer' ? 'Spritzer' : 'Schuss' };
+    }
     return { name: text, amount: null, unit: null };
   }
 

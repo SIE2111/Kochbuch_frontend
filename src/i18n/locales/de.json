@@ -809,6 +809,7 @@
     "poolWaehlen": "In welchem Pool veröffentlichen?",
     "poolsHinweis": "Eigene Pools sind komplett getrennt vom Haushalt. Der Community-Pool steht allen offen, eigene Pools nur den Eingeladenen.",
     "mitgliederAnzahl": "{anzahl} Mitglieder",
+    "poolErstellenKosten": "Einen neuen Pool anzulegen kostet 5 AI Coins.",
     "poolErstellen": "Pool erstellen",
     "poolBeitreten": "Pool beitreten",
     "poolNamePlatzhalter": "z. B. Familie, Kochclub …",

@@ -309,6 +309,7 @@ export default function MyPoolsScreen() {
         <View style={styles.modalUeberlagerung}>
           <View style={[styles.modalKarte, { backgroundColor: colors.card, borderRadius: radius.md }]}>
             <Text style={[styles.modalTitel, { color: colors.text }]}>{t('sonstiges.poolErstellen')}</Text>
+            <Text style={{ color: colors.muted, fontSize: 12.5, marginBottom: 10 }}>{t('sonstiges.poolErstellenKosten')}</Text>
             <TextInput
               value={neuerName}
               onChangeText={setNeuerName}

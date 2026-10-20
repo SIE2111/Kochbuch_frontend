@@ -809,6 +809,7 @@
     "poolWaehlen": "Publish in which pool?",
     "poolsHinweis": "Your own pools are completely separate from the household. The Community Pool is open to everyone, your own pools only to invitees.",
     "mitgliederAnzahl": "{anzahl} members",
+    "poolErstellenKosten": "Creating a new pool costs 5 AI Coins.",
     "poolErstellen": "Create pool",
     "poolBeitreten": "Join pool",
     "poolNamePlatzhalter": "e.g. family, cooking club …",

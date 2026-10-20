@@ -71,7 +71,7 @@ export default function PublishToPoolButton({
   // veroeffentlicheAusgewaehlte() unten.
   const publish = async (poolId: string): Promise<{ ok: true; coins: number } | { ok: false; status?: number; detail: string }> => {
     try {
-      // Im oeffentlichen Pool bekommt man 5 AI Coins gutgeschrieben (einmal je Rezept)
+      // Seit 20.10.2026 kostet jedes Veroeffentlichen 2 AI Coins (keine Belohnung mehr); coins_gutgeschrieben ist 0
       const antwort = await api.post<{ coins_gutgeschrieben?: number }>('/pool/publish', { recipe_id: recipeId, pool_id: poolId });
       return { ok: true, coins: antwort?.coins_gutgeschrieben ?? 0 };
     } catch (err) {

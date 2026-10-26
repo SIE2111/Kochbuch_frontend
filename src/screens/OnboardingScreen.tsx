@@ -61,7 +61,7 @@ export default function OnboardingScreen({ navigation }: Props) {
         create_standard_folders: createFolders,
         // Wer das Gerät auf Deutschland eingestellt hat, bekommt die deutschen
         // Klassiker automatisch zu den Standard-Rezepten dazu.
-        starter_packs: importStandard ? (geraeteLand() === 'DE' ? ['standard', 'deutsch'] : ['standard']) : null,
+        starter_packs: importStandard ? (geraeteLand() === 'DE' ? ['standard', 'deutsch'] : geraeteLand() === 'CH' ? ['standard', 'schweiz'] : ['standard']) : null,
       });
       // Bewusst NACH dem Setup und in einem eigenen try: Scheitert nur das
       // Speichern der Stufe, waere es unsinnig, das komplette Onboarding

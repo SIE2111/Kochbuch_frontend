@@ -32,6 +32,7 @@ const PACK_ICONS: Record<string, string> = {
   italienisch: 'pasta',
   polnisch: 'food-drumstick',
   deutsch: 'beer',
+  schweiz: 'terrain',
 };
 
 export default function StarterPacksScreen({ navigation }: any) {

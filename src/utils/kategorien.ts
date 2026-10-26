@@ -8,7 +8,7 @@
 export const BEKANNTE_KATEGORIEN = [
   'Klassiker', 'Traditionell', 'Schnell', 'Einfach', 'Vegetarisch', 'Vegan', 'Glutenfrei', 'Scharf', 'Mild', 'Süß',
   'Warm', 'Kalt', 'Exotisch', 'Weihnachten', 'Cocktail', 'Alkoholisch', 'Alkoholfrei', 'Österreichische Küche',
-  'Italienisch', 'Polnisch', 'Deutsch', 'Chinesisch', 'Japanisch', 'Indisch', 'Grillen',
+  'Italienisch', 'Polnisch', 'Deutsch', 'Schweizerisch', 'Chinesisch', 'Japanisch', 'Indisch', 'Grillen',
   'Low Carb', 'Kalorienarm', 'Eiweißreich', 'Laktosefrei', 'Zuckerarm', 'Ketogen', 'Mediterran',
 ];
 

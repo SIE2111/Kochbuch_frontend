@@ -31,6 +31,7 @@ const PACK_ICONS: Record<string, string> = {
   cocktails: 'glass-cocktail',
   italienisch: 'pasta',
   polnisch: 'food-drumstick',
+  deutsch: 'beer',
 };
 
 export default function StarterPacksScreen({ navigation }: any) {

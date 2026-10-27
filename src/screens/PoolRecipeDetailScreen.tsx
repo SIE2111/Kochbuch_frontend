@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Image, Pressable, StyleSheet, ActivityIndicator, Alert, Modal, TextInput } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
-import { useUebersetzung } from '../i18n';
+import { useUebersetzung, anzeigeName } from '../i18n';
 import { api, ApiError } from '../api/client';
 import type { HaubenLevel } from '../utils/stepLevels';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -275,7 +275,7 @@ export default function PoolRecipeDetailScreen({ route, navigation, onClose, onO
       <Text style={[styles.title, { color: colors.text }]}>{recipe.title}</Text>
       <Text style={[styles.meta, { color: colors.muted }]}>{meta}</Text>
       {recipe.tags && recipe.tags.length > 0 && (
-        <Text style={[styles.meta, { color: colors.muted }]}>{recipe.tags.join(' · ')}</Text>
+        <Text style={[styles.meta, { color: colors.muted }]}>{recipe.tags.map(anzeigeName).join(' · ')}</Text>
       )}
       {!recipe.is_own && recipe.owner_display_name && (
         <Text style={[styles.meta, { color: colors.muted }]}>

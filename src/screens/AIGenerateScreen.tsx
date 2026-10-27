@@ -3,7 +3,7 @@ import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Alert, Activi
 import * as ImagePicker from 'expo-image-picker';
 import { ensureMediaLibraryAccess } from '../utils/mediaPermissions';
 import { useTheme } from '../theme/ThemeContext';
-import { useUebersetzung } from '../i18n';
+import { useUebersetzung, anzeigeName } from '../i18n';
 import { askWhatNext } from '../utils/afterRecipeSaved';
 import { getEffectiveTimerSeconds } from '../components/SingleRecipeCookView';
 import { api, ApiError } from '../api/client';
@@ -417,7 +417,7 @@ export default function AIGenerateScreen({ navigation, route }: Props) {
                   ]}
                 >
                   <Text style={{ color: isSelected ? '#fff' : colors.text, fontSize: 12, fontWeight: '600' }}>
-                    {folder.name}
+                    {anzeigeName(folder.name)}
                   </Text>
                 </Pressable>
               );

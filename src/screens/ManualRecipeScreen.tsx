@@ -7,7 +7,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { ensureMediaLibraryAccess } from '../utils/mediaPermissions';
 import CategoryPicker from '../components/CategoryPicker';
 import { useTheme } from '../theme/ThemeContext';
-import { useUebersetzung } from '../i18n';
+import { useUebersetzung, anzeigeName } from '../i18n';
 import { api, ApiError } from '../api/client';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainStackParamList } from '../navigation/AppNavigator';
@@ -490,7 +490,7 @@ export default function ManualRecipeScreen({ navigation, route }: Props) {
                   ]}
                 >
                   <Text style={{ color: isSelected ? '#fff' : colors.text, fontSize: 12, fontWeight: '600' }}>
-                    {folder.name}
+                    {anzeigeName(folder.name)}
                   </Text>
                 </Pressable>
               );

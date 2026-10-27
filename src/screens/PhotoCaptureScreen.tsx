@@ -5,7 +5,7 @@ import BrutzelAvatar from '../components/BrutzelAvatar';
 import * as ImagePicker from 'expo-image-picker';
 import { ensureMediaLibraryAccess } from '../utils/mediaPermissions';
 import { useTheme } from '../theme/ThemeContext';
-import { useUebersetzung } from '../i18n';
+import { useUebersetzung, anzeigeName } from '../i18n';
 import CategoryPicker from '../components/CategoryPicker';
 import ImageCropper from '../components/ImageCropper';
 import { zutatZerlegen } from '../utils/zutaten';
@@ -557,7 +557,7 @@ export default function PhotoCaptureScreen({ navigation }: Props) {
                   onPress={() => setSelectedFolderId(isSelected ? null : folder.id)}
                   style={[styles.folderChip, { backgroundColor: isSelected ? gradient[0] : colors.card, borderRadius: radius.sm }]}
                 >
-                  <Text style={{ color: isSelected ? '#fff' : colors.text, fontSize: 12, fontWeight: '600' }}>{folder.name}</Text>
+                  <Text style={{ color: isSelected ? '#fff' : colors.text, fontSize: 12, fontWeight: '600' }}>{anzeigeName(folder.name)}</Text>
                 </Pressable>
               );
             })}

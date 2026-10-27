@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet, ActivityIndicator, Switch, Alert, Sc
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
-import { useUebersetzung } from '../i18n';
+import { useUebersetzung, anzeigeName } from '../i18n';
 import { api, ApiError } from '../api/client';
 import { BEKANNTE_KATEGORIEN } from '../utils/kategorien';
 
@@ -248,7 +248,7 @@ export default function ManageCategoriesScreen({ navigation }: any) {
                     style={[styles.rowText, { color: hidden.has(tag) ? colors.muted : colors.text }]}
                     numberOfLines={1}
                   >
-                    {tag}
+                    {anzeigeName(tag)}
                   </Text>
                   <Switch
                     value={!hidden.has(tag)}

@@ -16,7 +16,7 @@ import {
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../theme/ThemeContext';
-import { useUebersetzung } from '../i18n';
+import { useUebersetzung, anzeigeName } from '../i18n';
 import ScanFab from '../components/ScanFab';
 import { api, ApiError } from '../api/client';
 import type { CompositeScreenProps } from '@react-navigation/native';
@@ -383,7 +383,7 @@ export default function RecipesScreen({ navigation, route }: Props) {
           ]}
         >
           <Text allowFontScaling={false} style={[styles.folderChipText, { color: selectedFolderId === null ? '#fff' : colors.text }]}>
-            Alle ({ordnerZahl(null)})
+            {t('rezepte.alle')} ({ordnerZahl(null)})
           </Text>
         </Pressable>
         {folders.map((folder) => {
@@ -417,7 +417,7 @@ export default function RecipesScreen({ navigation, route }: Props) {
               style={[styles.folderChip, { backgroundColor: isSelected ? gradient[0] : colors.card, borderRadius: radius.sm }]}
             >
               <Text allowFontScaling={false} style={[styles.folderChipText, { color: isSelected ? '#fff' : colors.text }]}>
-                {folder.name} ({ordnerZahl(folder.id)})
+                {anzeigeName(folder.name)} ({ordnerZahl(folder.id)})
               </Text>
             </Pressable>
           );
@@ -455,7 +455,7 @@ export default function RecipesScreen({ navigation, route }: Props) {
                 style={[styles.folderChip, { backgroundColor: isSelected ? gradient[0] : colors.card, borderRadius: radius.sm }]}
               >
                 <Text allowFontScaling={false} style={[styles.folderChipText, { color: isSelected ? '#fff' : colors.text }]}>
-                  {cat}
+                  {anzeigeName(cat)}
                 </Text>
               </Pressable>
             );
@@ -528,7 +528,7 @@ export default function RecipesScreen({ navigation, route }: Props) {
                   <MaterialCommunityIcons name={SOURCE_ICONS[item.source_type] ?? 'file-outline'} size={12} color={colors.muted} />
                 </View>
                 {item.tags && item.tags.length > 0 && (
-                  <Text style={[styles.recipeTags, { color: colors.muted }]} numberOfLines={1}>{item.tags.join(' · ')}</Text>
+                  <Text style={[styles.recipeTags, { color: colors.muted }]} numberOfLines={1}>{item.tags.map(anzeigeName).join(' · ')}</Text>
                 )}
               </View>
             </Pressable>
@@ -556,7 +556,7 @@ export default function RecipesScreen({ navigation, route }: Props) {
                 />
               </View>
               {item.tags && item.tags.length > 0 && (
-                <Text style={[styles.recipeTags, { color: colors.muted }]}>{item.tags.join(' · ')}</Text>
+                <Text style={[styles.recipeTags, { color: colors.muted }]}>{item.tags.map(anzeigeName).join(' · ')}</Text>
               )}
               {item.owner_display_name && (
                 <Text style={[styles.ownerHint, { color: colors.muted }]} numberOfLines={1}>

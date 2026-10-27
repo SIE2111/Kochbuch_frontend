@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
-import { useUebersetzung } from '../i18n';
+import { useUebersetzung, anzeigeName } from '../i18n';
 import ScanFab from '../components/ScanFab';
 import IncomingSharesCard from '../components/IncomingSharesCard';
 import BrutzelGreetingOverlay from '../components/BrutzelGreetingOverlay';
@@ -439,7 +439,7 @@ export default function DashboardScreen({ navigation }: Props) {
               onLongPress={() => handleHideCategory(tag)}
               style={[styles.categoryChip, { backgroundColor: colors.card, borderRadius: radius.sm }]}
             >
-              <Text style={[styles.categoryText, { color: colors.text }]}>{tag}</Text>
+              <Text style={[styles.categoryText, { color: colors.text }]}>{anzeigeName(tag)}</Text>
             </Pressable>
           ))}
         </View>
@@ -466,7 +466,7 @@ export default function DashboardScreen({ navigation }: Props) {
       </View>
       {recentlyCooked.length === 0 && angefangen.length === 0 ? (
         <Text style={[styles.emptyText, { color: colors.muted }]}>
-          Noch nichts zubereitet – starte die Zubereitung eines Rezepts, dann erscheint es hier.
+          {t('dashboard.nochNichtsZubereitet')}
         </Text>
       ) : (
         <View style={[styles.recentCard, { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: 1, borderColor: colors.cardBorder }]}>
@@ -509,7 +509,7 @@ export default function DashboardScreen({ navigation }: Props) {
                   {r.title}
                 </Text>
                 <Text style={[styles.recentMeta, { color: colors.muted }]}>
-                  {(r.tags && r.tags[0]) || t('dashboard.rezept')}
+                  {(r.tags && r.tags[0] ? anzeigeName(r.tags[0]) : null) || t('dashboard.rezept')}
                   {r.prep_time_minutes ? ` · ${r.prep_time_minutes} Min.` : ''}
                 </Text>
               </View>

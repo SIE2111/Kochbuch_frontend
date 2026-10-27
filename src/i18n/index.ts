@@ -183,3 +183,9 @@ export function useUebersetzung() {
 
   return { t: uebersetzen, sprache: aktiveSprache };
 }
+
+/** Kategorie- oder Ordnername in der aktiven Sprache; unbekannte (eigene) Namen bleiben unveraendert. */
+export function anzeigeName(name: string): string {
+  const eintrag = nachschlagen(TEXTE[aktiveSprache], `kategorienNamen.${name}`);
+  return typeof eintrag === 'string' ? eintrag : name;
+}

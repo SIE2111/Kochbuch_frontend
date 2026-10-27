@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, Alert, Modal, TextInput, Image } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
-import { useUebersetzung } from '../i18n';
+import { useUebersetzung, anzeigeName } from '../i18n';
 import { api, ApiError } from '../api/client';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -639,7 +639,7 @@ export default function WeeklyPlanScreen({ navigation }: Props) {
                   onPress={() => setPickerKategorie(aktiv ? null : kat)}
                   style={[styles.pickerChip, { backgroundColor: aktiv ? gradient[0] : colors.card, borderRadius: radius.sm }]}
                 >
-                  <Text style={{ color: aktiv ? '#fff' : colors.text, fontSize: 12.5, fontWeight: '600' }}>{kat}</Text>
+                  <Text style={{ color: aktiv ? '#fff' : colors.text, fontSize: 12.5, fontWeight: '600' }}>{anzeigeName(kat)}</Text>
                 </Pressable>
               );
             })}
@@ -733,7 +733,7 @@ export default function WeeklyPlanScreen({ navigation }: Props) {
                         onPress={() => setDialogKategorie(aktiv ? null : kat)}
                         style={[styles.pickerChip, { backgroundColor: aktiv ? gradient[0] : colors.bg, borderRadius: radius.sm }]}
                       >
-                        <Text style={{ color: aktiv ? '#fff' : colors.text, fontSize: 12.5, fontWeight: '600' }}>{kat}</Text>
+                        <Text style={{ color: aktiv ? '#fff' : colors.text, fontSize: 12.5, fontWeight: '600' }}>{anzeigeName(kat)}</Text>
                       </Pressable>
                     );
                   })}

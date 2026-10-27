@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
-import { useUebersetzung } from '../i18n';
+import { useUebersetzung, anzeigeName } from '../i18n';
 import { api, ApiError } from '../api/client';
 import { BEKANNTE_KATEGORIEN } from '../utils/kategorien';
 
@@ -101,7 +101,7 @@ export default function CategoryPicker({ selected, onChange }: Props) {
                   onLongPress={() => handleDeleteCategory(tag)}
                   style={[styles.chip, { backgroundColor: isSelected ? gradient[0] : colors.card, borderRadius: radius.sm }]}
                 >
-                  <Text style={{ color: isSelected ? '#fff' : colors.text, fontSize: 12, fontWeight: '600' }}>{tag}</Text>
+                  <Text style={{ color: isSelected ? '#fff' : colors.text, fontSize: 12, fontWeight: '600' }}>{anzeigeName(tag)}</Text>
                 </Pressable>
               );
             })}

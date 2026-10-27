@@ -43,6 +43,7 @@ import PhotoCaptureScreen from '../screens/PhotoCaptureScreen';
 import MarketingHost from '../components/MarketingHost';
 import ManageCategoriesScreen from '../screens/ManageCategoriesScreen';
 import ZutatenWaehlenScreen from '../screens/ZutatenWaehlenScreen';
+import { useUebersetzung } from '../i18n';
 
 export type AuthStackParamList = {
   ForgotPassword: undefined;
@@ -132,6 +133,7 @@ const TAB_ICONS: Record<keyof MainTabParamList, keyof typeof MaterialCommunityIc
 
 function MainTabs() {
   const { colors, gradient } = useTheme();
+  const { t } = useUebersetzung();
   const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
@@ -164,14 +166,14 @@ function MainTabs() {
         ),
       })}
     >
-      <Tab.Screen name="Home" component={DashboardScreen} options={{ title: 'Home' }} />
-      <Tab.Screen name="Rezepte" component={RecipesScreen} />
-      <Tab.Screen name="Pool" component={CommunityPoolScreen} options={{ title: 'Community Pool' }} />
+      <Tab.Screen name="Home" component={DashboardScreen} options={{ title: t('tabs.home') }} />
+      <Tab.Screen name="Rezepte" component={RecipesScreen} options={{ title: t('tabs.rezepte') }} />
+      <Tab.Screen name="Pool" component={CommunityPoolScreen} options={{ title: t('tabs.community') }} />
       <Tab.Screen
         name="Wochenplan"
         component={WeeklyPlanScreen}
         options={{
-          title: 'Wochenplan',
+          title: t('tabs.wochenplan'),
           headerShown: true,
           headerStyle: { backgroundColor: colors.bg },
           headerTintColor: colors.text,
@@ -180,7 +182,7 @@ function MainTabs() {
           sceneStyle: { paddingTop: 0 },
         }}
       />
-      <Tab.Screen name="Profil" component={ProfileScreen} options={{ title: 'Profil' }} />
+      <Tab.Screen name="Profil" component={ProfileScreen} options={{ title: t('tabs.profil') }} />
     </Tab.Navigator>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { geraeteLand } from '../utils/region';
+import { geraeteLand, landesPaket } from '../utils/region';
 import { View, Text, Pressable, StyleSheet, ActivityIndicator, Switch, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
@@ -59,9 +59,9 @@ export default function OnboardingScreen({ navigation }: Props) {
     try {
       await api.post('/onboarding/setup', {
         create_standard_folders: createFolders,
-        // Wer das Gerät auf Deutschland eingestellt hat, bekommt die deutschen
-        // Klassiker automatisch zu den Standard-Rezepten dazu.
-        starter_packs: importStandard ? (geraeteLand() === 'DE' ? ['standard', 'deutsch'] : geraeteLand() === 'CH' ? ['standard', 'schweiz'] : ['standard']) : null,
+        // Basis-Rezepte für alle; wer das Gerät auf AT/DE/CH/IT/PL eingestellt
+        // hat, bekommt die Rezepte seines Landes automatisch dazu.
+        starter_packs: importStandard ? ['standard', ...landesPaket(geraeteLand())] : null,
       });
       // Bewusst NACH dem Setup und in einem eigenen try: Scheitert nur das
       // Speichern der Stufe, waere es unsinnig, das komplette Onboarding

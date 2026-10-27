@@ -9,3 +9,13 @@ export function geraeteLand(): string | null {
     return null;
   }
 }
+
+const LAND_PAKET: Record<string, string> = {
+  AT: 'oesterreich', DE: 'deutsch', CH: 'schweiz', IT: 'italienisch', PL: 'polnisch',
+};
+
+/** Starter-Paket des Landes (z. B. 'AT' -> ['oesterreich']); leer, wenn es keins gibt. */
+export function landesPaket(land: string | null): string[] {
+  const key = land ? LAND_PAKET[land] : undefined;
+  return key ? [key] : [];
+}

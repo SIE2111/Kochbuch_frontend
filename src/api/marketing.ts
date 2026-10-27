@@ -22,6 +22,10 @@ export type MarketingStatus = {
   eintraege: number;
   erster_schritt_offen: boolean;
   bewertung_faellig: boolean;
+  /** Einmalige Frage des Maskottchens 'Tipps und Angebote per E-Mail?' ist faellig. */
+  mail_frage_faellig?: boolean;
+  /** AI Coins als Dankeschoen fuer die bestaetigte Mail-Einwilligung. */
+  mail_bonus?: number;
   einwilligung: { bestaetigt: boolean; angefragt: boolean };
 };
 
@@ -45,6 +49,10 @@ export function statusMerken(teil: Partial<MarketingStatus>) {
 
 export async function einwilligungAnfragen(optIn: boolean, sprache: string): Promise<{ status: string }> {
   return api.post<{ status: string }>('/marketing/einwilligung', { opt_in: optIn, sprache });
+}
+
+export async function mailFrageBeantworten(antwort: 'ja' | 'nein', sprache: string): Promise<{ status: string }> {
+  return api.post<{ status: string }>('/marketing/mail-frage', { antwort, sprache });
 }
 
 export async function ersterSchrittErledigt(aktion: 'foto' | 'spaeter'): Promise<void> {

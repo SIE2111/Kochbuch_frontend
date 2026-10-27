@@ -59,6 +59,19 @@ export default function MarketingEinstellungen() {
     }
   };
 
+  // Bestaetigungs-Mail nicht angekommen: noch einmal schicken (der Server begrenzt auf wenige je Stunde)
+  const handleErneutSenden = async () => {
+    setMailSpeichert(true);
+    try {
+      await einwilligungAnfragen(true, getSprache());
+      showBrutzelHinweis({ title: t('marketing.einstellung.titel'), text: t('marketing.einstellung.erneutGesendet') });
+    } catch {
+      showBrutzelHinweis({ title: t('marketing.einstellung.titel'), text: t('marketing.einstellung.fehler') });
+    } finally {
+      setMailSpeichert(false);
+    }
+  };
+
   return (
     <View>
       {/* Freunde einladen: beide bekommen 50 AI Coins, sobald der Freund den Code eingibt */}
@@ -110,6 +123,11 @@ export default function MarketingEinstellungen() {
                   : 'marketing.einstellung.subAus')}
               </Text>
             </View>
+            {mailStand === 'angefragt' && !mailSpeichert && (
+              <Pressable onPress={handleErneutSenden} hitSlop={8} style={{ marginRight: 10 }}>
+                <MaterialCommunityIcons name="email-sync-outline" size={22} color={gradient[0]} />
+              </Pressable>
+            )}
             {mailSpeichert ? (
               <ActivityIndicator color={colors.muted} />
             ) : (

@@ -980,12 +980,20 @@
     "schonAbgeholt": "Du hast die {n} AI Coins schon abgeholt."
   },
   "marketing": {
-    "registrierenHaken": "Ich möchte Tipps und Angebote per E-Mail erhalten",
+    "registrierenHaken": "Ich möchte Rezept-Tipps und Angebote per E-Mail erhalten (jederzeit abbestellbar) – dafür gibt es AI Coins als Dankeschön",
     "ersterSchritt": {
       "titel": "Los geht's!",
       "text": "Fotografiere jetzt dein Lieblingsrezept. Ich lese Zutaten, Schritte und Timer für dich heraus – du kannst alles noch ändern, bevor du speicherst.",
       "foto": "Foto aufnehmen",
       "spaeter": "Später"
+    },
+    "mailFrage": {
+      "titel": "Darf ich dir schreiben?",
+      "text": "Ich schicke dir ab und zu Rezept-Tipps und Angebote per E-Mail – nicht oft, und du kannst dich jederzeit abmelden. Als Dankeschön bekommst du {bonus} AI Coins, sobald du die Mail bestätigt hast.",
+      "ja": "Ja, gern",
+      "nein": "Nein danke",
+      "danke": "Fein! Ich habe dir eine Mail geschickt. Tippe darin auf den Knopf, dann bist du dabei.",
+      "fehler": "Das hat gerade nicht geklappt. Du kannst es jederzeit im Profil unter E-Mail einschalten."
     },
     "erkannt": "Das habe ich erkannt:\nZutaten: {zutaten} · Schritte: {schritte} · Timer: {timer}\nSchau alles in Ruhe durch – du kannst jederzeit etwas ändern.",
     "plus": {
@@ -1003,7 +1011,8 @@
       "abschnitt": "E-Mail",
       "titel": "Tipps und Angebote per E-Mail",
       "subAus": "Aus – ich schicke dir keine Werbe-Mails",
-      "subAngefragt": "Bestätigungs-Mail gesendet – tippe darin auf den Knopf",
+      "subAngefragt": "Bestätigungs-Mail gesendet – tippe darin auf den Knopf. Nichts bekommen? Hier tippen: erneut senden",
+      "erneutGesendet": "Ich habe dir die Bestätigungs-Mail noch einmal geschickt. Schau auch im Spam-Ordner nach.",
       "subBestaetigt": "Bestätigt – ich schicke dir ab und zu Post",
       "mailGesendet": "Ich habe dir eine Mail geschickt. Tippe darin auf den Knopf, dann bist du dabei. Erst danach bekommst du Tipps und Angebote von mir.",
       "abgemeldet": "Okay, ich schicke dir keine Tipps und Angebote mehr.",

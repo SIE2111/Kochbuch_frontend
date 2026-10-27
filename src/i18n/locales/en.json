@@ -980,12 +980,20 @@
     "schonAbgeholt": "You have already picked up the {n} AI Coins."
   },
   "marketing": {
-    "registrierenHaken": "I would like to receive tips and offers by email",
+    "registrierenHaken": "I would like to receive recipe tips and offers by email (unsubscribe any time) – AI Coins as a thank-you",
     "ersterSchritt": {
       "titel": "Let's go!",
       "text": "Take a photo of your favourite recipe now. I read out the ingredients, steps and timers for you – you can still change everything before you save.",
       "foto": "Take photo",
       "spaeter": "Later"
+    },
+    "mailFrage": {
+      "titel": "May I write to you?",
+      "text": "Now and then I would like to send you recipe tips and offers by email – not often, and you can unsubscribe at any time. As a thank-you you get {bonus} AI Coins once you have confirmed the email.",
+      "ja": "Yes, please",
+      "nein": "No thanks",
+      "danke": "Great! I have sent you an email. Tap the button in it and you are in.",
+      "fehler": "That did not work just now. You can switch it on at any time in your profile under Email."
     },
     "erkannt": "This is what I recognised:\nIngredients: {zutaten} · Steps: {schritte} · Timers: {timer}\nTake your time to look it over – you can change anything at any time.",
     "plus": {
@@ -1003,7 +1011,8 @@
       "abschnitt": "Email",
       "titel": "Tips and offers by email",
       "subAus": "Off – I won't send you promotional emails",
-      "subAngefragt": "Confirmation email sent – tap the button in it",
+      "subAngefragt": "Confirmation email sent – tap the button in it. Nothing received? Tap here to send again",
+      "erneutGesendet": "I have sent you the confirmation email again. Please check your spam folder too.",
       "subBestaetigt": "Confirmed – I'll send you mail every now and then",
       "mailGesendet": "I've sent you an email. Tap the button in it and you're in. Only then will you receive tips and offers from me.",
       "abgemeldet": "Okay, I won't send you tips and offers any more.",

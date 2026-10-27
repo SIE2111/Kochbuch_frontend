@@ -6,14 +6,15 @@
 //   4. AI Coins knapp (80 % verbraucht): "Plus kommt bald - vormerken" bzw. (ab Plus-Start) Kaufhinweis
 //   5. Ende der Starteraktion naht (ab Plus-Start)
 //   6. Freunde einladen, einmalig nach dem 10. Eintrag
+//   (neu, Okt 2026) Einmalige Frage "Tipps und Angebote per E-Mail?" nach dem 1. Eintrag - ja ODER nein, danach nie wieder
 // Alle Fenster kommen vom Maskottchen, nie als System-Alert. Fehler und fehlendes Netz stoeren nichts.
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { requireOptionalNativeModule } from 'expo';
 import { showBrutzelHinweis } from './BrutzelHinweis';
-import { t } from '../i18n';
+import { t, getSprache } from '../i18n';
 import { api } from '../api/client';
-import { bewertungGefragt, einladungGezeigt, ersterSchrittErledigt, statusLaden } from '../api/marketing';
+import { bewertungGefragt, einladungGezeigt, ersterSchrittErledigt, mailFrageBeantworten, statusLaden } from '../api/marketing';
 import { einladungTeilen } from '../utils/einladung';
 import { plusDaZeigen, plusVormerkenZeigen, setzeProfilAktion } from '../utils/plusHinweis';
 
@@ -115,6 +116,26 @@ export default function MarketingHost({ navigationRef }: { navigationRef: Nav })
         }
 
         if (status.plus_da_hinweis && (await plusDaZeigen())) return;
+
+        if (status.mail_frage_faellig) {
+          const antworten = async (antwort: 'ja' | 'nein') => {
+            try {
+              await mailFrageBeantworten(antwort, getSprache());
+              if (antwort === 'ja') showBrutzelHinweis({ title: t('marketing.mailFrage.titel'), text: t('marketing.mailFrage.danke') });
+            } catch {
+              if (antwort === 'ja') showBrutzelHinweis({ title: t('marketing.mailFrage.titel'), text: t('marketing.mailFrage.fehler') });
+            }
+          };
+          showBrutzelHinweis({
+            title: t('marketing.mailFrage.titel'),
+            text: t('marketing.mailFrage.text', { bonus: status.mail_bonus ?? 10 }),
+            buttons: [
+              { text: t('marketing.mailFrage.ja'), onPress: () => { void antworten('ja'); } },
+              { text: t('marketing.mailFrage.nein'), style: 'cancel', onPress: () => { void antworten('nein'); } },
+            ],
+          });
+          return;
+        }
 
         if (status.einladung_faellig) {
           einladungGezeigt().catch(() => undefined);   // nur EINMAL anbieten, egal wie die Antwort ausfaellt

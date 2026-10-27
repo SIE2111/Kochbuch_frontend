@@ -28,14 +28,12 @@ export default function OnboardingScreen({ navigation }: Props) {
   const { t } = useUebersetzung();
   const { clearJustRegistered } = useAuth();
   const [createFolders, setCreateFolders] = useState(true);
-  // Bei der Anmeldung wird nur das Standard-Paket angeboten. Cocktails
-  // und Vegetarisch holt man sich im Profil, wenn man sie will - sie
-  // gleich mitzuliefern hiesse, jedem Neuling 38 Rezepte aufzudraengen,
-  // die er vielleicht nie braucht.
-  const [importStandard, setImportStandard] = useState(true);
+  // Alle Pakete sind waehlbar; vorausgewaehlt sind nur Basis und das
+  // Paket zum Land des Geraets. Der Rest laesst sich auch spaeter im Profil holen.
+  const [packs, setPacks] = useState<{ key: string; label: string; description: string; count: number }[]>([]);
+  const [auswahl, setAuswahl] = useState<string[]>(['standard', ...landesPaket(geraeteLand())]);
   // Vorbelegung wie in der Datenbank (default_hauben_level='fortgeschritten')
   const [haubenLevel, setHaubenLevel] = useState<HaubenLevel>('fortgeschritten');
-  const [totalAvailable, setTotalAvailable] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Brutzels kurze Einfuehrung laeuft VOR diesem Einrichtungsschritt -
@@ -45,13 +43,15 @@ export default function OnboardingScreen({ navigation }: Props) {
 
   useEffect(() => {
     api
-      .get<{ packs?: { key: string; count: number }[] }>('/onboarding/starter-pack-options')
-      .then((res) => setTotalAvailable(res.packs?.find((p) => p.key === 'standard')?.count ?? null))
+      .get<{ packs?: { key: string; label: string; description: string; count: number }[] }>('/onboarding/starter-pack-options')
+      .then((res) => setPacks(res.packs ?? []))
       .catch(() => {
         // Nur fuer die Anzeige der Rezeptanzahl - schlaegt das Laden fehl,
         // bleibt der Text generisch, der Import selbst funktioniert trotzdem
       });
   }, []);
+
+  const gesamt = packs.filter((p) => auswahl.includes(p.key)).reduce((n, p) => n + p.count, 0);
 
   const handleContinue = async () => {
     setIsSubmitting(true);
@@ -59,9 +59,7 @@ export default function OnboardingScreen({ navigation }: Props) {
     try {
       await api.post('/onboarding/setup', {
         create_standard_folders: createFolders,
-        // Basis-Rezepte für alle; wer das Gerät auf AT/DE/CH/IT/PL eingestellt
-        // hat, bekommt die Rezepte seines Landes automatisch dazu.
-        starter_packs: importStandard ? ['standard', ...landesPaket(geraeteLand())] : null,
+        starter_packs: auswahl.length > 0 ? auswahl : null,
       });
       // Bewusst NACH dem Setup und in einem eigenen try: Scheitert nur das
       // Speichern der Stufe, waere es unsinnig, das komplette Onboarding
@@ -141,36 +139,30 @@ export default function OnboardingScreen({ navigation }: Props) {
         Lässt sich beim Kochen jederzeit umschalten und später im Profil ändern.
       </Text>
 
-      <Text style={[styles.sectionLabel, { color: colors.muted }]}>STARTER-REZEPTE IMPORTIEREN</Text>
-      <Text style={[styles.rowSubtitle, { color: colors.muted, marginBottom: 6 }]}>
-        Cocktails und vegetarische Rezepte gibt es später im Profil.
-      </Text>
+      <Text style={[styles.sectionLabel, { color: colors.muted }]}>{t('sonstiges.starterTitel')}</Text>
+      <Text style={[styles.rowSubtitle, { color: colors.muted, marginBottom: 6 }]}>{t('sonstiges.starterHinweis')}</Text>
 
-      <Pressable
-        onPress={() => setImportStandard(true)}
-        style={[
-          styles.row,
-          { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: importStandard ? 1.5 : 0, borderColor: gradient[0] },
-        ]}
-      >
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.rowTitle, { color: colors.text }]}>
-            Standard-Rezepte{totalAvailable !== null ? ` (${totalAvailable})` : ''}
-          </Text>
-          <Text style={[styles.rowSubtitle, { color: colors.muted }]}>
-            Vorspeisen, Suppen, Hauptgerichte, Beilagen, Backen & Desserts
-          </Text>
-        </View>
-        {importStandard && <Text style={{ color: gradient[0], fontSize: 18 }}>✓</Text>}
-      </Pressable>
-
-      <Pressable
-        onPress={() => setImportStandard(false)}
-        style={[styles.row, { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: !importStandard ? 1.5 : 0, borderColor: gradient[0] }]}
-      >
-        <Text style={[styles.rowTitle, { color: colors.text, flex: 1 }]}>{t('sonstiges.keineStarter')}</Text>
-        {!importStandard && <Text style={{ color: gradient[0], fontSize: 18 }}>✓</Text>}
-      </Pressable>
+      {packs.map((pack) => {
+        const an = auswahl.includes(pack.key);
+        return (
+          <Pressable
+            key={pack.key}
+            onPress={() => setAuswahl((prev) => (prev.includes(pack.key) ? prev.filter((k) => k !== pack.key) : [...prev, pack.key]))}
+            style={[styles.row, { backgroundColor: colors.card, borderRadius: radius.md, borderWidth: an ? 1.5 : 0, borderColor: gradient[0] }]}
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.rowTitle, { color: colors.text }]}>{`${pack.label} (${pack.count})`}</Text>
+              <Text style={[styles.rowSubtitle, { color: colors.muted }]} numberOfLines={2}>{pack.description}</Text>
+            </View>
+            <Text style={{ color: an ? gradient[0] : colors.muted, fontSize: 18 }}>{an ? '✓' : '○'}</Text>
+          </Pressable>
+        );
+      })}
+      {packs.length > 0 && (
+        <Text style={[styles.rowSubtitle, { color: colors.muted, marginTop: 2 }]}>
+          {t('sonstiges.starterGesamt', { n: gesamt })}
+        </Text>
+      )}
 
       {error && <Text style={[styles.errorText, { color: '#DC2626' }]}>{error}</Text>}
 

@@ -6,14 +6,17 @@
 //   4. AI Coins knapp (80 % verbraucht): "Plus kommt bald - vormerken" bzw. (ab Plus-Start) Kaufhinweis
 //   5. Ende der Starteraktion naht (ab Plus-Start)
 //   6. Freunde einladen, einmalig nach dem 10. Eintrag
+//   (neu, Okt 2026) Einmalige Frage "Benachrichtigungen erhalten?" beim ersten Start (vor allem anderen); Ja fragt danach das System
 //   (neu, Okt 2026) Einmalige Frage "Tipps und Angebote per E-Mail?" nach dem 1. Eintrag - ja ODER nein, danach nie wieder
 // Alle Fenster kommen vom Maskottchen, nie als System-Alert. Fehler und fehlendes Netz stoeren nichts.
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { requireOptionalNativeModule } from 'expo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showBrutzelHinweis } from './BrutzelHinweis';
 import { t, getSprache } from '../i18n';
 import { api } from '../api/client';
+import { ensureNotificationPermission, notificationPermissionStatus } from '../utils/notifications';
 import { bewertungGefragt, einladungGezeigt, ersterSchrittErledigt, mailFrageBeantworten, statusLaden } from '../api/marketing';
 import { einladungTeilen } from '../utils/einladung';
 import { plusDaZeigen, plusVormerkenZeigen, setzeProfilAktion } from '../utils/plusHinweis';
@@ -25,6 +28,7 @@ type Nav = {
   navigate: (...args: any[]) => void;
 };
 
+const NACHRICHTEN_GEFRAGT_KEY = 'nachrichten_frage_beantwortet_v1';
 const MIN_ABSTAND_MS = 20000;   // nicht bei jedem Tab-Wechsel neu beim Server nachfragen
 const COINS_ANTEIL_KNAPP = 0.8;  // AI Coins: ab 80 % verbraucht
 
@@ -73,6 +77,50 @@ function datumAnzeige(iso: string): string {
   return `${tag}.${m}.${j}`;
 }
 
+/**
+ * Beim ersten Start einmal fragen, ob der Nutzer Benachrichtigungen (Timer-Ende beim Kochen, Erinnerungen aus dem Wochenplan)
+ * erhalten moechte - vom Maskottchen, vor der Systemabfrage. Ja: danach fragt das System; Nein: Schalter im Profil aus.
+ * Gibt true zurueck, wenn ein Fenster gezeigt wurde. Wer schon zugestimmt oder im System abgelehnt hat, wird nicht gefragt.
+ */
+let nachrichtenFrageOffen = false;   // Fenster steht schon (oder war in dieser Sitzung schon da): nicht doppelt zeigen
+async function nachrichtenFrageZeigen(): Promise<boolean> {
+  if (nachrichtenFrageOffen) return false;
+  try {
+    if (await AsyncStorage.getItem(NACHRICHTEN_GEFRAGT_KEY)) return false;
+    const status = await notificationPermissionStatus();
+    if (status !== 'undetermined') {            // schon entschieden (oder in dieser Umgebung nicht moeglich): nicht noch einmal fragen
+      if (status !== 'unavailable') await AsyncStorage.setItem(NACHRICHTEN_GEFRAGT_KEY, status);
+      return false;
+    }
+    nachrichtenFrageOffen = true;
+    const speichern = async (an: boolean) => {
+      try { await api.patch('/preferences/', { notifications_enabled: an }); } catch { /* Profil-Schalter bleibt wie er ist */ }
+    };
+    showBrutzelHinweis({
+      title: t('marketing.nachrichtenFrage.titel'),
+      text: t('marketing.nachrichtenFrage.text'),
+      buttons: [
+        {
+          text: t('marketing.nachrichtenFrage.ja'),
+          onPress: () => {
+            AsyncStorage.setItem(NACHRICHTEN_GEFRAGT_KEY, 'ja').catch(() => undefined);
+            void (async () => { await speichern(await ensureNotificationPermission()); })();
+          },
+        },
+        {
+          text: t('marketing.nachrichtenFrage.nein'),
+          style: 'cancel',
+          onPress: () => {
+            AsyncStorage.setItem(NACHRICHTEN_GEFRAGT_KEY, 'nein').catch(() => undefined);
+            void speichern(false);
+          },
+        },
+      ],
+    });
+    return true;
+  } catch { return false; }
+}
+
 export default function MarketingHost({ navigationRef }: { navigationRef: Nav }) {
   const laeuft = useRef(false);
   const letzte = useRef(0);
@@ -86,6 +134,7 @@ export default function MarketingHost({ navigationRef }: { navigationRef: Nav })
       laeuft.current = true;
       letzte.current = Date.now();
       try {
+        if (await nachrichtenFrageZeigen()) return;     // beim ersten Start zuerst: Benachrichtigungen ja/nein
         const status = await statusLaden();
 
         if (status.erster_schritt_offen && !ersterSchrittGezeigt.current) {

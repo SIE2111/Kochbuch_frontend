@@ -1053,6 +1053,12 @@
         "limit_erreicht": "This code can't be redeemed right now.",
         "fehler": "That didn't work just now. Please try again later."
       }
+    },
+    "nachrichtenFrage": {
+      "titel": "Shall I let you know?",
+      "text": "I will tell you when your cooking timer is done – even when the app is in the background – and remind you of dishes from your weekly plan. You can change this at any time in your profile.",
+      "ja": "Yes, please",
+      "nein": "No thanks"
     }
   },
   "nachSpeichern": {

@@ -1053,6 +1053,12 @@
         "limit_erreicht": "Dieser Code kann gerade nicht eingelöst werden.",
         "fehler": "Das hat gerade nicht geklappt. Versuch es später noch einmal."
       }
+    },
+    "nachrichtenFrage": {
+      "titel": "Soll ich dir Bescheid geben?",
+      "text": "Ich melde mich, wenn dein Kochtimer abgelaufen ist – auch wenn die App gerade im Hintergrund läuft – und erinnere dich an Gerichte aus deinem Wochenplan. Im Profil kannst du das jederzeit ändern.",
+      "ja": "Ja, gern",
+      "nein": "Nein danke"
     }
   },
   "nachSpeichern": {

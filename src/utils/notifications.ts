@@ -56,6 +56,16 @@ if (N) {
   });
 }
 
+/** Systemberechtigung fuer Benachrichtigungen, OHNE zu fragen: 'granted' | 'denied' | 'undetermined' | 'unavailable' (z. B. Expo Go). */
+export async function notificationPermissionStatus(): Promise<'granted' | 'denied' | 'undetermined' | 'unavailable'> {
+  const N = nachrichten();
+  if (!N) return 'unavailable';
+  try {
+    const { status } = await N.getPermissionsAsync();
+    return status === 'granted' ? 'granted' : status === 'denied' ? 'denied' : 'undetermined';
+  } catch { return 'unavailable'; }
+}
+
 export async function ensureNotificationPermission(): Promise<boolean> {
   const N = nachrichten();
   if (!N) return false;

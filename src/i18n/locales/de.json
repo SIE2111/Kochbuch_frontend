@@ -1056,6 +1056,8 @@
     },
     "nachrichtenFrage": {
       "titel": "Soll ich dir Bescheid geben?",
+      "titelNochmal": "Darf ich dich doch erinnern?",
+      "einstellungen": "Du hast die Benachrichtigungen in den Einstellungen deines Geräts ausgeschaltet. Tippst du auf „Ja, gern“, öffne ich sie dir – dort bei „Benachrichtigungen“ einschalten.",
       "text": "Ich melde mich, wenn dein Kochtimer abgelaufen ist – auch wenn die App gerade im Hintergrund läuft – und erinnere dich an Gerichte aus deinem Wochenplan. Im Profil kannst du das jederzeit ändern.",
       "ja": "Ja, gern",
       "nein": "Nein danke"

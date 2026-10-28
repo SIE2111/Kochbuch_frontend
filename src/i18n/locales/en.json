@@ -1056,6 +1056,8 @@
     },
     "nachrichtenFrage": {
       "titel": "Shall I let you know?",
+      "titelNochmal": "Shall I remind you after all?",
+      "einstellungen": "Notifications are switched off in your device settings. Tap “Yes, please” and I’ll open them for you – just turn on “Notifications” there.",
       "text": "I will tell you when your cooking timer is done – even when the app is in the background – and remind you of dishes from your weekly plan. You can change this at any time in your profile.",
       "ja": "Yes, please",
       "nein": "No thanks"

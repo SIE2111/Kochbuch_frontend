@@ -66,6 +66,16 @@ export async function notificationPermissionStatus(): Promise<'granted' | 'denie
   } catch { return 'unavailable'; }
 }
 
+/** Ob das System noch einmal selbst nachfragen darf (false = nur noch ueber die Einstellungen moeglich). */
+export async function notificationCanAskAgain(): Promise<boolean> {
+  const N = nachrichten();
+  if (!N) return false;
+  try {
+    const p = await N.getPermissionsAsync();
+    return p.status !== 'denied' || p.canAskAgain !== false;
+  } catch { return false; }
+}
+
 export async function ensureNotificationPermission(): Promise<boolean> {
   const N = nachrichten();
   if (!N) return false;

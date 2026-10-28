@@ -21,6 +21,7 @@ import KochplanKarte from '../components/KochplanKarte';
 import { kochplanLaden, kochplanEntfernen, KochplanEintrag } from '../utils/kochplan';
 import { TippBlase } from '../components/TippBlase';
 import { TIPPS } from '../utils/tippListe';
+import { begruessungSetzen } from '../utils/begruessung';
 import BrutzelAvatar from '../components/BrutzelAvatar';
 
 type Props = CompositeScreenProps<
@@ -111,9 +112,13 @@ export default function DashboardScreen({ navigation }: Props) {
           setGreetingSprechen(prefs.auto_read_steps);
           setGreetingMitMusik(prefs.play_animation_music);
           setShowGreeting(true);
+          begruessungSetzen('aktiv');
+        } else {
+          begruessungSetzen('fertig');
         }
       })
       .catch(() => {
+        begruessungSetzen('fertig');
         // Faellt unten einfach auf E-Mail/"da" zurueck, wenn das Laden scheitert
       });
   }, []);
@@ -637,7 +642,7 @@ export default function DashboardScreen({ navigation }: Props) {
       </Pressable>
     </Modal>
     <ScanFab />
-    {showGreeting && <BrutzelGreetingOverlay name={displayName} mitVideo={greetingMitVideo} sprechen={greetingSprechen} mitMusik={greetingMitMusik} onDismiss={() => setShowGreeting(false)} />}
+    {showGreeting && <BrutzelGreetingOverlay name={displayName} mitVideo={greetingMitVideo} sprechen={greetingSprechen} mitMusik={greetingMitMusik} onDismiss={() => { setShowGreeting(false); begruessungSetzen('fertig'); }} />}
     </>
   );
 }

@@ -109,6 +109,7 @@ function nachrichtenFaellig(st: NachrichtenStand, jetzt: number): boolean {
   return jetzt >= ab;
 }
 
+let weiterPruefen: () => void = () => undefined;   // nach einer beantworteten Frage gleich die naechste pruefen (MarketingHost setzt es)
 let nachrichtenFrageOffen = false;   // Fenster steht gerade: nicht doppelt zeigen
 async function nachrichtenFrageZeigen(): Promise<boolean> {
   if (nachrichtenFrageOffen) return false;
@@ -152,13 +153,14 @@ async function nachrichtenFrageZeigen(): Promise<boolean> {
               const ok = await ensureNotificationPermission();
               await speichern(ok);
               if (ok) await AsyncStorage.setItem(NACHRICHTEN_STAND_KEY, JSON.stringify({ ...neu, fertig: true })).catch(() => undefined);
+              weiterPruefen();
             })();
           },
         },
         {
           text: t('marketing.nachrichtenFrage.nein'),
           style: 'cancel',
-          onPress: () => { nachrichtenFrageOffen = false; void speichern(false); },
+          onPress: () => { nachrichtenFrageOffen = false; void speichern(false); weiterPruefen(); },
         },
       ],
     });
@@ -186,6 +188,29 @@ export default function MarketingHost({ navigationRef }: { navigationRef: Nav })
       try {
         if (await nachrichtenFrageZeigen()) return;     // beim ersten Start zuerst: Benachrichtigungen ja/nein
         const status = await statusLaden();
+
+        // Werbe-Info per E-Mail: gleich beim ersten Start (vor der Fuehrung zum ersten Rezept), danach nie wieder
+        if (status.mail_frage_faellig) {
+          const antworten = async (antwort: 'ja' | 'nein') => {
+            try {
+              await mailFrageBeantworten(antwort, getSprache());
+              if (antwort === 'nein') weiterPruefen();
+              if (antwort === 'ja') showBrutzelHinweis({ title: t('marketing.mailFrage.titel'), text: t('marketing.mailFrage.danke') });
+            } catch {
+              if (antwort === 'nein') weiterPruefen();
+              if (antwort === 'ja') showBrutzelHinweis({ title: t('marketing.mailFrage.titel'), text: t('marketing.mailFrage.fehler') });
+            }
+          };
+          showBrutzelHinweis({
+            title: t('marketing.mailFrage.titel'),
+            text: t('marketing.mailFrage.text', { bonus: status.mail_bonus ?? 10 }),
+            buttons: [
+              { text: t('marketing.mailFrage.ja'), onPress: () => { void antworten('ja'); } },
+              { text: t('marketing.mailFrage.nein'), style: 'cancel', onPress: () => { void antworten('nein'); } },
+            ],
+          });
+          return;
+        }
 
         if (status.erster_schritt_offen && !ersterSchrittGezeigt.current) {
           ersterSchrittGezeigt.current = true;
@@ -216,26 +241,6 @@ export default function MarketingHost({ navigationRef }: { navigationRef: Nav })
 
         if (status.plus_da_hinweis && (await plusDaZeigen())) return;
 
-        if (status.mail_frage_faellig) {
-          const antworten = async (antwort: 'ja' | 'nein') => {
-            try {
-              await mailFrageBeantworten(antwort, getSprache());
-              if (antwort === 'ja') showBrutzelHinweis({ title: t('marketing.mailFrage.titel'), text: t('marketing.mailFrage.danke') });
-            } catch {
-              if (antwort === 'ja') showBrutzelHinweis({ title: t('marketing.mailFrage.titel'), text: t('marketing.mailFrage.fehler') });
-            }
-          };
-          showBrutzelHinweis({
-            title: t('marketing.mailFrage.titel'),
-            text: t('marketing.mailFrage.text', { bonus: status.mail_bonus ?? 10 }),
-            buttons: [
-              { text: t('marketing.mailFrage.ja'), onPress: () => { void antworten('ja'); } },
-              { text: t('marketing.mailFrage.nein'), style: 'cancel', onPress: () => { void antworten('nein'); } },
-            ],
-          });
-          return;
-        }
-
         if (status.einladung_faellig) {
           einladungGezeigt().catch(() => undefined);   // nur EINMAL anbieten, egal wie die Antwort ausfaellt
           showBrutzelHinweis({
@@ -263,6 +268,7 @@ export default function MarketingHost({ navigationRef }: { navigationRef: Nav })
     };
 
     setzeProfilAktion(() => navigationRef.navigate('MainTabs', { screen: 'Profil' }));
+    weiterPruefen = () => { letzte.current = 0; setTimeout(() => { void pruefen(); }, 900); };
     const abmelden = navigationRef.addListener('state', () => { void pruefen(); });
     const begr = aufBegruessungHoeren(() => { if (begruessungStand() === 'fertig') { letzte.current = 0; setTimeout(() => { void pruefen(); }, 600); } });
     const app = AppState.addEventListener('change', (s) => { if (s === 'active') { letzte.current = 0; void pruefen(); } });

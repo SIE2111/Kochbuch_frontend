@@ -980,6 +980,12 @@
     "schonAbgeholt": "You have already picked up the {n} AI Coins."
   },
   "marketing": {
+    "bewertung": {
+      "titel": "Enjoying Mein Kochbuch?",
+      "text": "Then I’d be really happy about a quick rating in the store – it helps others find the app and only takes a few seconds.",
+      "ja": "Yes, rate it",
+      "nein": "Not now"
+    },
     "registrierenHaken": "I would like to receive recipe tips and offers by email (unsubscribe any time) – AI Coins as a thank-you",
     "ersterSchritt": {
       "titel": "Let's go!",

@@ -980,6 +980,12 @@
     "schonAbgeholt": "Du hast die {n} AI Coins schon abgeholt."
   },
   "marketing": {
+    "bewertung": {
+      "titel": "Gefällt dir Mein Kochbuch?",
+      "text": "Dann freue ich mich riesig über eine kurze Bewertung im Store – das hilft anderen, die App zu finden, und dauert nur ein paar Sekunden.",
+      "ja": "Ja, bewerten",
+      "nein": "Jetzt nicht"
+    },
     "registrierenHaken": "Ich möchte Rezept-Tipps und Angebote per E-Mail erhalten (jederzeit abbestellbar) – dafür gibt es AI Coins als Dankeschön",
     "ersterSchritt": {
       "titel": "Los geht's!",

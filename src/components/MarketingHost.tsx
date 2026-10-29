@@ -50,8 +50,17 @@ async function bewertungAnzeigen(): Promise<boolean> {
   if (!modul) return false;
   try {
     if (modul.isAvailableAsync && !(await modul.isAvailableAsync())) return false;
+    // Erst die Figur der App fragen (Wunsch 29.10.2026), bei "Ja" das Bewertungsfenster des Systems
+    const store = modul;
     await bewertungGefragt();     // erst vermerken, dann fragen: hoechstens einmal je Nutzer und App
-    await modul.requestReview();
+    showBrutzelHinweis({
+      title: t('marketing.bewertung.titel'),
+      text: t('marketing.bewertung.text'),
+      buttons: [
+        { text: t('marketing.bewertung.ja'), onPress: () => { setTimeout(() => { store.requestReview().catch(() => undefined) }, 700) } },
+        { text: t('marketing.bewertung.nein'), style: 'cancel' },
+      ],
+    });
     return true;
   } catch {
     return false;

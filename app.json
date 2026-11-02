@@ -3,7 +3,7 @@
     "name": "Mein Kochbuch AI",
     "slug": "meinkochbuch",
     "scheme": "meinkochbuch",
-    "version": "1.1",
+    "version": "1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -30,8 +30,7 @@
           "de",
           "en"
         ]
-      },
-      "usesAppleSignIn": true
+      }
     },
     "android": {
       "package": "at.homearchive.meinkochbuch",
@@ -74,7 +73,6 @@
       ],
       "expo-localization",
       "expo-sharing",
-      "expo-apple-authentication",
       "./plugins/withWeinkellerQuery"
     ],
     "extra": {

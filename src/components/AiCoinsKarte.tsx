@@ -11,7 +11,7 @@ import { api } from '../api/client';
 import { kaufenZeigen } from '../utils/coinsGeschenk';
 
 type Eintrag = { key: string; label: string; label_en?: string; cost: string; cost_en?: string; note?: string; note_en?: string };
-type Stand = { monthly_total: number; monthly_remaining: number; purchased: number; trial_ends?: string | null; bonus?: number; gift_available?: boolean; gift_amount?: number; items: Eintrag[] };
+type Stand = { monthly_total: number; monthly_remaining: number; purchased: number; trial_ends?: string | null; bonus?: number; gift_available?: boolean; gift_amount?: number; gift_locked?: boolean; gift_apps?: { key: string; name: string; url: string; installed: boolean }[]; gift_apps_needed?: number; items: Eintrag[] };
 
 // 'JJJJ-MM-TT' -> 'TT.MM.JJJJ'
 function datumAnzeige(iso: string): string {
@@ -60,11 +60,11 @@ export default function AiCoinsKarte({ refreshKey }: {
         {stand ? <Text style={[st.zahl, { color: colors.text }]}>{stand.purchased}</Text> : null}
       </View>
 
-      <Pressable style={mitTrenner} onPress={() => kaufenZeigen(!!stand?.gift_available, stand?.gift_amount ?? 100, laden)}>
+      <Pressable style={mitTrenner} onPress={() => kaufenZeigen(!!stand?.gift_available, stand?.gift_amount ?? 100, laden, stand)}>
         <MaterialCommunityIcons name="gift-outline" size={20} color={colors.muted} style={st.icon} />
         <View style={{ flex: 1 }}>
           <Text style={[st.titel, { color: colors.text }, stand?.gift_available ? { fontWeight: '800' } : null]}>{t('profil.aiCoinsGeschenk')}</Text>
-          <Text style={[st.sub, { color: colors.muted }]}>{stand?.gift_available ? t('profil.aiCoinsGeschenkHinweis', { n: stand.gift_amount ?? 100 }) : t('profil.aiCoinsKaufenSpaeter')}</Text>
+          <Text style={[st.sub, { color: colors.muted }]}>{stand?.gift_available ? (stand.gift_locked ? t('profil.aiCoinsGeschenkAbDrei', { n: stand.gift_amount ?? 100, min: stand.gift_apps_needed ?? 3, anzahl: (stand.gift_apps || []).filter((a) => a.installed).length }) : t('profil.aiCoinsGeschenkHinweis', { n: stand.gift_amount ?? 100 })) : t('profil.aiCoinsKaufenSpaeter')}</Text>
         </View>
         <MaterialCommunityIcons name="chevron-right" size={22} color={colors.muted} />
       </Pressable>

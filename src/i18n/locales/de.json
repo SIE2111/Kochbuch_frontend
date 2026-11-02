@@ -218,6 +218,7 @@
     "nochNichtsZubereitet": "Noch nichts zubereitet – starte die Zubereitung eines Rezepts, dann erscheint es hier."
   },
   "profil": {
+    "aiCoinsGeschenkAbDrei": "{n} AI Coins geschenkt, sobald du {min} unserer Apps nutzt (jetzt: {anzahl})",
     "name": "NAME",
     "haushalt": "Haushalt",
     "standardStufe": "STANDARD-STUFE IM KOCH-MODUS",
@@ -313,6 +314,10 @@
     "aiCoinsKaufenSpaeter": "Du hast die AI Coins schon abgeholt"
   },
   "detail": {
+    "kochenKosten": "2 AI Coins je Kochvorgang",
+    "klassischTitel": "Klassisch dazu: {beilage}",
+    "klassischText": "Hast du noch nicht im Kochbuch – tippe, und ich erstelle dir ein Rezept dafür.",
+    "klassischWunsch": "{beilage} als Beilage zu {gericht}",
     "nichtGeladen": "Rezept konnte nicht geladen werden",
     "portionen": "Portionen",
     "duBenoetigst": "Du benötigst: ",
@@ -963,6 +968,9 @@
     "fehler": "Die Suche hat nicht geklappt."
   },
   "hinweis": {
+    "geschenkAbDreiTitel": "Geschenk ab 3 Apps",
+    "geschenkAbDreiText": "Die {n} AI Coins schenke ich dir, sobald du mindestens {min} unserer Apps nutzt – im Moment sind es {anzahl}:\n\n{liste}\n\nAlle Apps findest du auf www.homearchive.at.",
+    "appAnsehen": "{name} ansehen",
     "von": "Brutzel hat einen Hinweis",
     "verstanden": "Verstanden",
     "coinsTitel": "AI Coins aufgebraucht",

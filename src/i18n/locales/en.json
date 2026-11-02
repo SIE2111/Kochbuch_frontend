@@ -218,6 +218,7 @@
     "nochNichtsZubereitet": "Nothing cooked yet – start cooking a recipe and it will show up here."
   },
   "profil": {
+    "aiCoinsGeschenkAbDrei": "{n} AI Coins as a gift once you use {min} of our apps (now: {anzahl})",
     "name": "NAME",
     "haushalt": "Household",
     "standardStufe": "DEFAULT LEVEL IN COOKING MODE",
@@ -313,6 +314,10 @@
     "aiCoinsKaufenSpaeter": "You have already picked up the AI Coins"
   },
   "detail": {
+    "kochenKosten": "2 AI Coins per cooking session",
+    "klassischTitel": "Classic with it: {beilage}",
+    "klassischText": "Not in your cookbook yet – tap and I’ll create a recipe for it.",
+    "klassischWunsch": "{beilage} as a side dish for {gericht}",
     "nichtGeladen": "The recipe could not be loaded",
     "portionen": "Servings",
     "duBenoetigst": "You'll need: ",
@@ -963,6 +968,9 @@
     "fehler": "The search failed."
   },
   "hinweis": {
+    "geschenkAbDreiTitel": "Gift from 3 apps",
+    "geschenkAbDreiText": "I’ll give you the {n} AI Coins as soon as you use at least {min} of our apps – right now it’s {anzahl}:\n\n{liste}\n\nYou’ll find all apps at www.homearchive.at.",
+    "appAnsehen": "View {name}",
     "von": "Brutzel has a note",
     "verstanden": "Got it",
     "coinsTitel": "AI Coins used up",

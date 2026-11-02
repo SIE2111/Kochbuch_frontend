@@ -145,6 +145,7 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
 
 
   const [sideSuggestions, setSideSuggestions] = useState<SideSuggestion[]>([]);
+  const [klassischeBeilage, setKlassischeBeilage] = useState<string | null>(null);   // z.B. "Jasminreis", fehlt im Kochbuch
   const [manualSides, setManualSides] = useState<SideSuggestion[]>([]);
   const [selectedSideIds, setSelectedSideIds] = useState<string[]>([]);
   const [isSidesLoading, setIsSidesLoading] = useState(true);
@@ -159,8 +160,8 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
     // KI-Zuordnung aus den eigenen gespeicherten Rezepten, mit Begruendung.
     setIsSidesLoading(true);
     api
-      .post<{ suggestions: SideSuggestion[] }>(`/ai/suggest-sides-for-recipe/${recipeId}`)
-      .then((res) => setSideSuggestions(res.suggestions))
+      .post<{ suggestions: SideSuggestion[]; klassisch?: string | null }>(`/ai/suggest-sides-for-recipe/${recipeId}`)
+      .then((res) => { setSideSuggestions(res.suggestions); setKlassischeBeilage(res.klassisch ?? null); })
       .catch((err) => setSidesError(err instanceof ApiError ? err.detail : t('detail.vorschlaegeNichtGeladen')))
       .finally(() => setIsSidesLoading(false));
   }, [recipeId]);
@@ -908,7 +909,7 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
   const blockAktionen = (
     <>
       <Pressable
-        onPress={() => {
+        onPress={async () => {
           // Merken, welche Beilagen tatsaechlich mitgekocht werden - beim
           // START, nicht beim Auswaehlen: Ausgewaehlt wird viel, gekocht
           // wird das, was wirklich zusammengehoert. Beim naechsten Mal
@@ -917,6 +918,14 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
           if (currentSteps.length === 0) {
             Alert.alert(t('detail.keineSchritteTitel'), t('detail.keineSchritteText'));
             return;
+          }
+          // Kochen kostet 2 AI Coins je Vorgang (Beilagen inklusive). Sind keine mehr da (402), zeigt Brutzel
+          // seinen Hinweis (siehe api/client.ts) und es geht nicht los. Andere Fehler (kein Netz o. ae.)
+          // halten das Kochen nicht auf.
+          try {
+            await api.post(`/recipes/${recipeId}/zubereitung-start`, {});
+          } catch (e) {
+            if (e instanceof ApiError && e.status === 402) return;
           }
           if (selectedSideIds.length > 0) {
             api.post(`/ai/remember-sides/${recipeId}`, { side_recipe_ids: selectedSideIds }).catch(() => {});
@@ -937,6 +946,7 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
         style={[styles.cookButton, { backgroundColor: gradient[0], borderRadius: radius.md }]}
       >
         <Text style={styles.cookButtonText}>{t('detail.zubereitungStarten')}</Text>
+        <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 11.5, marginTop: 2 }}>{t('detail.kochenKosten')}</Text>
       </Pressable>
 
       <Pressable
@@ -1026,6 +1036,18 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
                 </Pressable>
               );
             })}
+            {!!klassischeBeilage && (
+              <Pressable
+                onPress={() => navigation?.navigate('AIGenerate', { wunsch: t('detail.klassischWunsch', { beilage: klassischeBeilage, gericht: recipe?.title ?? '' }) })}
+                style={[styles.sideRow, { backgroundColor: colors.bg, borderRadius: radius.sm }]}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.sideTitle, { color: colors.text }]}>{t('detail.klassischTitel', { beilage: klassischeBeilage })}</Text>
+                  <Text style={[styles.sideReason, { color: colors.muted }]}>{t('detail.klassischText')}</Text>
+                </View>
+                <MaterialCommunityIcons name="creation" size={20} color={gradient[0]} />
+              </Pressable>
+            )}
             <Pressable onPress={openSidePicker} style={styles.searchLink}>
               <MaterialCommunityIcons name="magnify" size={14} color={gradient[0]} />
               <Text style={[styles.searchLinkText, { color: gradient[0] }]}>{t('detail.anderesRezeptSuchen')}</Text>
@@ -1513,7 +1535,7 @@ const styles = StyleSheet.create({
   servingsValue: { fontSize: 34, fontWeight: '800', minWidth: 50, textAlign: 'center' },
   equipmentCard: { flexDirection: 'row', alignItems: 'flex-start', padding: 12, marginBottom: 12 },
   equipmentText: { flex: 1, fontSize: 12.5, lineHeight: 18 },
-  cookButton: { height: 46, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
+  cookButton: { minHeight: 52, paddingVertical: 6, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
   sidesCard: { padding: 14, marginBottom: 14 },
   reviewButton: { height: 42, alignItems: 'center', justifyContent: 'center' },
   reviewButtonText: { color: '#fff', fontWeight: '700', fontSize: 12.5 },

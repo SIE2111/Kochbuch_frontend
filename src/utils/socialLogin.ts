@@ -5,7 +5,7 @@
 // Die nativen Module kommen erst mit dem vollen Build 1.1. In aelteren Builds (und in Expo Go) fehlen sie -
 // dann bleiben die Knoepfe einfach weg, statt dass die App beim Laden abstuerzt.
 import { Platform } from 'react-native';
-import { GOOGLE_IOS_CLIENT_ID, GOOGLE_WEB_CLIENT_ID } from '../config/socialLogin';
+import { GOOGLE_IOS_CLIENT_ID, GOOGLE_WEB_CLIENT_ID, SOCIAL_LOGIN_AKTIV } from '../config/socialLogin';
 import { requireOptionalNativeModule } from 'expo';
 import { supabase } from '../api/supabaseClient';
 
@@ -14,11 +14,13 @@ export type SocialErgebnis = { neu: boolean; name: string | null } | null;   // 
 const extra = { googleWebClientId: GOOGLE_WEB_CLIENT_ID, googleIosClientId: GOOGLE_IOS_CLIENT_ID };
 
 function apple(): any | null {
+  if (!SOCIAL_LOGIN_AKTIV) return null;
   if (Platform.OS !== 'ios' || !requireOptionalNativeModule('ExpoAppleAuthentication')) return null;
   try { return require('expo-apple-authentication'); } catch { return null; }
 }
 
 function google(): any | null {
+  if (!SOCIAL_LOGIN_AKTIV) return null;
   if (!extra.googleWebClientId || (Platform.OS === 'ios' && !extra.googleIosClientId)) return null;
   if (!requireOptionalNativeModule('RNGoogleSignin')) return null;
   try { return require('@react-native-google-signin/google-signin'); } catch { return null; }

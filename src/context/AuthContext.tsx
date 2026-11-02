@@ -5,6 +5,11 @@ import { einwilligungAnfragen } from '../api/marketing';
 import { einladungEinloesenMitHinweis } from '../utils/einladung';
 import { supabase } from '../api/supabaseClient';
 import { api, setOnTrialExpired } from '../api/client';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { mitAppleAnmelden, mitGoogleAnmelden, googleAbmelden } from '../utils/socialLogin';
+
+/** Nach dem ersten Apple-/Google-Login fragt Brutzel nach dem Einladungscode (siehe MarketingHost). */
+export const EINLADUNG_FRAGE_KEY = 'einladung_frage_offen_v1';
 
 /**
  * Kochbuch nutzt bewusst Pflicht-Login (kein Kein-Kontozwang-Prinzip wie
@@ -42,6 +47,8 @@ interface AuthContextValue {
   verifyCode: (email: string, code: string) => Promise<void>;
   /** Fordert einen neuen Code an. */
   resendCode: (email: string) => Promise<void>;
+  /** Anmelden/Registrieren mit Apple oder Google (Version 1.1). Abbruch durch den Nutzer = kein Fehler. */
+  signInSocial: (art: 'apple' | 'google', formular?: { marketingOptIn?: boolean; einladungscode?: string }) => Promise<void>;
   signOut: () => Promise<void>;
   /** 3-Monats-Testphase abgelaufen (Backend antwortet 402 auf JEDEM
    * authentifizierten Request, siehe deps.py/client.ts) - gesetzt sobald
@@ -138,12 +145,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Eingegebener Einladungscode eines Freundes: einloesen, das Maskottchen sagt, wie es ausging.
         if (freundesCode) void einladungEinloesenMitHinweis(freundesCode);
       },
+      signInSocial: async (art, formular) => {
+        const erg = art === 'apple' ? await mitAppleAnmelden() : await mitGoogleAnmelden();
+        if (!erg) return;   // abgebrochen
+        if (!erg.neu) return;   // bestehendes Konto: einfach angemeldet
+        setJustRegistered(true);
+        // Name aus Apple/Google uebernehmen (Apple gibt ihn nur beim ersten Mal heraus)
+        if (erg.name) void api.patch('/preferences/', { display_name: erg.name }).catch(() => undefined);
+        if (formular?.marketingOptIn) void einwilligungAnfragen(true, getSprache()).catch(() => undefined);
+        const code = (formular?.einladungscode || '').trim();
+        if (code) void einladungEinloesenMitHinweis(code);
+        else await AsyncStorage.setItem(EINLADUNG_FRAGE_KEY, '1').catch(() => undefined);
+      },
       resendCode: async (email) => {
         await api.post('/auth/resend-code', { email: email.trim().toLowerCase() });
       },
       signOut: async () => {
         pendingPassword.current = null;
         setTrialExpired(null);
+        await googleAbmelden();
         await supabase.auth.signOut();
       },
     }),

@@ -18,6 +18,7 @@ import { t, getSprache } from '../i18n';
 import { api } from '../api/client';
 import { ensureNotificationPermission, notificationCanAskAgain, notificationPermissionStatus } from '../utils/notifications';
 import { aufBegruessungHoeren, begruessungStand } from '../utils/begruessung';
+import { EINLADUNG_FRAGE_KEY } from '../context/AuthContext';
 import { bewertungGefragt, einladungGezeigt, ersterSchrittErledigt, mailFrageBeantworten, statusLaden } from '../api/marketing';
 import { einladungTeilen } from '../utils/einladung';
 import { plusDaZeigen, plusVormerkenZeigen, setzeProfilAktion } from '../utils/plusHinweis';
@@ -216,6 +217,20 @@ export default function MarketingHost({ navigationRef }: { navigationRef: Nav })
             buttons: [
               { text: t('marketing.mailFrage.ja'), onPress: () => { void antworten('ja'); } },
               { text: t('marketing.mailFrage.nein'), style: 'cancel', onPress: () => { void antworten('nein'); } },
+            ],
+          });
+          return;
+        }
+
+        // Nach dem ersten Apple-/Google-Login: Einladungscode gab es dort kein Feld - also kurz fragen
+        if (status.einladung_einloesbar && (await AsyncStorage.getItem(EINLADUNG_FRAGE_KEY).catch(() => null))) {
+          await AsyncStorage.removeItem(EINLADUNG_FRAGE_KEY).catch(() => undefined);
+          showBrutzelHinweis({
+            title: t('marketing.einladungFrageTitel'),
+            text: t('marketing.einladungFrageText'),
+            buttons: [
+              { text: t('marketing.einladungFrageJa'), onPress: () => { navigationRef.navigate('MainTabs', { screen: 'Profil' }); } },
+              { text: t('marketing.einladungFrageNein'), style: 'cancel', onPress: () => { weiterPruefen(); } },
             ],
           });
           return;

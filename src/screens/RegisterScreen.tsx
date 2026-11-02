@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import RechtFenster from '../components/RechtFenster';
+import SocialLoginKnoepfe from '../components/SocialLoginKnoepfe';
 import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, Alert, Linking, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../theme/ThemeContext';
@@ -173,6 +174,8 @@ export default function RegisterScreen({ navigation }: Props) {
             <Text style={{ color: gradient[0], fontWeight: '600' }}>{t('auth.anmelden')}</Text>
           </Text>
         </Pressable>
+
+        <SocialLoginKnoepfe formular={{ agbAkzeptiert: termsAccepted, marketingOptIn, einladungscode }} onAgbOeffnen={setLegal} />
 
         <LanguageSwitchRow />
       </View>

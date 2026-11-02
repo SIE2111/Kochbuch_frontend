@@ -6,6 +6,11 @@ import { useTheme } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
 import PasswortFeld from '../components/PasswortFeld';
 import LanguageSwitchRow from '../components/LanguageSwitchRow';
+import SocialLoginKnoepfe from '../components/SocialLoginKnoepfe';
+import RechtFenster from '../components/RechtFenster';
+
+const AGB_URL = 'https://www.homearchive.at/agb';
+const DATENSCHUTZ_URL = 'https://www.homearchive.at/datenschutz';
 import { useAuth } from '../context/AuthContext';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '../navigation/AppNavigator';
@@ -36,6 +41,7 @@ export default function LoginScreen({ navigation }: Props) {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [legal, setLegal] = useState<null | 'agb' | 'datenschutz'>(null);
 
   useEffect(() => {
     AsyncStorage.getItem(REMEMBER_EMAIL_KEY).then(saved => {
@@ -139,9 +145,12 @@ export default function LoginScreen({ navigation }: Props) {
 
         </Pressable>
 
+        <SocialLoginKnoepfe onAgbOeffnen={setLegal} />
+
         <LanguageSwitchRow />
       </View>
       </ScrollView>
+      <RechtFenster titel={legal === 'agb' ? t('auth.agbLesen') : t('auth.datenschutzLesen')} url={legal ? (legal === 'agb' ? AGB_URL : DATENSCHUTZ_URL) + '?embedded=1' : null} onClose={() => setLegal(null)} />
     </KeyboardAvoidingView>
   );
 }

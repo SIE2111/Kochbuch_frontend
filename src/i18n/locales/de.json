@@ -146,6 +146,15 @@
     "fussnote": "Importierte Rezepte sind in der Rezeptliste an ihrem Herkunftszeichen erkennbar. Entfernt wird immer nur, was unverändert, nie gekocht und nicht veröffentlicht ist – eigene Arbeit geht dabei nicht verloren."
   },
   "auth": {
+    "oderAnmeldenMit": "oder anmelden mit",
+    "mitApple": "Mit Apple anmelden",
+    "mitGoogle": "Mit Google anmelden",
+    "socialAppleGoogle": "Apple oder Google",
+    "socialRecht1": "Mit {welche} akzeptierst du die ",
+    "socialRecht2": " und die ",
+    "agbKurz": "AGB",
+    "datenschutzKurz": "Datenschutzerklärung",
+    "socialFehler": "Das hat leider nicht geklappt ({fehler}). Versuch es bitte noch einmal oder melde dich mit E-Mail an.",
     "appName": "Mein Kochbuch AI",
     "email": "E-Mail",
     "emailPlatzhalter": "deine@email.at",
@@ -988,6 +997,10 @@
     "schonAbgeholt": "Du hast die {n} AI Coins schon abgeholt."
   },
   "marketing": {
+    "einladungFrageTitel": "Hast du einen Einladungscode?",
+    "einladungFrageText": "Hat dich jemand eingeladen? Dann gib den Code im Profil unter „Freunde“ ein – ihr bekommt beide AI Coins geschenkt.",
+    "einladungFrageJa": "Code eingeben",
+    "einladungFrageNein": "Nein",
     "bewertung": {
       "titel": "Gefällt dir Mein Kochbuch?",
       "text": "Dann freue ich mich riesig über eine kurze Bewertung im Store – das hilft anderen, die App zu finden, und dauert nur ein paar Sekunden.",

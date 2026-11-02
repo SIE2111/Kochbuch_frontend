@@ -146,6 +146,15 @@
     "fussnote": "Imported recipes are marked with their source icon in the recipe list. Only untouched, never cooked and unpublished recipes are removed – your own work is never lost."
   },
   "auth": {
+    "oderAnmeldenMit": "or sign in with",
+    "mitApple": "Sign in with Apple",
+    "mitGoogle": "Sign in with Google",
+    "socialAppleGoogle": "Apple or Google",
+    "socialRecht1": "By continuing with {welche} you accept the ",
+    "socialRecht2": " and the ",
+    "agbKurz": "Terms",
+    "datenschutzKurz": "Privacy Policy",
+    "socialFehler": "That didn’t work ({fehler}). Please try again or sign in with email.",
     "appName": "Mein Kochbuch AI",
     "email": "Email",
     "emailPlatzhalter": "you@example.com",
@@ -988,6 +997,10 @@
     "schonAbgeholt": "You have already picked up the {n} AI Coins."
   },
   "marketing": {
+    "einladungFrageTitel": "Do you have an invite code?",
+    "einladungFrageText": "Did someone invite you? Then enter the code in your profile under “Friends” – you both get AI Coins as a gift.",
+    "einladungFrageJa": "Enter code",
+    "einladungFrageNein": "No",
     "bewertung": {
       "titel": "Enjoying Mein Kochbuch?",
       "text": "Then I’d be really happy about a quick rating in the store – it helps others find the app and only takes a few seconds.",

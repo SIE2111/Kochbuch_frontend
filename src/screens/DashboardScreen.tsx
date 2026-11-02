@@ -10,6 +10,7 @@ import IncomingSharesCard from '../components/IncomingSharesCard';
 import BrutzelGreetingOverlay from '../components/BrutzelGreetingOverlay';
 import BrutzelFaqBubble from '../components/BrutzelFaqBubble';
 import { useAuth } from '../context/AuthContext';
+import { sichernAnbieten } from '../utils/gast';
 import { api, ApiError } from '../api/client';
 import { useFocusEffect } from '@react-navigation/native';
 import type { CompositeScreenProps } from '@react-navigation/native';
@@ -59,7 +60,7 @@ export default function DashboardScreen({ navigation }: Props) {
   const { colors, gradient, radius } = useTheme();
   const { istTablet, inhaltsBreite, inhaltsBreiteZweispaltig } = useLayout();
   const { t } = useUebersetzung();
-  const { session } = useAuth();
+  const { session, isGuest } = useAuth();
   const [recipes, setRecipes] = useState<RecipeSummary[]>([]);
   const [folders, setFolders] = useState<{ id: string; name: string }[]>([]);
   const [stats, setStats] = useState<{ total_recipes: number; cooked_this_week: number; cooked_total: number } | null>(null);
@@ -573,6 +574,16 @@ export default function DashboardScreen({ navigation }: Props) {
 
       {/* Ein Tipp je Start, der Reihe nach, jeder nur einmal - abschaltbar über
           "Brutzel anzeigen" (show_brutzel), siehe utils/tipps.ts */}
+      {isGuest && (
+        <Pressable onPress={() => { void sichernAnbieten(); }}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, marginBottom: 14, borderRadius: radius.md, borderWidth: 1, borderColor: gradient[0] + '55', backgroundColor: gradient[0] + '14' }}>
+          <BrutzelAvatar size={40} variant="head" />
+          <Text style={{ flex: 1, color: colors.text, fontSize: 12.5, lineHeight: 17 }}>
+            {t('gast.bannerText')} <Text style={{ color: gradient[0], fontWeight: '700' }}>{t('gast.bannerLink')}</Text>
+          </Text>
+        </Pressable>
+      )}
+
       <TippBlase tipps={TIPPS} erlaubt={brutzelTipps}
         avatar={<BrutzelAvatar size={44} variant="head" />}
         farben={{ flaeche: colors.card, text: colors.text, gedaempft: colors.muted, akzent: gradient[0] }} />

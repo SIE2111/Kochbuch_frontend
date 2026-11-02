@@ -4,6 +4,8 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme, type BackgroundStyle, type AccentColor } from '../theme/ThemeContext';
 import { useUebersetzung } from '../i18n';
 import { useAuth } from '../context/AuthContext';
+import { sichernAnbieten } from '../utils/gast';
+import { showBrutzelHinweis } from '../components/BrutzelHinweis';
 import { api, ApiError } from '../api/client';
 import RechtFenster from '../components/RechtFenster';
 import MarkenZeile from '../components/MarkenZeile';
@@ -106,7 +108,7 @@ export default function ProfileScreen({ navigation }: Props) {
   const { colors, gradient, radius, theme, setTheme } = useTheme();
   const { inhaltsBreite, quer } = useLayout();
   const { t } = useUebersetzung();
-  const { signOut, session } = useAuth();
+  const { signOut, session, isGuest } = useAuth();
   // Nur Major.Minor, wie bei HomeArchive AI's eigenem "v2.4" im Profil.
   // nativeApplicationVersion statt app.json: Bei appVersionSource "remote"
   // (siehe eas.json) ist app.json nicht mehr die verbindliche Quelle, das
@@ -583,7 +585,22 @@ export default function ProfileScreen({ navigation }: Props) {
       {/* AI Coins: Monats-Coins, zusaetzliche Coins, Liste "wofuer" (kein KI-Schalter mehr) */}
       <AiCoinsKarte />
 
-      <Pressable onPress={() => signOut()} style={[styles.signOutButton, { borderColor: '#DC2626', borderRadius: radius.md, marginTop: 22 }]}>
+      <Pressable onPress={() => {
+        // Gast: Abmelden heisst, die Rezepte sind weg - erst sichern anbieten
+        if (isGuest) {
+          showBrutzelHinweis({
+            title: t('gast.sichernTitel'),
+            text: t('gast.abmeldenWarnung'),
+            buttons: [
+              { text: t('gast.jetztSichern'), onPress: () => { void sichernAnbieten(); } },
+              { text: t('profil.abmelden'), style: 'destructive', onPress: () => { void signOut(); } },
+              { text: t('hinweis.spaeter'), style: 'cancel' },
+            ],
+          });
+          return;
+        }
+        void signOut();
+      }} style={[styles.signOutButton, { borderColor: '#DC2626', borderRadius: radius.md, marginTop: 22 }]}>
         <Text style={styles.signOutText}>{t('profil.abmelden')}</Text>
       </Pressable>
 

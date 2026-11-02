@@ -33,6 +33,7 @@ import ModerationScreen from '../screens/ModerationScreen';
 import VoiceSettingsScreen from '../screens/VoiceSettingsScreen';
 import SupportScreen from '../screens/SupportScreen';
 import HouseholdScreen from '../screens/HouseholdScreen';
+import { uebernahmeAusfuehren } from '../utils/gast';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import StarterPacksScreen from '../screens/StarterPacksScreen';
 import LanguageSettingsScreen from '../screens/LanguageSettingsScreen';
@@ -282,7 +283,7 @@ function MainNavigator({ startOnOnboarding }: { startOnOnboarding: boolean }) {
 const navigationRef = createNavigationContainerRef<MainStackParamList>();
 
 export default function AppNavigator() {
-  const { session, isLoading, trialExpired, signOut, justRegistered } = useAuth();
+  const { session, isLoading, trialExpired, signOut, justRegistered, clearJustRegistered } = useAuth();
   const { colors, isLoaded: themeLoaded } = useTheme();
 
   // 2026-09-29: Prueft, ob dieses (ggf. laengst in Buerroablage/Medienablage
@@ -298,9 +299,19 @@ export default function AppNavigator() {
   useEffect(() => {
     if (!session) { setFirstLoginThisApp(null); return; }
     let cancelled = false;
-    api.get<{ first_login_this_app: boolean }>('/account/app-status')
-      .then(res => { if (!cancelled) setFirstLoginThisApp(!!res.first_login_this_app); })
-      .catch(() => { if (!cancelled) setFirstLoginThisApp(false); }); // im Zweifel nicht blockieren
+    (async () => {
+      // Kam der Nutzer als Gast und hat jetzt ein echtes Konto: zuerst seine Gast-Rezepte uebernehmen.
+      // Dann braucht es kein Einrichten mehr (Ordner und Starter-Rezepte hat er ja schon).
+      const gast = !!(session.user as { is_anonymous?: boolean } | undefined)?.is_anonymous;
+      const uebernommen = gast ? 0 : await uebernahmeAusfuehren();
+      try {
+        const res = await api.get<{ first_login_this_app: boolean }>('/account/app-status');
+        if (!cancelled) setFirstLoginThisApp(uebernommen > 0 ? false : !!res.first_login_this_app);
+        if (uebernommen > 0) clearJustRegistered();
+      } catch {
+        if (!cancelled) setFirstLoginThisApp(false); // im Zweifel nicht blockieren
+      }
+    })();
     return () => { cancelled = true; };
   }, [session]);
 

@@ -1161,5 +1161,20 @@
     "Italienische Küche": "Italienische Küche",
     "Polnische Küche": "Polnische Küche",
     "Basis-Rezepte": "Basis-Rezepte"
+  },
+  "gast": {
+    "jetztSichern": "Jetzt sichern",
+    "umschauen": "👀  Erst mal umschauen – ohne Konto",
+    "bannerText": "Du schaust gerade als Gast. Sichere dein Konto, damit deine Rezepte nicht verloren gehen.",
+    "bannerLink": "Jetzt sichern ›",
+    "sichernTitel": "Sichere deine Rezepte",
+    "sichernText": "Mit einem Konto sind deine Rezepte sicher, auch auf einem neuen Handy – und du kannst teilen, einen Haushalt anlegen und dir das Geschenk-Paket holen. Alles, was du schon angelegt hast, bleibt erhalten.",
+    "mitApple": "Mit Apple sichern",
+    "mitGoogle": "Mit Google sichern",
+    "mitEmail": "Mit E-Mail sichern",
+    "ticketFehler": "Gerade keine Verbindung",
+    "uebernommenTitel": "Geschafft!",
+    "uebernommenText": "Deine Rezepte aus dem Umschauen sind jetzt in deinem Konto.",
+    "abmeldenWarnung": "Als Gast gehen deine Rezepte beim Abmelden verloren. Sichere vorher dein Konto."
   }
 }

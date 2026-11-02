@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Application from 'expo-application';
 import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../theme/ThemeContext';
@@ -36,7 +37,9 @@ function translateAuthError(message: string): string {
 export default function LoginScreen({ navigation }: Props) {
   const { colors, gradient, radius } = useTheme();
   const { t } = useUebersetzung();
-  const { signInWithPassword } = useAuth();
+  const { signInWithPassword, startGuest } = useAuth();
+  const [gastLaeuft, setGastLaeuft] = useState(false);
+  const gastMoeglich = (Application.nativeApplicationVersion || '1.0') !== '1.0';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -133,6 +136,23 @@ export default function LoginScreen({ navigation }: Props) {
           </Text>
         </Pressable>
 
+        {/* "Erst mal umschauen" ohne Konto (Version 1.1): anonym anmelden, sichern geht spaeter.
+            Erst ab dem Build 1.1 (in 1.0 fehlen Apple-/Google-Sichern, und der Server-Schalter ist dann an) */}
+        {gastMoeglich && <Pressable
+          onPress={async () => {
+            if (gastLaeuft) return;
+            setGastLaeuft(true);
+            try { await startGuest(); }
+            catch (e) { Alert.alert(t('auth.anmeldungFehlgeschlagen'), t('auth.socialFehler', { fehler: String((e as any)?.message || e) })); }
+            finally { setGastLaeuft(false); }
+          }}
+          style={[styles.gastKnopf, { borderColor: gradient[0] }]}
+        >
+          {gastLaeuft ? <ActivityIndicator color={gradient[0]} size="small" /> : (
+            <Text style={[styles.gastText, { color: gradient[0] }]}>{t('gast.umschauen')}</Text>
+          )}
+        </Pressable>}
+
         <Pressable
 
           onPress={() => navigation.navigate('ForgotPassword')}
@@ -172,4 +192,6 @@ const styles = StyleSheet.create({
   checkmark: { color: '#fff', fontSize: 11, fontWeight: '700' },
   checkText: { fontSize: 12 },
   link: { fontSize: 12.5, textAlign: 'center' },
+  gastKnopf: { alignSelf: 'center', marginTop: 14, minHeight: 40, paddingHorizontal: 18, borderRadius: 20, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
+  gastText: { fontSize: 13.5, fontWeight: '600' },
 });

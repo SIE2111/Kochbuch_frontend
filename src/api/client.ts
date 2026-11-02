@@ -96,7 +96,12 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
     } catch {
       // Antwort war kein JSON - Standardmeldung behalten
     }
-    if (response.status === 402 && istCoinsLeer(data)) {
+    if (response.status === 403 && !!data && (data as { code?: string }).code === 'GAST_KONTO_NOETIG') {
+      // Gast ("Erst mal umschauen"): Brutzel bietet an, das Konto zu sichern. Den gleichlautenden Fehler-Alert
+      // des Aufrufers schluckt BrutzelHinweis (merkeCoinsMeldung).
+      merkeCoinsMeldung(detail);
+      void (require('../utils/gast') as typeof import('../utils/gast')).sichernAnbieten();
+    } else if (response.status === 402 && istCoinsLeer(data)) {
       detail = coinsLeerMelden(detail);
     } else if (response.status === 402 && onTrialExpired) {
       onTrialExpired(detail);

@@ -50,6 +50,10 @@ interface AuthContextValue {
   /** Anmelden/Registrieren mit Apple oder Google (Version 1.1). Abbruch durch den Nutzer = kein Fehler. */
   signInSocial: (art: 'apple' | 'google', formular?: { marketingOptIn?: boolean; einladungscode?: string }) => Promise<void>;
   signOut: () => Promise<void>;
+  /** "Erst mal umschauen" ohne Konto: anonym bei Supabase anmelden (Version 1.1). */
+  startGuest: () => Promise<void>;
+  /** Angemeldet als Gast (noch ohne echtes Konto)? */
+  isGuest: boolean;
   /** 3-Monats-Testphase abgelaufen (Backend antwortet 402 auf JEDEM
    * authentifizierten Request, siehe deps.py/client.ts) - gesetzt sobald
    * irgendein API-Call das meldet, unabhaengig davon welcher Screen gerade
@@ -157,6 +161,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (code) void einladungEinloesenMitHinweis(code);
         else await AsyncStorage.setItem(EINLADUNG_FRAGE_KEY, '1').catch(() => undefined);
       },
+      startGuest: async () => {
+        const { error } = await supabase.auth.signInAnonymously();
+        if (error) throw error;
+      },
+      isGuest: !!(session?.user as { is_anonymous?: boolean } | undefined)?.is_anonymous,
       resendCode: async (email) => {
         await api.post('/auth/resend-code', { email: email.trim().toLowerCase() });
       },

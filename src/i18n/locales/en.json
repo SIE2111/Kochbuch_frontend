@@ -1035,6 +1035,7 @@
       "fehler": "That didn't work just now. Please try again later."
     },
     "einstellung": {
+      "sofortDabei": "Great, you’re in! A welcome email is on its way – it always has an unsubscribe link at the bottom.",
       "abschnitt": "Email",
       "titel": "Tips and offers by email",
       "subAus": "Off – I won't send you promotional emails",

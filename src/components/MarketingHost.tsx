@@ -203,9 +203,10 @@ export default function MarketingHost({ navigationRef }: { navigationRef: Nav })
         if (status.mail_frage_faellig) {
           const antworten = async (antwort: 'ja' | 'nein') => {
             try {
-              await mailFrageBeantworten(antwort, getSprache());
+              const erg = await mailFrageBeantworten(antwort, getSprache());
               if (antwort === 'nein') weiterPruefen();
-              if (antwort === 'ja') showBrutzelHinweis({ title: t('marketing.mailFrage.titel'), text: t('marketing.mailFrage.danke') });
+              // Mit bestaetigter E-Mail gilt das "Ja" sofort - sonst kommt die Bestaetigungs-Mail
+              if (antwort === 'ja') showBrutzelHinweis({ title: t('marketing.mailFrage.titel'), text: t(erg?.status === 'bestaetigt' ? 'marketing.einstellung.sofortDabei' : 'marketing.mailFrage.danke') });
             } catch {
               if (antwort === 'nein') weiterPruefen();
               if (antwort === 'ja') showBrutzelHinweis({ title: t('marketing.mailFrage.titel'), text: t('marketing.mailFrage.fehler') });

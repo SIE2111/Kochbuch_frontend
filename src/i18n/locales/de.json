@@ -1035,6 +1035,7 @@
       "fehler": "Das hat gerade nicht geklappt. Versuch es später noch einmal."
     },
     "einstellung": {
+      "sofortDabei": "Fein, du bist dabei! Eine Willkommens-Mail ist schon unterwegs – darunter findest du jederzeit einen Abmelde-Link.",
       "abschnitt": "E-Mail",
       "titel": "Tipps und Angebote per E-Mail",
       "subAus": "Aus – ich schicke dir keine Werbe-Mails",

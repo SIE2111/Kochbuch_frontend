@@ -44,10 +44,12 @@ export default function MarketingEinstellungen() {
   const handleMailToggle = async (an: boolean) => {
     setMailSpeichert(true);
     try {
-      await einwilligungAnfragen(an, getSprache());
+      const erg = await einwilligungAnfragen(an, getSprache());
       if (an) {
-        setMailStand('angefragt');
-        showBrutzelHinweis({ title: t('marketing.einstellung.titel'), text: t('marketing.einstellung.mailGesendet') });
+        // Mit bestaetigter E-Mail gilt die Zustimmung sofort (kein zweiter Klick in einer Mail, 03.11.2026)
+        const sofort = (erg as { status?: string } | undefined)?.status === 'bestaetigt';
+        setMailStand(sofort ? 'bestaetigt' : 'angefragt');
+        showBrutzelHinweis({ title: t('marketing.einstellung.titel'), text: t(sofort ? 'marketing.einstellung.sofortDabei' : 'marketing.einstellung.mailGesendet') });
       } else {
         setMailStand('aus');
         showBrutzelHinweis({ title: t('marketing.einstellung.titel'), text: t('marketing.einstellung.abgemeldet') });

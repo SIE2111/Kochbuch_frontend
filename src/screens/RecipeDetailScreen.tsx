@@ -57,6 +57,7 @@ interface RecipeDetail {
   locale: string | null;
   available_translations: string[];
   calories_kcal: number | null;
+  nutrition_user_edited?: boolean;
   protein_g: number | null;
   fat_g: number | null;
   carbs_g: number | null;
@@ -1182,6 +1183,7 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
           protein_g: recipe.protein_g,
           fat_g: recipe.fat_g,
           carbs_g: recipe.carbs_g,
+          nutrition_user_edited: recipe.nutrition_user_edited,
         }}
       />
 

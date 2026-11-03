@@ -499,6 +499,12 @@
     "fuerDiesenSchritt": "Für diesen Schritt"
   },
   "naehrwerte": {
+    "aendern": "Werte ändern",
+    "selbstEintragen": "Selbst eintragen",
+    "speichern": "Speichern",
+    "abbrechen": "Abbrechen",
+    "vomBenutzer": "Vom Benutzer geändert",
+    "speichernFehlgeschlagen": "Speichern hat nicht geklappt",
     "titel": "Nährwerte pro Portion",
     "schaetzen": "Nährwerte schätzen",
     "laeuft": "Wird geschätzt…",

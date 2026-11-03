@@ -499,6 +499,12 @@
     "fuerDiesenSchritt": "For this step"
   },
   "naehrwerte": {
+    "aendern": "Change values",
+    "selbstEintragen": "Enter yourself",
+    "speichern": "Save",
+    "abbrechen": "Cancel",
+    "vomBenutzer": "Changed by the user",
+    "speichernFehlgeschlagen": "Saving didn’t work",
     "titel": "Nutrition per serving",
     "schaetzen": "Estimate nutrition",
     "laeuft": "Estimating…",

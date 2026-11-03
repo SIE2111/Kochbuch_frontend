@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ActivityIndicator, TextInput, Keyboard } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../theme/ThemeContext';
 import { api, ApiError } from '../api/client';
@@ -20,6 +20,7 @@ type Antwort = {
   carbs_g: number;
   unsichere_zutaten: number;
   anteile: Anteil[];
+  vom_benutzer?: boolean;
 };
 
 type Props = {
@@ -30,6 +31,7 @@ type Props = {
     protein_g?: number | null;
     fat_g?: number | null;
     carbs_g?: number | null;
+    nutrition_user_edited?: boolean;
   };
 };
 
@@ -60,8 +62,52 @@ export default function NutritionCard({ recipeId, gespeichert }: Props) {
           carbs_g: gespeichert!.carbs_g ?? 0,
           unsichere_zutaten: 0,
           anteile: [],
+          vom_benutzer: !!gespeichert?.nutrition_user_edited,
         }
       : null,
+  );
+  // Von Hand aendern (03.11.2026): kostenlos, danach "vom Benutzer geaendert"
+  const [bearbeiten, setBearbeiten] = useState(false);
+  const [eingabe, setEingabe] = useState({ kcal: '', eiweiss: '', fett: '', kh: '' });
+  const bearbeitenStarten = () => {
+    setEingabe({
+      kcal: werte ? String(werte.calories_kcal) : '', eiweiss: werte ? String(werte.protein_g) : '',
+      fett: werte ? String(werte.fat_g) : '', kh: werte ? String(werte.carbs_g) : '',
+    });
+    setBearbeiten(true);
+  };
+  const zahl = (s: string) => Math.max(0, Math.round(Number(String(s).replace(',', '.')) || 0));
+  const speichern = async () => {
+    Keyboard.dismiss();
+    setLaeuft(true);
+    setFehler(null);
+    try {
+      const res = await api.put<Antwort>(`/nutrition/${recipeId}`, {
+        calories_kcal: zahl(eingabe.kcal), protein_g: zahl(eingabe.eiweiss), fat_g: zahl(eingabe.fett), carbs_g: zahl(eingabe.kh),
+      });
+      setWerte(res);
+      setBearbeiten(false);
+    } catch (err) {
+      setFehler(err instanceof ApiError ? err.detail : t('naehrwerte.speichernFehlgeschlagen'));
+    } finally {
+      setLaeuft(false);
+    }
+  };
+  const feld = (beschriftung: string, wert: string, setze: (v: string) => void, einheit: string) => (
+    <View style={styles.kachel}>
+      <Text style={[styles.kachelLabel, { color: colors.text, marginBottom: 4 }]}>{beschriftung}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        <TextInput
+          value={wert}
+          onChangeText={setze}
+          keyboardType="number-pad"
+          returnKeyType="done"
+          onSubmitEditing={() => Keyboard.dismiss()}
+          style={[styles.eingabe, { color: colors.text, borderColor: colors.muted + '66', borderRadius: radius.sm }]}
+        />
+        <Text style={{ color: colors.muted, fontSize: 13 }}>{einheit}</Text>
+      </View>
+    </View>
   );
   const [laeuft, setLaeuft] = useState(false);
   const [fehler, setFehler] = useState<string | null>(null);
@@ -96,7 +142,26 @@ export default function NutritionCard({ recipeId, gespeichert }: Props) {
     <View style={[styles.karte, { backgroundColor: colors.card, borderRadius: radius.md }]}>
       <Text style={[styles.titel, { color: colors.text }]}>{t('naehrwerte.titel')}</Text>
 
-      {!werte && !laeuft && (
+      {bearbeiten && (
+        <>
+          <View style={styles.raster}>
+            {feld(t('naehrwerte.energie'), eingabe.kcal, (v) => setEingabe((e) => ({ ...e, kcal: v })), 'kcal')}
+            {feld(t('naehrwerte.eiweiss'), eingabe.eiweiss, (v) => setEingabe((e) => ({ ...e, eiweiss: v })), 'g')}
+            {feld(t('naehrwerte.fett'), eingabe.fett, (v) => setEingabe((e) => ({ ...e, fett: v })), 'g')}
+            {feld(t('naehrwerte.kohlenhydrate'), eingabe.kh, (v) => setEingabe((e) => ({ ...e, kh: v })), 'g')}
+          </View>
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
+            <Pressable onPress={speichern} disabled={laeuft} style={[styles.knopf, { flex: 1, backgroundColor: gradient[0], borderRadius: radius.sm }]}>
+              <Text style={styles.knopfText}>{t('naehrwerte.speichern')}</Text>
+            </Pressable>
+            <Pressable onPress={() => setBearbeiten(false)} style={[styles.knopf, { borderRadius: radius.sm }]}>
+              <Text style={{ color: colors.muted, fontSize: 14, fontWeight: '600' }}>{t('naehrwerte.abbrechen')}</Text>
+            </Pressable>
+          </View>
+        </>
+      )}
+
+      {!werte && !laeuft && !bearbeiten && (
         <Pressable
           onPress={() => schaetzen()}
           style={[styles.knopf, { backgroundColor: gradient[0], borderRadius: radius.sm }]}
@@ -113,8 +178,20 @@ export default function NutritionCard({ recipeId, gespeichert }: Props) {
         </View>
       )}
 
-      {werte && (
+      {!werte && !laeuft && !bearbeiten && (
+        <Pressable onPress={bearbeitenStarten} style={styles.neuKnopf}>
+          <Text style={{ color: gradient[0], fontSize: 12.5, fontWeight: '600' }}>{t('naehrwerte.selbstEintragen')}</Text>
+        </Pressable>
+      )}
+
+      {werte && !bearbeiten && (
         <>
+          {werte.vom_benutzer && (
+            <View style={styles.vermerk}>
+              <MaterialCommunityIcons name="account-edit-outline" size={14} color={colors.muted} />
+              <Text style={{ color: colors.muted, fontSize: 12 }}>{t('naehrwerte.vomBenutzer')}</Text>
+            </View>
+          )}
           <View style={styles.raster}>
             {kachel('fire', t('naehrwerte.energie'), werte.calories_kcal, 'kcal')}
             {kachel('egg-outline', t('naehrwerte.eiweiss'), werte.protein_g, 'g')}
@@ -143,13 +220,18 @@ export default function NutritionCard({ recipeId, gespeichert }: Props) {
             </Text>
           )}
 
-          <Text style={[styles.hinweis, { color: colors.muted }]}>{t('naehrwerte.hinweis')}</Text>
+          {!werte.vom_benutzer && <Text style={[styles.hinweis, { color: colors.muted }]}>{t('naehrwerte.hinweis')}</Text>}
 
-          <Pressable onPress={() => schaetzen(true)} disabled={laeuft} style={styles.neuKnopf}>
-            <Text style={{ color: gradient[0], fontSize: 12.5, fontWeight: '600' }}>
-              {t('naehrwerte.neuBerechnen')}
-            </Text>
-          </Pressable>
+          <View style={{ flexDirection: 'row', gap: 18 }}>
+            <Pressable onPress={bearbeitenStarten} disabled={laeuft} style={styles.neuKnopf}>
+              <Text style={{ color: gradient[0], fontSize: 12.5, fontWeight: '600' }}>{t('naehrwerte.aendern')}</Text>
+            </Pressable>
+            <Pressable onPress={() => schaetzen(true)} disabled={laeuft} style={styles.neuKnopf}>
+              <Text style={{ color: gradient[0], fontSize: 12.5, fontWeight: '600' }}>
+                {t('naehrwerte.neuBerechnen')}
+              </Text>
+            </Pressable>
+          </View>
         </>
       )}
 
@@ -181,4 +263,6 @@ const styles = StyleSheet.create({
   hinweis: { fontSize: 11.5, lineHeight: 16, marginTop: 10 },
   neuKnopf: { minHeight: 44, justifyContent: 'center' },
   fehler: { fontSize: 12.5, marginTop: 8 },
+  eingabe: { minWidth: 70, height: 40, borderWidth: 1, paddingHorizontal: 10, fontSize: 16 },
+  vermerk: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 6 },
 });

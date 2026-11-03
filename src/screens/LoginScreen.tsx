@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { showBrutzelHinweis } from '../components/BrutzelHinweis';
+import { hatKontoAufGeraet } from '../utils/kontoGeraet';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Application from 'expo-application';
 import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
@@ -21,6 +23,11 @@ type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 // Wie in Buero-/Medienablage: E-Mail merken (Haekchen auf dem Anmeldeschirm).
 const REMEMBER_EMAIL_KEY = 'ha_remember_email';
 
+/** Akzentfarbe als zarte Flaeche (gleiche Farbe, 13 % Deckkraft). */
+function hell(farbe: string): string {
+  return /^#[0-9a-fA-F]{6}$/.test(farbe) ? farbe + '22' : 'transparent';
+}
+
 // Supabase liefert Fehlermeldungen nur auf Englisch (z.B. "Invalid login
 // credentials") - roh angezeigt versteht das nicht jeder Nutzer.
 // Gleiche Uebersetzung wie in Buerroablage/Medienablage (dortige
@@ -39,7 +46,10 @@ export default function LoginScreen({ navigation }: Props) {
   const { t } = useUebersetzung();
   const { signInWithPassword, startGuest } = useAuth();
   const [gastLaeuft, setGastLaeuft] = useState(false);
-  const gastMoeglich = (Application.nativeApplicationVersion || '1.0') !== '1.0';
+  // Nur fuer Neue: ab Build 1.1 und nur, wenn auf diesem Geraet noch nie ein echtes Konto angemeldet war
+  const [kontoDa, setKontoDa] = useState<boolean | null>(null);
+  useEffect(() => { hatKontoAufGeraet(REMEMBER_EMAIL_KEY).then(setKontoDa); }, []);
+  const gastMoeglich = (Application.nativeApplicationVersion || '1.0') !== '1.0' && kontoDa === false;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -143,13 +153,13 @@ export default function LoginScreen({ navigation }: Props) {
             if (gastLaeuft) return;
             setGastLaeuft(true);
             try { await startGuest(); }
-            catch (e) { Alert.alert(t('auth.anmeldungFehlgeschlagen'), t('auth.socialFehler', { fehler: String((e as any)?.message || e) })); }
+            catch (e) { showBrutzelHinweis({ title: t('auth.anmeldungFehlgeschlagen'), text: t('auth.socialFehler', { fehler: String((e as any)?.message || e) }) }); }
             finally { setGastLaeuft(false); }
           }}
-          style={[styles.gastKnopf, { borderColor: gradient[0] }]}
+          style={[styles.gastKnopf, { borderColor: gradient[0], backgroundColor: hell(gradient[0]) }]}
         >
           {gastLaeuft ? <ActivityIndicator color={gradient[0]} size="small" /> : (
-            <Text style={[styles.gastText, { color: gradient[0] }]}>{t('gast.umschauen')}</Text>
+            <Text style={[styles.gastText, { color: gradient[0] }]}>{'👀  ' + t('gast.umschauen')}</Text>
           )}
         </Pressable>}
 
@@ -192,6 +202,7 @@ const styles = StyleSheet.create({
   checkmark: { color: '#fff', fontSize: 11, fontWeight: '700' },
   checkText: { fontSize: 12 },
   link: { fontSize: 12.5, textAlign: 'center' },
-  gastKnopf: { alignSelf: 'center', marginTop: 14, minHeight: 40, paddingHorizontal: 18, borderRadius: 20, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
-  gastText: { fontSize: 13.5, fontWeight: '600' },
+  // Prominent (Wunsch 03.11.2026): volle Breite, getoente Flaeche, kraeftiger Rand
+  gastKnopf: { alignSelf: 'stretch', marginTop: 16, minHeight: 50, paddingHorizontal: 18, borderRadius: 14, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  gastText: { fontSize: 16, fontWeight: '800' },
 });

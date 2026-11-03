@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { kontoMerken } from '../utils/kontoGeraet';
 import type { Session } from '@supabase/supabase-js';
 import { spracheZumServer, getSprache } from '../i18n';
 import { einwilligungAnfragen } from '../api/marketing';
@@ -81,11 +82,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
+      if (data.session && !(data.session.user as { is_anonymous?: boolean }).is_anonymous) kontoMerken();
       setIsLoading(false);
     });
 
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
+      if (newSession && !(newSession.user as { is_anonymous?: boolean }).is_anonymous) kontoMerken();
       // Die Sprachwahl vor dem Login kam nie beim Server an - da gab es
       // noch kein Konto. Jetzt nachholen, sonst verschickt der Server
       // deutsche Mails an jemanden, der die App auf Englisch gestellt hat.

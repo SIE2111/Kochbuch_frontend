@@ -24,14 +24,14 @@ async function ticketHolen(): Promise<boolean> {
 }
 
 /** Brutzels Fenster "Sichere deine Rezepte". grund: kurzer Satz, warum (z. B. bei Pool-Teilen). */
-export async function sichernAnbieten(grund?: string): Promise<void> {
+export async function sichernAnbieten(grund?: string, titel?: string): Promise<void> {
   if (fensterOffen) return;
   fensterOffen = true;
   const { appleVerfuegbar, googleVerfuegbar, mitAppleAnmelden, mitGoogleAnmelden } =
     require('./socialLogin') as typeof import('./socialLogin');
   const apple = await appleVerfuegbar();
   const google = googleVerfuegbar();
-  const fehler = (e: any) => showBrutzelHinweis({ title: t('gast.sichernTitel'), text: t('auth.socialFehler', { fehler: String(e?.message || e) }) });
+  const fehler = (e: any) => showBrutzelHinweis({ title: (titel || t('gast.sichernTitel')), text: t('auth.socialFehler', { fehler: String(e?.message || e) }) });
   const social = (art: 'apple' | 'google') => async () => {
     fensterOffen = false;
     if (!(await ticketHolen())) { fehler(t('gast.ticketFehler')); return; }
@@ -42,7 +42,7 @@ export async function sichernAnbieten(grund?: string): Promise<void> {
     } catch (e) { fehler(e); }
   };
   showBrutzelHinweis({
-    title: t('gast.sichernTitel'),
+    title: (titel || t('gast.sichernTitel')),
     text: (grund ? grund + '\n\n' : '') + t('gast.sichernText'),
     buttons: [
       ...(apple ? [{ text: t('gast.mitApple'), onPress: social('apple') }] : []),

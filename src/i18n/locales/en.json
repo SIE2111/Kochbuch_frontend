@@ -1178,10 +1178,13 @@
     "sichernText": "With an account your recipes are safe, even on a new phone – and you can share, set up a household and get the gift pack. Everything you’ve created stays.",
     "mitApple": "Secure with Apple",
     "mitGoogle": "Secure with Google",
-    "mitEmail": "Secure with email",
+    "mitEmail": "Register with email",
     "ticketFehler": "No connection right now",
     "uebernommenTitel": "Done!",
     "uebernommenText": "Your recipes from browsing are now in your account.",
-    "abmeldenWarnung": "As a guest your recipes are lost when you sign out. Secure your account first."
+    "abmeldenWarnung": "As a guest your recipes are lost when you sign out. Secure your account first.",
+    "coinsGrund": "As a guest you get {n} AI Coins once to try things out, after that you need an account. With an account you get 50 AI Coins a month for the first 3 months, then 25 – plus the gift pack.",
+    "coinsLeerTitel": "Trial coins used up",
+    "coinsLeerText": "As a guest you had {n} AI Coins once to try things out – they are used up now. To keep going, register for free: you’ll get 50 AI Coins a month for the first 3 months, then 25 – plus the gift pack."
   }
 }

@@ -5,11 +5,20 @@ import { t } from '../i18n';
 import { showBrutzelHinweis } from '../components/BrutzelHinweis';
 
 type GeschenkApp = { key: string; name: string; url: string; installed: boolean };
-type Stand = { gift_available?: boolean; gift_amount?: number; gift_received?: number; gift_locked?: boolean; gift_apps?: GeschenkApp[]; gift_apps_needed?: number };
+type Stand = { guest?: boolean; monthly_total?: number; gift_available?: boolean; gift_amount?: number; gift_received?: number; gift_locked?: boolean; gift_apps?: GeschenkApp[]; gift_apps_needed?: number };
+
+/** Gast ohne Konto: kein Geschenk, stattdessen anbieten, das Konto zu sichern (mehr Coins + Geschenk). */
+function gastSichern(leer: boolean): void {
+  const { sichernAnbieten } = require('./gast') as typeof import('./gast');
+  // leer = die einmaligen 10 Probe-Coins sind aufgebraucht: ab jetzt nur noch mit Registrierung
+  if (leer) sichernAnbieten(t('gast.coinsLeerText', { n: 10 }), t('gast.coinsLeerTitel'));
+  else sichernAnbieten(t('gast.coinsGrund', { n: 10 }));
+}
 
 /** Zeigt Brutzels Hinweis mit Knopf "Gratis holen". true = angeboten (dann KEIN weiterer Hinweis). */
 export async function geschenkAnbieten(titel: string): Promise<boolean> {
   const s = await api.get<Stand>('/coins');
+  if (s?.guest) { gastSichern(true); return true; }
   if (!s?.gift_available) return false;
   if (s.gift_locked) { gesperrtZeigen(s); return true; }
   const n = s.gift_amount || 100;
@@ -40,6 +49,7 @@ export async function geschenkHolen(): Promise<boolean> {
 
 /** Profil: "AI Coins kaufen" - bis es Bezahlung gibt, ist das Paket mit 100 AI Coins einmalig und vorerst ohne Kosten abholbar. */
 export function kaufenZeigen(verfuegbar: boolean, n: number, danach?: () => void, stand?: Stand) {
+  if (stand?.guest) { gastSichern(false); return; }
   if (verfuegbar && stand?.gift_locked) { gesperrtZeigen(stand); return; }
   if (!verfuegbar) {
     showBrutzelHinweis({ title: t('hinweis.kaufenTitel'), text: t('hinweis.schonAbgeholt', { n }) });

@@ -117,7 +117,10 @@ export default function ProfileScreen({ navigation }: Props) {
   // fest ein, das Risiko eines fehlenden nativen Moduls entfaellt damit.
   let versionAnzeige: string | null = null;
   try {
-    versionAnzeige = Application.nativeApplicationVersion?.split('.').slice(0, 2).join('.') ?? null;
+    // Wie im Weinkeller: volle Version plus Build-Nummer (Wunsch 03.11.2026), z. B. "1.1 (Build 13)"
+    const v = Application.nativeApplicationVersion || null;
+    const b = Application.nativeBuildVersion || null;
+    versionAnzeige = v ? (b ? `${v} (Build ${b})` : v) : null;
   } catch {
     versionAnzeige = null;
   }
@@ -710,7 +713,7 @@ export default function ProfileScreen({ navigation }: Props) {
       <View style={styles.footer}>
         <MarkenZeile />
         {versionAnzeige && (
-          <Text style={[styles.footerVersion, { color: colors.muted }]}>{`v${versionAnzeige}`}</Text>
+          <Text style={[styles.footerVersion, { color: colors.muted }]}>{`Version ${versionAnzeige}`}</Text>
         )}
         <UpdateInfo akzent={gradient[0]} gedaempft={colors.muted} />
       </View>

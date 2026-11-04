@@ -947,7 +947,6 @@ export default function RecipeDetailScreen({ route, navigation, onClose }: Props
         style={[styles.cookButton, { backgroundColor: gradient[0], borderRadius: radius.md }]}
       >
         <Text style={styles.cookButtonText}>{t('detail.zubereitungStarten')}</Text>
-        <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 11.5, marginTop: 2 }}>{t('detail.kochenKosten')}</Text>
       </Pressable>
 
       <Pressable

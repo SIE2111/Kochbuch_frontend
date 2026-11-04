@@ -159,7 +159,7 @@ export default function LoginScreen({ navigation }: Props) {
           style={[styles.gastKnopf, { borderColor: gradient[0], backgroundColor: hell(gradient[0]) }]}
         >
           {gastLaeuft ? <ActivityIndicator color={gradient[0]} size="small" /> : (
-            <Text style={[styles.gastText, { color: gradient[0] }]}>{'👀  ' + t('gast.umschauen')}</Text>
+            <Text style={[styles.gastText, { color: gradient[0] }]}>{t('gast.umschauen')}</Text>
           )}
         </Pressable>}
 

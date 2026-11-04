@@ -1,25 +1,24 @@
 // Marketing-Hinweise des Maskottchens (Phase 1), einmal im NavigationContainer eingehaengt.
 // Zeigt auf der Startseite (Home), hoechstens EIN Fenster je Pruefung und in dieser Reihenfolge:
-//   1. Fuehrung zum ersten Eintrag ("Fotografiere jetzt dein Lieblingsrezept") - nur beim ersten Start
-//   2. Bewertungsabfrage nach dem 5. Eintrag (System-Dialog, einmal je Nutzer und App)
-//   3. "Plus ist da" (nur fuer Vormerker, nach dem Plus-Start)
-//   4. AI Coins knapp (80 % verbraucht): "Plus kommt bald - vormerken" bzw. (ab Plus-Start) Kaufhinweis
-//   5. Ende der Starteraktion naht (ab Plus-Start)
-//   6. Freunde einladen, einmalig nach dem 10. Eintrag
-//   (neu, Okt 2026) Einmalige Frage "Benachrichtigungen erhalten?" beim ersten Start (vor allem anderen); Ja fragt danach das System
-//   (neu, Okt 2026) Einmalige Frage "Tipps und Angebote per E-Mail?" nach dem 1. Eintrag - ja ODER nein, danach nie wieder
+//   1. Bewertungsabfrage nach dem 5. Eintrag (System-Dialog, einmal je Nutzer und App)
+//   2. "Plus ist da" (nur fuer Vormerker, nach dem Plus-Start)
+//   3. AI Coins knapp (80 % verbraucht): "Plus kommt bald - vormerken" bzw. (ab Plus-Start) Kaufhinweis
+//   4. Ende der Starteraktion naht (ab Plus-Start)
+//   5. Freunde einladen, einmalig nach dem 10. Eintrag
+//   Einmalige Frage "Tipps und Angebote per E-Mail?" - ja ODER nein, danach nie wieder
+//   (Nov 2026) Als Gast ("Erst mal umschauen") kommt KEIN Fenster. Die Frage nach Benachrichtigungen und die
+//   Fuehrung "Los geht's" gibt es nicht mehr: Das System fragt selbst, wenn der erste Kochtimer gestartet wird.
 // Alle Fenster kommen vom Maskottchen, nie als System-Alert. Fehler und fehlendes Netz stoeren nichts.
 import { useEffect, useRef } from 'react';
-import { AppState, Linking } from 'react-native';
+import { AppState } from 'react-native';
 import { requireOptionalNativeModule } from 'expo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showBrutzelHinweis } from './BrutzelHinweis';
 import { t, getSprache } from '../i18n';
 import { api } from '../api/client';
-import { ensureNotificationPermission, notificationCanAskAgain, notificationPermissionStatus } from '../utils/notifications';
 import { aufBegruessungHoeren, begruessungStand } from '../utils/begruessung';
-import { EINLADUNG_FRAGE_KEY } from '../context/AuthContext';
-import { bewertungGefragt, einladungGezeigt, ersterSchrittErledigt, mailFrageBeantworten, statusLaden } from '../api/marketing';
+import { EINLADUNG_FRAGE_KEY, useAuth } from '../context/AuthContext';
+import { bewertungGefragt, einladungGezeigt, mailFrageBeantworten, statusLaden } from '../api/marketing';
 import { einladungTeilen } from '../utils/einladung';
 import { plusDaZeigen, plusVormerkenZeigen, setzeProfilAktion } from '../utils/plusHinweis';
 
@@ -30,8 +29,6 @@ type Nav = {
   navigate: (...args: any[]) => void;
 };
 
-const NACHRICHTEN_GEFRAGT_KEY = 'nachrichten_frage_beantwortet_v1';   // erste Fassung, nur noch zum Uebernehmen
-const NACHRICHTEN_STAND_KEY = 'nachrichten_frage_stand_v2';
 const MIN_ABSTAND_MS = 20000;   // nicht bei jedem Tab-Wechsel neu beim Server nachfragen
 const COINS_ANTEIL_KNAPP = 0.8;  // AI Coins: ab 80 % verbraucht
 
@@ -89,104 +86,20 @@ function datumAnzeige(iso: string): string {
   return `${tag}.${m}.${j}`;
 }
 
-/**
- * Brutzel fragt, ob der Nutzer Benachrichtigungen (Timer-Ende beim Kochen, Erinnerungen aus dem Wochenplan) erhalten
- * moechte: beim ersten Start, und solange sie nicht an sind wieder nach 7, 14 und 30 Tagen, danach einmal im Monat.
- * "Ja": das System fragt (hat man dort schon endgueltig abgelehnt, oeffnen sich die Einstellungen) und der Schalter im
- * Profil geht an. "Nein": Schalter im Profil aus. Sind sie im System erlaubt UND im Profil an, wird nicht mehr gefragt.
- * Gibt true zurueck, wenn ein Fenster gezeigt wurde.
- */
-const TAG_MS = 86400000;
-const NACHRICHTEN_ABSTAENDE_TAGE = [0, 7, 14, 30];   // ab der ersten Frage; danach alle 30 Tage ab der letzten
-const NACHRICHTEN_MONATLICH_TAGE = 30;
-type NachrichtenStand = { erstes: number; letztes: number; anzahl: number; fertig?: boolean };
-
-async function nachrichtenStandLaden(): Promise<NachrichtenStand> {
-  const roh = await AsyncStorage.getItem(NACHRICHTEN_STAND_KEY);
-  if (roh) { try { return JSON.parse(roh); } catch { /* neu anfangen */ } }
-  const alt = await AsyncStorage.getItem(NACHRICHTEN_GEFRAGT_KEY);   // Stand der ersten Fassung (nur einmal gefragt)
-  const jetzt = Date.now();
-  if (alt === 'ja' || alt === 'granted') return { erstes: jetzt, letztes: jetzt, anzahl: 1, fertig: true };
-  if (alt) return { erstes: jetzt, letztes: jetzt, anzahl: 1 };
-  return { erstes: 0, letztes: 0, anzahl: 0 };
-}
-
-function nachrichtenFaellig(st: NachrichtenStand, jetzt: number): boolean {
-  if (st.anzahl <= 0) return true;
-  const ab = st.anzahl < NACHRICHTEN_ABSTAENDE_TAGE.length
-    ? st.erstes + NACHRICHTEN_ABSTAENDE_TAGE[st.anzahl] * TAG_MS
-    : st.letztes + NACHRICHTEN_MONATLICH_TAGE * TAG_MS;
-  return jetzt >= ab;
-}
-
 let weiterPruefen: () => void = () => undefined;   // nach einer beantworteten Frage gleich die naechste pruefen (MarketingHost setzt es)
-let nachrichtenFrageOffen = false;   // Fenster steht gerade: nicht doppelt zeigen
-async function nachrichtenFrageZeigen(): Promise<boolean> {
-  if (nachrichtenFrageOffen) return false;
-  try {
-    const status = await notificationPermissionStatus();
-    if (status === 'unavailable') return false;                 // z. B. Expo Go auf Android: geht hier gar nicht
-    const st = await nachrichtenStandLaden();
-    const jetzt = Date.now();
-    if (!nachrichtenFaellig(st, jetzt)) return false;
-    // Schon an (im System erlaubt UND im Profil eingeschaltet)? Dann nie mehr fragen.
-    if (status === 'granted') {
-      let profilAn = st.fertig === true;
-      try { profilAn = (await api.get<{ notifications_enabled?: boolean }>('/preferences/')).notifications_enabled !== false; } catch { /* wie gemerkt */ }
-      if (profilAn) {
-        await AsyncStorage.setItem(NACHRICHTEN_STAND_KEY, JSON.stringify({ ...st, fertig: true }));
-        return false;
-      }
-    }
-    const nochmal = st.anzahl > 0;
-    const nurEinstellungen = status === 'denied' && !(await notificationCanAskAgain());
-    const neu: NachrichtenStand = { erstes: st.erstes || jetzt, letztes: jetzt, anzahl: st.anzahl + 1 };
-    await AsyncStorage.setItem(NACHRICHTEN_STAND_KEY, JSON.stringify(neu));
-    nachrichtenFrageOffen = true;
-    const speichern = async (an: boolean) => {
-      try { await api.patch('/preferences/', { notifications_enabled: an }); } catch { /* Profil-Schalter bleibt wie er ist */ }
-    };
-    showBrutzelHinweis({
-      title: t(nochmal ? 'marketing.nachrichtenFrage.titelNochmal' : 'marketing.nachrichtenFrage.titel'),
-      text: t('marketing.nachrichtenFrage.text') + (nurEinstellungen ? '\n\n' + t('marketing.nachrichtenFrage.einstellungen') : ''),
-      buttons: [
-        {
-          text: t('marketing.nachrichtenFrage.ja'),
-          onPress: () => {
-            nachrichtenFrageOffen = false;
-            void (async () => {
-              if (nurEinstellungen) {
-                await speichern(true);
-                Linking.openSettings().catch(() => undefined);
-                return;   // ob es dort eingeschaltet wurde, zeigt die naechste Pruefung
-              }
-              const ok = await ensureNotificationPermission();
-              await speichern(ok);
-              if (ok) await AsyncStorage.setItem(NACHRICHTEN_STAND_KEY, JSON.stringify({ ...neu, fertig: true })).catch(() => undefined);
-              weiterPruefen();
-            })();
-          },
-        },
-        {
-          text: t('marketing.nachrichtenFrage.nein'),
-          style: 'cancel',
-          onPress: () => { nachrichtenFrageOffen = false; void speichern(false); weiterPruefen(); },
-        },
-      ],
-    });
-    return true;
-  } catch { return false; }
-}
 
 export default function MarketingHost({ navigationRef }: { navigationRef: Nav }) {
   const laeuft = useRef(false);
   const letzte = useRef(0);
-  const ersterSchrittGezeigt = useRef(false);
   const start = useRef(Date.now());
+  // Wer nur "Erst mal umschauen" gewaehlt hat, wird mit keinem Fenster gestoert
+  const { isGuest } = useAuth();
+  const gast = useRef(isGuest);
+  gast.current = isGuest;
 
   useEffect(() => {
     const pruefen = async () => {
-      if (laeuft.current || !navigationRef.isReady()) return;
+      if (laeuft.current || gast.current || !navigationRef.isReady()) return;
       if (navigationRef.getCurrentRoute()?.name !== 'Home') return;
       if (Date.now() - letzte.current < MIN_ABSTAND_MS) return;
       // Erst nach der Begruessung (Brutzel-Video beim Start), sonst laege das Fenster darueber.
@@ -196,10 +109,9 @@ export default function MarketingHost({ navigationRef }: { navigationRef: Nav })
       laeuft.current = true;
       letzte.current = Date.now();
       try {
-        if (await nachrichtenFrageZeigen()) return;     // beim ersten Start zuerst: Benachrichtigungen ja/nein
         const status = await statusLaden();
 
-        // Werbe-Info per E-Mail: gleich beim ersten Start (vor der Fuehrung zum ersten Rezept), danach nie wieder
+        // Werbe-Info per E-Mail: nur fuer angemeldete Nutzer, danach nie wieder
         if (status.mail_frage_faellig) {
           const antworten = async (antwort: 'ja' | 'nein') => {
             try {
@@ -232,29 +144,6 @@ export default function MarketingHost({ navigationRef }: { navigationRef: Nav })
             buttons: [
               { text: t('marketing.einladungFrageJa'), onPress: () => { navigationRef.navigate('MainTabs', { screen: 'Profil' }); } },
               { text: t('marketing.einladungFrageNein'), style: 'cancel', onPress: () => { weiterPruefen(); } },
-            ],
-          });
-          return;
-        }
-
-        if (status.erster_schritt_offen && !ersterSchrittGezeigt.current) {
-          ersterSchrittGezeigt.current = true;
-          showBrutzelHinweis({
-            title: t('marketing.ersterSchritt.titel'),
-            text: t('marketing.ersterSchritt.text'),
-            buttons: [
-              {
-                text: t('marketing.ersterSchritt.foto'),
-                onPress: () => {
-                  ersterSchrittErledigt('foto').catch(() => undefined);
-                  navigationRef.navigate('PhotoCapture');
-                },
-              },
-              {
-                text: t('marketing.ersterSchritt.spaeter'),
-                style: 'cancel',
-                onPress: () => { ersterSchrittErledigt('spaeter').catch(() => undefined); },
-              },
             ],
           });
           return;

@@ -1186,5 +1186,9 @@
     "coinsGrund": "As a guest you get {n} AI Coins once to try things out, after that you need an account. With an account you get 50 AI Coins a month for the first 3 months, then 25 – plus the gift pack.",
     "coinsLeerTitel": "Trial coins used up",
     "coinsLeerText": "As a guest you had {n} AI Coins once to try things out – they are used up now. To keep going, register for free: you’ll get 50 AI Coins a month for the first 3 months, then 25 – plus the gift pack."
+  },
+  "begruessungTon": {
+    "an": "🔊 Sound on",
+    "aus": "🔇 Sound off"
   }
 }

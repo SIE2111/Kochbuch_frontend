@@ -8,6 +8,7 @@ import { useTheme } from '../theme/ThemeContext';
 import MarkenZeile from './MarkenZeile';
 import BrutzelIntroScreens from './BrutzelIntroScreens';
 import { useUebersetzung } from '../i18n';
+import { begruessungTonGemerkt, begruessungTonMerken } from '../utils/begruessungTon';
 
 interface Props {
   name: string;
@@ -56,7 +57,7 @@ export default function BrutzelGreetingOverlay({ name, onDismiss, mitVideo = tru
   // werden. Abgespielt und angezeigt wird nur bei eingeschalteter Animation.
   const player = useVideoPlayer(require('../../assets/brutzel-celebration.mp4'), (p) => {
     p.loop = false;
-    p.muted = !mitMusik;
+    p.muted = true;   // startet immer stumm, Ton erst auf Wunsch (Knopf "Ton an")
     if (mitVideo) p.play();
   });
 
@@ -88,20 +89,30 @@ export default function BrutzelGreetingOverlay({ name, onDismiss, mitVideo = tru
     // sprechen-Prop - gleiche Vereinheitlichung wie bei Buerroablage und
     // in CookingFinishedCelebration.tsx (Vorlesen laeuft automatisch mit
     // der Animation mit, kein eigener Schalter mehr dafuer noetig).
-    if (!mitMusik) {
-      return;
-    }
-
-    // Feste Vorleser-Stimme (weiblich) statt Brutzels eigener (maennlich)
-    // - die ist den Tipp-Karten vorbehalten (siehe Auftrag Punkt 3), hier
-    // spricht die App selbst.
-    vorleserStimme().then((voice) => Speech.speak(greetingText, { language: SPEECH_LANGUAGE, voice }));
-
+    // Ton nur, wenn der Profil-Schalter an ist UND der Nutzer ihn hier schon einmal eingeschaltet hat
+    if (mitMusik) begruessungTonGemerkt().then((an) => { if (an) tonSchalten(true, false); });
     return () => {
       Speech.stop();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const [tonAn, setTonAn] = useState(false);
+  // Ton an/aus: Video-Ton und vorgelesene Begruessung zusammen. Beim Einschalten startet die Animation neu,
+  // damit man Musik und Gruss auch hoert.
+  function tonSchalten(an: boolean, merken = true) {
+    setTonAn(an);
+    if (merken) begruessungTonMerken(an);
+    try { player.muted = !an; } catch { /* egal */ }
+    if (an) {
+      try { player.currentTime = 0; if (mitVideo) player.play(); } catch { /* egal */ }
+      Speech.stop();
+      // Feste Vorleser-Stimme (weiblich) statt Brutzels eigener (maennlich) - die ist den Tipp-Karten vorbehalten
+      vorleserStimme().then((voice) => Speech.speak(greetingText, { language: SPEECH_LANGUAGE, voice }));
+    } else {
+      Speech.stop();
+    }
+  }
 
   const handleDismiss = () => {
     Speech.stop();
@@ -142,6 +153,11 @@ export default function BrutzelGreetingOverlay({ name, onDismiss, mitVideo = tru
           )}
           {mitVideo && <VideoView player={player} style={styles.video} contentFit="cover" nativeControls={false} />}
         </View>
+        {mitVideo && (
+          <Pressable onPress={() => tonSchalten(!tonAn)} hitSlop={8} style={[styles.tonKnopf, { borderColor: colors.muted }]}>
+            <Text style={{ color: colors.text, fontSize: 13, fontWeight: '600' }}>{tonAn ? t('begruessungTon.aus') : t('begruessungTon.an')}</Text>
+          </Pressable>
+        )}
 
         <Animated.View style={{ opacity: textOpacity, alignItems: 'center' }}>
           <Text style={[styles.title, { color: colors.text }]}>{t('sonstiges.hallo', { name })}</Text>
@@ -178,6 +194,7 @@ const styles = StyleSheet.create({
   videoBox: { width: '100%', height: 300, marginBottom: 20, borderRadius: 16, overflow: 'hidden' },
   videoFallback: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' },
   markenZeile: { paddingHorizontal: 24, paddingBottom: 4 },
+  tonKnopf: { marginTop: -8, marginBottom: 18, paddingHorizontal: 14, paddingVertical: 7, borderRadius: 16, borderWidth: 1 },
   video: { width: '100%', height: '100%' },
   title: { fontSize: 22, fontWeight: '700', marginBottom: 6 },
   subtitle: { fontSize: 13, marginBottom: 22, textAlign: 'center' },

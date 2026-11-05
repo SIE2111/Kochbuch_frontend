@@ -1186,5 +1186,9 @@
     "coinsGrund": "Als Gast hast du einmalig {n} AI Coins zum Ausprobieren, danach brauchst du ein Konto. Mit einem Konto bekommst du in den ersten 3 Monaten 50 AI Coins im Monat, danach 25 – und dazu das Geschenk-Paket.",
     "coinsLeerTitel": "Probe-Coins aufgebraucht",
     "coinsLeerText": "Als Gast hattest du einmalig {n} AI Coins zum Ausprobieren – die sind jetzt aufgebraucht. Damit es weitergeht, registriere dich kostenlos: Dann bekommst du in den ersten 3 Monaten 50 AI Coins im Monat, danach 25 – und dazu das Geschenk-Paket."
+  },
+  "begruessungTon": {
+    "an": "🔊 Ton an",
+    "aus": "🔇 Ton aus"
   }
 }

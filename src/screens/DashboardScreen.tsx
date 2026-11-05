@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl, Image, Alert, TextInput, Modal, Keyboard, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,6 +10,7 @@ import IncomingSharesCard from '../components/IncomingSharesCard';
 import BrutzelGreetingOverlay from '../components/BrutzelGreetingOverlay';
 import BrutzelFaqBubble from '../components/BrutzelFaqBubble';
 import { useAuth } from '../context/AuthContext';
+import { musikStandardFuerNeue } from '../utils/neuerNutzerStandard';
 import { sichernAnbieten } from '../utils/gast';
 import { api, ApiError } from '../api/client';
 import { useFocusEffect } from '@react-navigation/native';
@@ -88,6 +89,8 @@ export default function DashboardScreen({ navigation }: Props) {
   // /preferences/) - vorher las die Begruessung stattdessen aus den
   // Supabase-Auth-user_metadata, einer komplett getrennten Ablage, die
   // eine Aenderung im Profil nie mitbekam.
+  const sessionRef = useRef(session);
+  sessionRef.current = session;
   const loadDisplayName = useCallback(() => {
     api
       .get<{
@@ -95,7 +98,9 @@ export default function DashboardScreen({ navigation }: Props) {
         category_order: string[] | null; hidden_categories: string[] | null; auto_read_steps: boolean;
         play_animation_music: boolean;
       }>('/preferences/')
-      .then((prefs) => {
+      .then(async (prefs) => {
+        // Neue Konten: Animations-Musik standardmaessig aus (einmalig, danach zaehlt nur der Schalter im Profil)
+        prefs.play_animation_music = await musikStandardFuerNeue(sessionRef.current?.user.id, sessionRef.current?.user.created_at, prefs.play_animation_music);
         setProfileDisplayName(prefs.display_name);
         setBrutzelTipps(prefs.show_brutzel !== false);
         setCategoryOrder(prefs.category_order ?? []);
